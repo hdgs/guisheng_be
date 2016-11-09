@@ -67,15 +67,15 @@ class User(db.Model, UserMixin):
     """user"""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    avatar_hash = db.Column(db.String(64))
+    img_url = db.Column(db.String(64))
     name = db.Column(db.String(64))
     weibo = db.Column(db.String(64))
     introduction = db.Column(db.Text)
     works = db.Column(db.Text)
-    #collects = db.relationship('Collect', backref='author', lazy='dynamic')
-    #suggest = db.relationship('Suggest', backref='author', lazy='dynamic')
+    collects = db.relationship('Collect', backref='author', lazy='dynamic')
+    suggestion = db.Column(db.Text)
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     phonenumber = db.Column(db.String(164), unique=True, index=True)
-    #email = db.Column(db.String(164), info={'validator' : Email()})
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(164))
 
