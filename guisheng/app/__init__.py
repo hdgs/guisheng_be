@@ -3,6 +3,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask.ext.moment import Moment
 from flask_debugtoolbar import DebugToolbarExtension
 from config import config
 
@@ -23,6 +24,7 @@ toolbar = DebugToolbarExtension(app)
 
 
 db = SQLAlchemy(app)
+moment = Moment(app)
 login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
@@ -44,3 +46,5 @@ app.register_blueprint(main, url_prefix='/main')
 from auth import auth
 app.register_blueprint(auth, url_prefix="/auth")
 
+from api_1_0 import api
+app.register_blueprint(api, url_prefix="/api/v1.0")

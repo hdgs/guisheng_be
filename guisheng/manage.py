@@ -36,7 +36,6 @@ import sys
 import os
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.moment import Moment
 from app import db, app
 from app.models import User, Role
 
@@ -47,7 +46,7 @@ sys.setdefaultencoding('utf-8')
 
 manager = Manager(app)
 migrate = Migrate(app, db)
-moment = Moment(app)
+
 
 
 def make_shell_context():

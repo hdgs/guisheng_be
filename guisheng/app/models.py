@@ -67,15 +67,15 @@ class User(db.Model, UserMixin):
     """user"""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    img_url = db.Column(db.String(64))
-    name = db.Column(db.String(64))
-    weibo = db.Column(db.String(64))
-    introduction = db.Column(db.Text)
-    works = db.Column(db.Text)
-    collects = db.relationship('Collect', backref='author', lazy='dynamic')
-    suggestion = db.Column(db.Text)
+    img_url = db.Column(db.String(164),default="")
+    name = db.Column(db.String(64),default="")
+    weibo = db.Column(db.String(164),default="")
+    introduction = db.Column(db.Text,default="")
+    works = db.Column(db.Text,default="")
+    collection = db.relationship('Collect', backref='author', lazy='dynamic')
+    suggestion = db.Column(db.Text,default="")
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    phonenumber = db.Column(db.String(164), unique=True, index=True)
+    phonenumber = db.Column(db.String(164), unique=True, index=True,default="")
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(164))
 
@@ -110,23 +110,22 @@ class AnonymousUser(AnonymousUserMixin):
 
 login_manager.anonymous_user = AnonymousUser
 
-# you can writing your models here:
-
 #新闻
 class News(db.Model):
     __tablename__ = 'news'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64))
+    title = db.Column(db.String(64),default="")
+    author = db.Column(db.String(64), db.ForeignKey('users.name'),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    body = db.Column(db.Text)
+    body = db.Column(db.Text,default="")
     comments = db.relationship('Comment', backref='news', lazy='dynamic')
     light = db.relationship('Light', backref='news', lazy='dynamic')
     collect = db.relationship('Collect', backref='news', lazy='dynamic')
-    tag = db.Column(db.String(64))
+    tag = db.Column(db.PickleType,default="")
     views = db.Column(db.Integer)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    img_url = db.Column(db.String(164))
-    description = db.Column(db.Text)
+    time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    img_url = db.Column(db.String(164),default="")
+    description = db.Column(db.Text,default="")
 
     def __repr__(self):
         return "<News %r>" % self.id
@@ -135,23 +134,25 @@ class News(db.Model):
 class Everydaypic(db.Model):
     __tablename__ = 'everydaypics'
     id = db.Column(db.Integer,primary_key=True)
-    img_url = db.Column(db.String(164))
+    img_url = db.Column(db.String(164),default="")
     temperature = db.Column(db.Float)
-    data = db.Column(db.String(64))
-    place = db.Column(db.String(64))
+    data = db.Column(db.String(164),default="")
+    place = db.Column(db.String(164),default="")
 
     def __repr__(self):
         return "<Everydaypic %r>" % self.id
 
-#图片集的单张图片
+#图片集
 class Picture(db.Model):
     __tablename__ = 'pictures'
     id = db.Column(db.Integer,primary_key=True)
-    img_url = db.Column(db.String(164))
-    title = db.Column(db.String(64))
-    tag = db.Column(db.String(64))
+    img_url = db.Column(db.PickleType,default="")
+    title = db.Column(db.String(64),default="")
+    author = db.Column(db.String(64), db.ForeignKey('users.name'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    tag = db.Column(db.PickleType,default="")
     views = db.Column(db.Integer)
-    introduction = db.Column(db.Text)
+    introduction = db.Column(db.PickleType,default="")
     like = db.relationship('Like',backref='pictures', lazy='dynamic')
     comments = db.relationship('Comment',backref='pictures', lazy='dynamic')
     collect = db.relationship('Collect',backref='pictures', lazy='dynamic')
@@ -160,89 +161,62 @@ class Picture(db.Model):
     def __repr__(self):
         return "<Picture %r>" % self.id
 
-#纯文章
+#水墨文章
 class Article(db.Model):
     __tablename__ = 'articles'
     id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(64))
+    title = db.Column(db.String(164),default="")
+    img_url = db.Column(db.String(164),default="")
+    author = db.Column(db.String(64), db.ForeignKey('users.name'))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    content = db.Column(db.Text)
+    body = db.Column(db.Text,default="")
     comments = db.relationship('Comment',backref='articles', lazy='dynamic')
     light = db.relationship('Light',backref='articles', lazy='dynamic')
     collect = db.relationship('Collect',backref='articles', lazy='dynamic')
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    img_url = db.Column(db.String(64))
+    description = db.Column(db.Text,default="")
+    tag = db.Column(db.PickleType,default="")
+    music_url = db.Column(db.String(164),default="")
+    music_title = db.Column(db.String(164),default="")
+    music_imgurl = db.Column(db.String(164),default="")
+    film_url = db.Column(db.String(164),default="")
 
     def __repr__(self):
         return "<Post %r>" % self.id
 
-#带音乐分享的文章
-class MusicArticle(db.Model):
-    __tablename__ = 'musicarticles'
-    id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(164))
-    img_url = db.Column(db.String(164))
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    body = db.Column(db.Text)
-    comments = db.relationship('Comment',backref='musicarticles', lazy='dynamic')
-    light = db.relationship('Light',backref='musicarticles', lazy='dynamic')
-    collect = db.relationship('Collect',backref='musicarticles', lazy='dynamic')
-    views = db.Column(db.Integer)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    music_url = db.Column(db.String(164))
-    music_title = db.Column(db.String(64))
-    music_imgurl = db.Column(db.String(164))
-
-    def __repr__(self):
-        return "<Post %r>" % self.id
-
-#带电影分享的文章
-class FilmArticle(db.Model):
-    __tablename__ = 'filmarticles'
-    id = db.Column(db.Integer,primary_key=True)
-    img_url = db.Column(db.String(164))
-    title = db.Column(db.String(64))
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    body = db.Column(db.Text)
-    comments = db.relationship('Comment',backref='filmarticles', lazy='dynamic')
-    light = db.relationship('Light',backref='filmarticles', lazy='dynamic')
-    collect = db.relationship('Collect',backref='filmarticles', lazy='dynamic')
-    views = db.Column(db.Integer)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    film_url = db.Column(db.String(164))
-
-    def __repr__(self):
-        return "<Post %r>" % self.id
 
 #互动话题
 class Interaction(db.Model):
     __tablename__ = 'interactions'
     id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(64), unique=True)
-    views = db.Column(db.Integer,primary_key=True)
+    title = db.Column(db.String(164), default="")
+    author = db.Column(db.String(64), db.ForeignKey('users.name'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    views = db.Column(db.Integer)
     comments = db.relationship('Comment',backref='interactions', lazy='dynamic')
-    commentnum = db.Column(db.Integer)
     light = db.relationship('Light',backref='interactions', lazy='dynamic')
     collect = db.relationship('Collect',backref='interactions', lazy='dynamic')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    description = db.Column(db.Text,default="")
+    tag = db.Column(db.PickleType,default="")
+    body = db.Column(db.Text,default="")
 
     def __repr__(self):
-        return "<Topic %r>" % self.id
+        return "<Interaction %r>" % self.id
 
 #评论
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
+    body = db.Column(db.Text,default="")
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    musicarticle_id = db.Column(db.Integer, db.ForeignKey('musicarticles.id'))
-    filmarticle_id = db.Column(db.Integer, db.ForeignKey('filmarticles.id'))
-    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
-    topic_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
+    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id')) 
+    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
+    like = db.relationship('Like',backref='comments', lazy='dynamic')
 
     def __repr__(self):
         return "<Comment %r>" % self.id
@@ -254,8 +228,6 @@ class Collect(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    musicarticle_id = db.Column(db.Integer, db.ForeignKey('musicarticles.id'))
-    filmarticle_id = db.Column(db.Integer, db.ForeignKey('filmarticles.id'))
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
     topic_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
 
@@ -269,10 +241,8 @@ class Light(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    musicarticle_id = db.Column(db.Integer, db.ForeignKey('musicarticles.id'))
-    filmarticle_id = db.Column(db.Integer, db.ForeignKey('filmarticles.id'))
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
-    topic_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
+    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
     like_degree = db.Column(db.Integer,primary_key=True)
 
     def __repr__(self):
@@ -284,6 +254,7 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
+    comment_id = db.Column(db.Integer,db.ForeignKey('comments.id'))
 
     def __repr__(self):
         return "<Like %r>" % self.id
