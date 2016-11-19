@@ -1,14 +1,14 @@
 # coding: utf-8
-from flask import render_template,jsonify,Response,g
+from flask import render_template,jsonify,Response,g,request
 import json
-from ..models import News,Picture,Article,Interaction
+from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic
 from . import api
 
 @api.route('/feed/', methods=['GET','POST'])
 def main_page():
-    kind = request.args.get('kind')
-    page = request.args.get('page')
-    count = request.args.get('count')
+    kind = int(request.args.get('kind'))
+    page = int(request.args.get('page'))
+    count = int(request.args.get('count'))
 
     if kind == 0:
         news = News.query.order_by(News.time.desc()).limit(count)
@@ -24,41 +24,43 @@ def main_page():
             tolist.append(a)
         for i in interactions:
             tolist.append(i)
-        tolist.sort(reverse=True)
+        tolist.sort()
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":content.id,
                 "img_url":content.img_url,
                 "title":content.title,
-                "author":content.author,
+                "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
                 "tag":content.tag,
                 "description":content.description,
-            } for content in tolist]
+                "time":content.time.strftime('%Y-%m-%d %H:%M:%S %f'),
+                } for content in tolist[:count-1]]
         ),mimetype='application/json')
 
-    if kind == 1:
-        news = News.query.order_by(News.time.desc()).limit(count).offset((page-1)*count)
+    elif kind == 1:
+        news = News.query.order_by(News.time.desc()).limit(count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":singlenews.id,
                 "img_url":singlenews.img_url,
                 "title":singlenews.title,
-                "author":singlenews.author,
+                "author":User.query.get_or_404(singlenews.author_id).name,
                 "views":singlenews.views,
                 "tag":singlenews.tag,
                 "description":singlenews.description,
-            }for singlenews in news]
+                "time":singlenews.time.strftime('%Y-%m-%d %H:%M:%S %f'),
+            } for singlenews in news]
         ),mimetype='application/json')
 
-    if kind == 2:
-        pictures = Picture.query.order_by(Picture.time.desc()).limit(count).offset((page-1)*count)
+    elif kind == 2:
+        pictures = Picture.query.order_by(Picture.time.desc()).limit(count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":picture.id,
                 "img_url":picture.img_url,
                 "title":picture.title,
-                "author":picture.author,
+                "author":User.query.get_or_404(picture.author_id).name,
                 "views":picture.views,
                 "tag":picture.tag,
                 "description":picture.description,
@@ -66,33 +68,34 @@ def main_page():
         ),mimetype='application/json')
 
 
-    if kind == 3:
-        articles = Article.query.order_by(Article.time.desc()).limit(count).offset((page-1)*count)
+    elif kind == 3:
+        articles = Article.query.order_by(Article.time.desc()).limit(count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":article.id,
                 "img_url":article.img_url,
                 "title":article.title,
-                "author":article.author,
+                "author":User.query.get_or_404(article.author_id).name,
                 "views":article.views,
                 "tag":article.tag,
                 "description":article.description,
             }for article in articles]
         ),mimetype='application/json')
 
-    if kind == 4:
-        interactions = Interaction.query.order_by(Interaction.time.desc()).limit(count).offset((page-1)*count)
+    else:
+        interactions = Interaction.query.order_by(Interaction.time.desc()).limit(count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":interaction.id,
                 "img_url":interaction.img_url,
                 "title":interaction.title,
-                "author":interaction.author,
+                "author":User.query.get_or_404(interaction.author_id).name,
                 "views":interaction.views,
                 "tag":interaction.tag,
                 "description":interaction.description,
             }for interaction in interactions]
         ),mimetype='application/json')
+
 
 @api.route('/everydaypic/', methods=['GET','POST'])
 def get_everydaypic():
@@ -109,7 +112,7 @@ def get_pic(id):
     pic = Picture.query.get_or_404(id)
     return Response(json.dumps({
         "title":pic.title,
-        "author":pic.author,
+        "author":User.query.get_or_404(pic.author_id).name,
         "time":pic.time.strftime('%Y-%m-%d %H:%M:%S %f'),
         "pics":pic.img_url,
         "introduction":pic.introduction,
@@ -121,18 +124,18 @@ def get_photos():
     return Response(json.dumps([{
             "img_url":photo.img_url,
             "title":photo.title,
-            "author":photo.author,
+            "author":User.query.get_or_404(photo.author_id).name,
             "views":photo.views,
             "tag":photo.tag,
         } for photo in photos]
     ),mimetype='application/json')
-        
+
 @api.route('/news/<int:id>/', methods=['GET','POST'])
 def get_news(id):
     news = News.query.get_or_404(id)
     return Response(json.dumps({
         "title":news.title,
-        "author":news.author,
+        "author":User.query.get_or_404(news.author_id).name,
         "time":news.time.strftime('%Y-%m-%d %H:%M:%S %f'),
         "body":news.body,
         }),mimetype='application/json')
@@ -143,7 +146,7 @@ def get_article(id):
     return Response(json.dumps({
         "title":article.title,
         "img_url":article.img_url,
-        "author":article.author,
+        "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%Y-%m-%d %H:%M:%S %f'),
         "body":article.body,
         "music":{
@@ -160,7 +163,7 @@ def get_interaction(id):
     interaction = Interaction.query.get_or_404(id)
     return Response(json.dumps({
         "title":interaction.title,
-        "author":interaction.author,
+        "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%Y-%m-%d %H:%M:%S %f'),
         "body":interaction.body,
         }),mimetype='application/json')
@@ -174,10 +177,14 @@ def profile(id):
             "name":user.name,
             "weibo":user.weibo,
             "introduction":user.introduction,
-            "works":user.works,
-            "collection":user.collection,
+            "works":','.join([inews.title for inews in user.news.all()])+
+                    ','.join([pic.title for pic in user.pictures.all()])+
+                    ','.join([article.title for article in user.articles.all()])+
+                    ','.join([interaction.title for interaction in user.interactions.all()]),
+            #"collection":user.collection,
             "suggestion":user.suggestion,
             }),mimetype='application/json')
+
     if request.method == 'PUT':
         user = User.query.get_or_404(id)
         user.img_url = request.get_json().get("img_url")
@@ -192,11 +199,13 @@ def profile(id):
             "name":user.name,
             "weibo":user.weibo,
             "introduction":user.introduction,
-            "works":user.works,
-            "collection":user.collection,
+            "works":','.join([inews.title for inews in user.news.all()])+
+                    ','.join([pic.title for pic in user.pictures.all()])+
+                    ','.join([article.title for article in user.articles.all()])+
+                    ','.join([interaction.title for interaction in user.interactions.all()]),
+            #"collection":user.collection,
             "suggestion":user.suggestion,
             }),mimetype='application/json')
-
 
 @api.route('/comments/',methods=['GET','POST'])
 def comments():
@@ -211,12 +220,18 @@ def comments():
             post = Article.query.get_or_404(article_id)
         if kind == 4:
             post = Interaction.query.get_or_404(article_id)
-        comments = post.comments.order_by(Comment.time.asc()).items
+        comments = post.comments.filter_by(comment_id=-1).order_by(Comment.time.asc()).items
+        responses = post.comments.filter_by(comment_id!=-1).order_by(Comment.time.asc()).items
         return Response(json.dumps([{
                 "article_id":article_id,
-                "img_url":g.current_user.img_url,
+                "img_url":(User.query.get_or_404(comment.author_id)).img_url,
                 "message":comment.body,
-                "comments":[],
+                "comments":[{
+                    "article_id":article_id,
+                    "img_url":(User.query.get_or_404(response.author_id)).img_url,
+                    "message":response.body,
+                    "likes":response.likes,
+                    }for response in responses],
                 "likes":comment.likes,
             } for comment in comments]
         ),mimetype='application/json')
@@ -232,7 +247,7 @@ def comments():
             comment.article_id = request.get_json.get("article_id")
         if kind == 4:
             comment.interaction_id = request.get_json.get("article_id")
-        comment.id = request.get_json().get("comment_id")
+        comment.comment_id = request.get_json().get("comment_id")
         comment.body = request.get_json().get("message")
         comment.author_id = request.get_json().get("user_id")
         db.session.add(comment)
