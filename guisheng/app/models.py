@@ -67,6 +67,7 @@ class User(db.Model, UserMixin):
     """user"""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(164), unique=True, index=True)
     password_hash = db.Column(db.String(164))
     img_url = db.Column(db.String(164),default="")
     name = db.Column(db.String(64),default="")
@@ -81,7 +82,6 @@ class User(db.Model, UserMixin):
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     likes = db.relationship('Like', backref='author', lazy='dynamic')
     lights = db.relationship('Light', backref='author', lazy='dynamic')
-    phonenumber = db.Column(db.String(164), unique=True, index=True,default="")
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     @property
@@ -113,10 +113,10 @@ class User(db.Model, UserMixin):
         seed()
         for i in range(count):
             u=User(name=forgery_py.internet.user_name(True),
+                   email=forgery_py.internet.email_address(),
                    img_url=forgery_py.internet.email_address(),
                    weibo=forgery_py.internet.email_address(),
                    introduction=forgery_py.lorem_ipsum.paragraph(),
-                   phonenumber=forgery_py.address.phone(),
                    password_hash=forgery_py.lorem_ipsum.word())
             db.session.add(u)
             try:
@@ -338,7 +338,7 @@ class Comment(db.Model):
     like = db.relationship('Like',backref='comment', lazy='dynamic')
 
     @staticmethod
-    def generate_fake():
+    def generate_fake(count=100):
         from random import seed,randint
         import forgery_py
 
@@ -347,7 +347,7 @@ class Comment(db.Model):
         news_count = News.query.count()
         pic_count = Picture.query.count()
         art_count = Article.query.count()
-        int_count = Interction.query.count()
+        int_count = Interaction.query.count()
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             n = News.query.offset(randint(0,news_count-1)).first()
@@ -412,9 +412,8 @@ class Light(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
     interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
-    like_degree = db.Column(db.Integer,primary_key=True)
+    like_degree = db.Column(db.Integer)
 
     @staticmethod
     def generate_fake(count=100):
@@ -425,18 +424,15 @@ class Light(db.Model):
         user_count = User.query.count()
         news_count = News.query.count()
         art_count = Article.query.count()
-        pic_count = Picture.query.count()
         int_count = Interaction.query.count()
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             n = News.query.offset(randint(0,news_count-1)).first()
             a = Article.query.offset(randint(0,art_count-1)).first()
-            p = Picture.query.offset(randint(0,pic_count-1)).first()
             t = Interaction.query.offset(randint(0,int_count-1)).first()
-            l = Linght(author=u,
+            l = Light(author=u,
                         news=n,
                         article=a,
-                        picture=p,
                         interaction=t,
                         like_degree=randint(1,5))
             db.session.add(l)
@@ -453,7 +449,7 @@ class Like(db.Model):
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
     comment_id = db.Column(db.Integer,db.ForeignKey('comments.id'))
 
-    @staticmethod
+    @staticmethod 
     def generate_fake(count=100):
         from random import seed,randint
         import forgery_py

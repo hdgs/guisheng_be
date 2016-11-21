@@ -5,4 +5,4 @@ import json
 
 @main.route('/',methods=['GET','POST'])
 def index():
-    return "hi"
+    return render_template('index.html')
