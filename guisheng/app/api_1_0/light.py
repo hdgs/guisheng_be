@@ -21,3 +21,4 @@ def light():
     db.session.add(light)
     db.session.commit()
  
+

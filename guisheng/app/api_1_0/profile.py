@@ -6,7 +6,6 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 
 
-
 @api.route('/profile/<int:id>/', methods=['GET','POST','PUT'])
 def profile(id):
     if request.method == 'GET':

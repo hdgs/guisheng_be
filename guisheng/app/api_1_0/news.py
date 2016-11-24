@@ -16,4 +16,3 @@ def get_news(id):
         "body":news.body,
         }),mimetype='application/json')
 
-

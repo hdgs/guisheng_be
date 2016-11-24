@@ -29,3 +29,4 @@ def get_photos():
         } for photo in photos]
     ),mimetype='application/json')
 
+

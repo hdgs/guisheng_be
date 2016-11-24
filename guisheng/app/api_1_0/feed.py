@@ -96,3 +96,5 @@ def main_page():
                 "description":interaction.description,
             }for interaction in interactions]
         ),mimetype='application/json')
+
+        

@@ -24,3 +24,4 @@ def get_article(id):
             }
         }),mimetype='application/json')
 
+
