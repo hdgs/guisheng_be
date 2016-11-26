@@ -13,7 +13,7 @@ def get_interaction(id):
     return Response(json.dumps({
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
-        "time":interaction.time.strftime('%Y-%m-%d %H:%M:%S %f'),
+        "time":interaction.time.strftime('%m/%d/%Y'),
         "body":interaction.body,
         }),mimetype='application/json')
 

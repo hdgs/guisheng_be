@@ -10,9 +10,9 @@ def get_everydaypic():
     everydaypic = Everydaypic.query.first()
     return Response(json.dumps({
         "img_url":everydaypic.img_url,
-        "temperature":everydaypic.temperature,
+        "climate_url":everypic.climate_url,
+        "climate":everydaypic.climate,
         "date":everydaypic.date,
-        "place":everydaypic.place,
         }),mimetype='application/json')
 
 

@@ -12,7 +12,7 @@ def get_pic(id):
     return Response(json.dumps({
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,
-        "time":pic.time.strftime('%Y-%m-%d %H:%M:%S %f'),
+        "time":pic.time.strftime('%m/%d/%Y'),
         "pics":pic.img_url,
         "introduction":pic.introduction,
     }),mimetype='application/json')

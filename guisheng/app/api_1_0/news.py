@@ -1,8 +1,7 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
 import json
-from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment
+from ..models import Role,User,News
 from . import api
 
 
@@ -12,7 +11,8 @@ def get_news(id):
     return Response(json.dumps({
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
-        "time":news.time.strftime('%Y-%m-%d %H:%M:%S %f'),
+        "time":news.time.strftime('%m/%d/%Y'),
         "body":news.body,
         }),mimetype='application/json')
+
 

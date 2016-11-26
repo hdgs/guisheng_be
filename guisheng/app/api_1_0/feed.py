@@ -29,11 +29,11 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":content.id,
-                "img_url":content.img_url,
+                "img_url":content.img_url[0],
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
-                "tag":content.tag,
+                "tag":content.tag[0],
                 "description":content.description,
                 "time":content.time.strftime('%Y-%m-%d %H:%M:%S %f'),
                 } for content in tolist[:count-1]]
@@ -48,7 +48,7 @@ def main_page():
                 "title":singlenews.title,
                 "author":User.query.get_or_404(singlenews.author_id).name,
                 "views":singlenews.views,
-                "tag":singlenews.tag,
+                "tag":singlenews.tag[0],
                 "description":singlenews.description,
                 "time":singlenews.time.strftime('%Y-%m-%d %H:%M:%S %f'),
             } for singlenews in news]
@@ -63,7 +63,7 @@ def main_page():
                 "title":picture.title,
                 "author":User.query.get_or_404(picture.author_id).name,
                 "views":picture.views,
-                "tag":picture.tag,
+                "tag":picture.tag[0],
                 "description":picture.description,
             }for picture in pictures]
         ),mimetype='application/json')
@@ -74,11 +74,11 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":article.id,
-                "img_url":article.img_url,
+                "img_url":article.img_url[0],
                 "title":article.title,
                 "author":User.query.get_or_404(article.author_id).name,
                 "views":article.views,
-                "tag":article.tag,
+                "tag":article.tag[0],
                 "description":article.description,
             }for article in articles]
         ),mimetype='application/json')
@@ -97,4 +97,4 @@ def main_page():
             }for interaction in interactions]
         ),mimetype='application/json')
 
-        
+

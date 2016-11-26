@@ -145,10 +145,10 @@ class News(db.Model):
     comments = db.relationship('Comment', backref='news', lazy='dynamic')
     light = db.relationship('Light', backref='news', lazy='dynamic')
     collect = db.relationship('Collect', backref='news', lazy='dynamic')
-    tag = db.Column(db.PickleType,default="")
+    tag = db.Column(db.PickleType,default=[""])
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
-    img_url = db.Column(db.String(164),default="")
+    img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
 
     @staticmethod
@@ -166,7 +166,7 @@ class News(db.Model):
                      tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                      views=randint(0,100),
                      time=forgery_py.date.date(True),
-                     img_url=forgery_py.internet.email_address(),
+                     img_url=[forgery_py.internet.email_address()],
                      description=forgery_py.lorem_ipsum.paragraph())
             db.session.add(n)
             db.session.commit()
@@ -179,21 +179,21 @@ class Everydaypic(db.Model):
     __tablename__ = 'everydaypics'
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.Column(db.String(164),default="")
-    temperature = db.Column(db.Float)
+    climate = db.Column(db.String(164))
+    climate_url = db.Column(db.String(64))
     date = db.Column(db.String(164),default="")
-    place = db.Column(db.String(164),default="")
 
     @staticmethod
     def generate_fake(count=100):
-        from random import seed,randint,uniform
+        from random import seed
         import forgery_py
 
         seed()
         for i in range(count):
             e = Everydaypic(img_url=forgery_py.internet.email_address(),
-                            temperature = uniform(0,100),
-                            date = forgery_py.date.date(True),
-                            place = forgery_py.address.city())
+                            climate = "sunny",
+                            climate_url = forgery_py.internet.email_address(),
+                            date = forgery_py.date.date(True))
             db.session.add(e)
             db.session.commit()
 
@@ -204,10 +204,10 @@ class Everydaypic(db.Model):
 class Picture(db.Model):
     __tablename__ = 'pictures'
     id = db.Column(db.Integer,primary_key=True)
-    img_url = db.Column(db.PickleType,default="")
+    img_url = db.Column(db.PickleType,default=[""])
     title = db.Column(db.String(64),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    tag = db.Column(db.PickleType,default="")
+    tag = db.Column(db.PickleType,default=[""])
     views = db.Column(db.Integer)
     introduction = db.Column(db.PickleType,default="")
     description = db.Column(db.Text,default="")
@@ -225,7 +225,7 @@ class Picture(db.Model):
         user_count = User.query.count()
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
-            p = Picture(img_url=forgery_py.internet.email_address(),
+            p = Picture(img_url=[forgery_py.internet.email_address()],
                         title=forgery_py.lorem_ipsum.title(randint(1,4)),
                         author=u,
                         tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
@@ -244,7 +244,7 @@ class Article(db.Model):
     __tablename__ = 'articles'
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164),default="")
-    img_url = db.Column(db.String(164),default="")
+    img_url = db.Column(db.PickleType,default=[""])
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body = db.Column(db.Text,default="")
     comments = db.relationship('Comment',backref='article', lazy='dynamic')
@@ -253,11 +253,15 @@ class Article(db.Model):
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     description = db.Column(db.Text,default="")
-    tag = db.Column(db.PickleType,default="")
+    tag = db.Column(db.PickleType,default=[""])
     music_url = db.Column(db.String(164),default="")
     music_title = db.Column(db.String(164),default="")
-    music_imgurl = db.Column(db.String(164),default="")
+    music_img_url = db.Column(db.String(164),default="")
+    singer = db.Column(db.String(64),default="")
     film_url = db.Column(db.String(164),default="")
+    film_img_url = db.Column(db.String(164),default="")
+    scores = db.Column(db.Integer)
+
 
     @staticmethod
     def generate_fake(count=100):
@@ -269,7 +273,7 @@ class Article(db.Model):
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             a = Article(title=forgery_py.lorem_ipsum.title(randint(1,4)),
-                        img_url=forgery_py.internet.email_address(),
+                        img_url=[forgery_py.internet.email_address()],
                         author=u,
                         body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                         time=forgery_py.date.date(True),
@@ -277,8 +281,11 @@ class Article(db.Model):
                         tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                         music_url=forgery_py.internet.email_address(),
                         music_title=forgery_py.lorem_ipsum.word(),
-                        music_imgurl=forgery_py.internet.email_address(),
-                        film_url=forgery_py.internet.email_address())
+                        music_img_url=forgery_py.internet.email_address(),
+                        singer = forgery_py.lorem_ipsum.title(randint(1,4)),
+                        film_url=forgery_py.internet.email_address(),
+                        film_img_url=forgery_py.internet.email_address(),
+                        scores = randint(0,10))
             db.session.add(a)
             db.session.commit()
 
@@ -300,7 +307,7 @@ class Interaction(db.Model):
     description = db.Column(db.Text,default="")
     tag = db.Column(db.PickleType,default="")
     body = db.Column(db.Text,default="")
-    img_url = db.Column(db.String(164),default="")
+    img_url = db.Column(db.PickleType,default=[""])
 
     @staticmethod
     def generate_fake(count=100):
@@ -316,6 +323,7 @@ class Interaction(db.Model):
                             time=forgery_py.date.date(True),
                             description=forgery_py.lorem_ipsum.paragraph(),
                             tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
+                            img_url=[forgery_py.internet.email_address()],
                             body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)))
             db.session.add(t)
             db.session.commit()

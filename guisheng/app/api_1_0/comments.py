@@ -17,15 +17,15 @@ def comments():
             responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         elif kind == 2:
             post = Picture.query.get_or_404(a_id)
-            comments = Comment.query.filter_by(picture_id=a_id).order_by(Commment.time.asc()).all()
+            comments = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).all()
             responses = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).all()
         elif kind == 3:
             post = Article.query.get_or_404(a_id)
-            comments = Comment.query.filter_by(article_id=a_id).order_by(Commment.time.asc()).all()
+            comments = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
             responses = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
         else:
             post = Interaction.query.get_or_404(a_id)
-            comments = Comment.query.filter_by(interaction_id=a_id).order_by(Commment.time.asc()).all()
+            comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
             responses = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
         return Response(json.dumps([{
                 "article_id":a_id,
@@ -35,9 +35,9 @@ def comments():
                     "article_id":a_id,
                     "img_url":(User.query.get_or_404(response.author_id)).img_url,
                     "message":response.body,
-                    #"likes":response.like,
+                   "likes":response.like.count(),
                     }for response in responses],
-                #"likes":comment.like,
+                "likes":comment.like.count(),
             } for comment in comments]
         ),mimetype='application/json')
 
