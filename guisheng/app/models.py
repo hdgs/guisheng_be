@@ -6,9 +6,11 @@ sql models
     -- http://flask-sqlalchemy.pocoo.org/2.1/
 
 """
+from flask import current_app,request
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin, current_user
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
 # permissions
@@ -70,6 +72,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(164), unique=True, index=True)
     password_hash = db.Column(db.String(164))
     img_url = db.Column(db.String(164),default="")
+    bg_url = db.Column(db.String(164),default="")
     name = db.Column(db.String(64),default="")
     weibo = db.Column(db.String(164),default="")
     introduction = db.Column(db.Text,default="")
@@ -104,6 +107,25 @@ class User(db.Model, UserMixin):
             return True
         return False
 
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.id})
+
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'],
+                       expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('ascii')
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
+
+
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
@@ -115,6 +137,7 @@ class User(db.Model, UserMixin):
             u=User(name=forgery_py.internet.user_name(True),
                    email=forgery_py.internet.email_address(),
                    img_url=forgery_py.internet.email_address(),
+                   bg_url=forgery_py.internet.email_address(),
                    weibo=forgery_py.internet.email_address(),
                    introduction=forgery_py.lorem_ipsum.paragraph(),
                    password_hash=forgery_py.lorem_ipsum.word())
@@ -285,7 +308,8 @@ class Article(db.Model):
                         singer = forgery_py.lorem_ipsum.title(randint(1,4)),
                         film_url=forgery_py.internet.email_address(),
                         film_img_url=forgery_py.internet.email_address(),
-                        scores = randint(0,10))
+                        scores = randint(0,10),
+                        views = randint(0,100))
             db.session.add(a)
             db.session.commit()
 
@@ -324,7 +348,8 @@ class Interaction(db.Model):
                             description=forgery_py.lorem_ipsum.paragraph(),
                             tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                             img_url=[forgery_py.internet.email_address()],
-                            body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)))
+                            body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
+                            views=randint(0,100))
             db.session.add(t)
             db.session.commit()
 

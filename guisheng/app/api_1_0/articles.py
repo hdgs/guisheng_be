@@ -23,4 +23,22 @@ def get_article(id):
             }
         }),mimetype='application/json')
 
+@api.route('/articles/',methods=['GET','POST'])
+def command_articles():
+    article_id = request.get_json().get('article_id')
+    article_tag = Article.query.get_or_404(article_id).tag[0]
+    all_articles = Article.query.order_by(Article.views.desc()).all()
+    command_articles = []
+    for a in all_articles:
+        if a.tag[0]==article_tag:
+            command_articles.append(a)
+    return Response(json.dumps([{
+            "title":article.title,
+            "description":article.description,
+            "author":User.query.get_or_404(article.author_id).name,
+            "tag":article.tag[0],
+            "views":article.views
+        }for article in command_articles]
+    ),mimetype='application/json')
+
 

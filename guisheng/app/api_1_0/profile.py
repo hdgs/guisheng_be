@@ -6,26 +6,28 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 
 
-@api.route('/profile/<int:id>/', methods=['GET','POST','PUT'])
+@api.route('/profile/<int:id>',methods=['GET','POST','PUT'])
 def profile(id):
-    if request.method == 'GET':
-        user = User.query.get_or_404(id)
+    if request.method == 'GET': 
+        user= User.query.get_or_404(id)
         return Response(json.dumps({
             "img_url":user.img_url,
+            "bg_url":user.bg_url,
             "name":user.name,
             "weibo":user.weibo,
             "introduction":user.introduction,
+            "suggestion":user.suggestion,
+            #            "collection":','.join([col.title for col in user.collection.all()]),
             "works":','.join([inews.title for inews in user.news.all()])+
                     ','.join([pic.title for pic in user.pictures.all()])+
                     ','.join([article.title for article in user.articles.all()])+
                     ','.join([interaction.title for interaction in user.interactions.all()]),
-            #"collection":user.collection,
-            "suggestion":user.suggestion,
-            }),mimetype='application/json')
+        }),mimetype='application/json')
 
     if request.method == 'PUT':
         user = User.query.get_or_404(id)
         user.img_url = request.get_json().get("img_url")
+        user.bg_url = request.get_json().get("bg_url")
         user.name = request.get_json().get("name")
         user.weibo = request.get_json().get("weibo")
         user.ntroduction = request.get_json().get("introduction")
@@ -34,6 +36,7 @@ def profile(id):
         db.session.commit()
         return Response(json.dumps({
             "img_url":user.img_url,
+            "bg_url":user.bg_url,
             "name":user.name,
             "weibo":user.weibo,
             "introduction":user.introduction,
@@ -41,8 +44,7 @@ def profile(id):
                     ','.join([pic.title for pic in user.pictures.all()])+
                     ','.join([article.title for article in user.articles.all()])+
                     ','.join([interaction.title for interaction in user.interactions.all()]),
-            #"collection":user.collection,
+                    #   "collection":''.join([col.title for col in user.collection.all()]),
             "suggestion":user.suggestion,
             }),mimetype='application/json')
-
-
+ 

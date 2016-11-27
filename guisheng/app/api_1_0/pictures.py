@@ -18,15 +18,20 @@ def get_pic(id):
     }),mimetype='application/json')
 
 @api.route('/photos/', methods=['GET','POST'])
-def get_photos():
-    photos = Picture.query.order_by(Picture.views.desc()).limit(10)
+def command_pics():
+    pic_id = request.get_json().get('article_id')
+    pic_tag = Picture.query.get_or_404(pic_id).tag[0]
+    all_pics = Picture.query.order_by(Picture.views.desc()).all()
+    command_pics = []
+    for p in all_pics:
+        if p.tag[0]==pic_tag:
+            command_pics.append(p)
     return Response(json.dumps([{
-            "img_url":photo.img_url,
-            "title":photo.title,
-            "author":User.query.get_or_404(photo.author_id).name,
-            "views":photo.views,
-            "tag":photo.tag,
-        } for photo in photos]
+            "img_url":pic.img_url,
+            "title":pic.title,
+            "author":User.query.get_or_404(pic.author_id).name,
+            "views":pic.views,
+            "tag":pic.tag,
+        } for pic in command_pics]
     ),mimetype='application/json')
-
 

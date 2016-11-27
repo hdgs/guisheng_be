@@ -8,8 +8,8 @@ from . import api
 @api.route('/light/',methods=['GET','POST'])
 def light():
     light = Light()
-    light.like_degree = request.get_json().get("like_degree")
-    kind = request.get_json().get("kind")
+    light.like_degree = request.get_json().get("like_degree",type=int)
+    kind = request.get_json().get("kind",type=int)
     if kind == 1:
         light.news_id = request.get_json().get("article_id") 
     if kind == 2:

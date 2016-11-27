@@ -9,8 +9,8 @@ from . import api
 @api.route('/comments/',methods=['GET','POST'])
 def comments():
     if request.method == 'GET':
-        kind = int(request.args.get('kind'))
-        a_id = int(request.args.get('article_id'))
+        kind = request.args.get('kind',type=int)
+        a_id = request.args.get('article_id',type=int)
         if kind == 1:
             post = News.query.get_or_404(a_id)
             comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
