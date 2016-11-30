@@ -98,16 +98,16 @@ def main_page():
         #        count = request.args.get('count',type=int)
         content = request.get_json().get("content")
         alist = []
-        for n in News.query.order_by(News.time.desc()).limit(10):
+        for n in News.query.order_by(News.time.desc()).all():
             if n.title==content or content in n.tag:
                 alist.append(n)
-        for p in Picture.query.order_by(Picture.time.desc()).limit(10):
+        for p in Picture.query.order_by(Picture.time.desc()).all():
             if p.title==content or content in p.tag:
                 alist.append(p)
-        for a in Article.query.order_by(Article.time.desc()).limit(10):
+        for a in Article.query.order_by(Article.time.desc()).all():
             if a.title==content or content in a.tag:
                 alist.append(a)
-        for i in Interaction.query.order_by(Interaction.time.desc()).limit(10):
+        for i in Interaction.query.order_by(Interaction.time.desc()).all():
             if i.title==content or content in i.tag:
                 alist.append(i)
         alist.sort(key=attrgetter('time'),reverse=True)

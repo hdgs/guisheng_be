@@ -168,7 +168,7 @@ class News(db.Model):
     comments = db.relationship('Comment', backref='news', lazy='dynamic')
     light = db.relationship('Light', backref='news', lazy='dynamic')
     collect = db.relationship('Collect', backref='news', lazy='dynamic')
-    tag = db.Column(db.PickleType,default=[""])
+    tag = db.relationship("PostTag", backref="news",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
@@ -230,7 +230,7 @@ class Picture(db.Model):
     img_url = db.Column(db.PickleType,default=[""])
     title = db.Column(db.String(64),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    tag = db.Column(db.PickleType,default=[""])
+    tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer)
     introduction = db.Column(db.PickleType,default="")
     description = db.Column(db.Text,default="")
@@ -276,7 +276,7 @@ class Article(db.Model):
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     description = db.Column(db.Text,default="")
-    tag = db.Column(db.PickleType,default=[""])
+    tag = db.relationship("PostTag", backref="articles",lazy="dynamic", cascade='all')
     music_url = db.Column(db.String(164),default="")
     music_title = db.Column(db.String(164),default="")
     music_img_url = db.Column(db.String(164),default="")
@@ -329,7 +329,7 @@ class Interaction(db.Model):
     collect = db.relationship('Collect',backref='interaction', lazy='dynamic')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     description = db.Column(db.Text,default="")
-    tag = db.Column(db.PickleType,default="")
+    tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
     img_url = db.Column(db.PickleType,default=[""])
 
@@ -482,7 +482,7 @@ class Like(db.Model):
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
     comment_id = db.Column(db.Integer,db.ForeignKey('comments.id'))
 
-    @staticmethod 
+    @staticmethod
     def generate_fake(count=100):
         from random import seed,randint
         import forgery_py
@@ -503,3 +503,69 @@ class Like(db.Model):
 
     def __repr__(self):
         return "<Like %r>" % self.id
+
+class PostTag(db.Model):
+    __tablename__ = 'posttags'
+    tag_id = db.Column(db.Integer,db.ForeignKey('tags.id', ondelete="CASCADE"),
+                       primary_key=True)
+    news_id = db.Column(db.Integer,db.ForeignKey('news.id',ondelete="CASCADE"),
+                        primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"),
+                           primary_key=True)
+    picture_id = db.Column(db.Integer,db.ForeignKey('pictures.id',ondelete="CASCADE"),
+                           primary_key=True)
+    interaction_id = db.Column(db.Integer,db.ForeignKey('interactions.id',ondelete="CASCADE"),
+                               primary_key=True)
+    count = db.Column(db.Integer,default=0)
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed,randint
+        import forgery_py
+
+        seed()
+        tag_count = Tag.query.count()
+        news_count = News.query.count()
+        art_count = Article.query.count()
+        pic_count = Picture.query.count()
+        int_count = Interaction.query.count()
+        for j in range(count):
+            t = Tag.query.offset(randint(0,tag_count-1)).first()
+            n = News.query.offset(randint(0,news_count-1)).first()
+            a = Article.query.offset(randint(0,art_count-1)).first()
+            p = Picture.query.offset(randint(0,pic_count-1)).first()
+            i = Interaction.query.offset(randint(0,int_count-1)).first()
+            pt = PostTag(tags=t,
+                         news=n,
+                         articles=a,
+                         pictures=p,
+                         interactions=i,
+                         count=randint(0,100))
+            db.session.add(pt)
+            db.session.commit()
+
+    def __repr__(self):
+        return "PostTag %r>" % self.id
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer,primary_key=True)
+    count = db.Column(db.Integer,default=0)
+    body = db.Column(db.String(64),default="")
+    news = db.relationship("PostTag", backref="news_tags", lazy="dynamic",cascade='all')
+    pictures = db.relationship("PostTag", backref="pictures_tags", lazy="dynamic",cascade='all')
+    articles = db.relationship("PostTag", backref="articles_tags", lazy="dynamic",cascade='all')
+    interactions = db.relationship("PostTag", backref="interactions_tags", lazy="dynamic",cascade='all')
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed,randint
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            t=Tag(count=randint(0,100),
+                  body=forgery_py.lorem_ipsum.title(1))
+
+    def __repr__(self):
+        return "<Tag %r>" % self.id

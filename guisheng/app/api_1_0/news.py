@@ -17,9 +17,10 @@ def get_news(id):
 
 @api.route('/news/', methods=['GET','POST'])
 def command_news():
-    news_id = request.get_json().get('article_id')
-    news_tag = News.query.get_or_404(news_id).tag[0]
-    all_news = News.query.order_by(News.views.desc()).all()
+    n_id = request.get_json().get('article_id',type=int)
+    news_tag = PostTag.query.filter_by(news_id=n_id).first()
+    tag_id = news_tag.tag_id
+    tag_news = News.query.filter_by(tag_id=tag_id).order_by(News.views.desc()).all()
     command_news = []
     for n in all_news:
         if n.tag[0]==news_tag:

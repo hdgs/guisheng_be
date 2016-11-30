@@ -64,9 +64,9 @@ def comments():
 @api.route('/comments/<int:id>/like/')
 def get_comment_likes(id):
     comment = Comment.query.get_or_404(id)
-    likes = comment.like.count() 
+    likes = comment.like.count()
     return Response(json.dumps({
         "likes":likes,
         }),mimetype='application/json')
- 
- 
+
+
