@@ -10,7 +10,8 @@ from flask import current_app,request
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin, current_user
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+# from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import JSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
 # permissions
@@ -28,9 +29,9 @@ class Permission:
 # user roles
 class Role(db.Model):
     """
-    1. User: COMMENT
-    2. Moderator: MODERATE_COMMENTS
-    3. Administrator: ADMINISTER
+    User: id=3
+    Moderator: id=1
+    Administrator: id=2
     """
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -98,11 +99,11 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    def can(self, permissions):
+        return self.role is not None and \
+            (self.role.permissions & permissions) == permissions
 
-    def is_admin(self):
+    def is_administrator(self):
         if self.role_id == 2:
             return True
         return False
@@ -111,9 +112,8 @@ class User(db.Model, UserMixin):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
 
-    def generate_auth_token(self, expiration):
-        s = Serializer(current_app.config['SECRET_KEY'],
-                       expires_in=expiration)
+    def generate_auth_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'id': self.id}).decode('ascii')
 
     @staticmethod
@@ -153,10 +153,20 @@ class User(db.Model, UserMixin):
 
 class AnonymousUser(AnonymousUserMixin):
     """ anonymous user """
-    def is_admin(self):
+    def can(self, permissions):
         return False
 
+    def is_administrator(self):
+        return False
+
+    def generate_auth_token(self, expiration):
+        return None
+
 login_manager.anonymous_user = AnonymousUser
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 #新闻
 class News(db.Model):
@@ -186,11 +196,10 @@ class News(db.Model):
             n = News(title=forgery_py.lorem_ipsum.title(randint(1,4)),
                      author=u,
                      body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
-                     tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                      views=randint(0,100),
                      time=forgery_py.date.date(True),
                      img_url=[forgery_py.internet.email_address()],
-                     description=forgery_py.lorem_ipsum.paragraph())
+                     description=forgery_py.lorem_ipsum.paragraph(),)
             db.session.add(n)
             db.session.commit()
 
@@ -251,7 +260,6 @@ class Picture(db.Model):
             p = Picture(img_url=[forgery_py.internet.email_address()],
                         title=forgery_py.lorem_ipsum.title(randint(1,4)),
                         author=u,
-                        tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                         views=randint(0,100),
                         introduction=forgery_py.lorem_ipsum.paragraph(),
                         description=forgery_py.lorem_ipsum.paragraph(),
@@ -301,7 +309,6 @@ class Article(db.Model):
                         body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                         time=forgery_py.date.date(True),
                         description=forgery_py.lorem_ipsum.paragraph(),
-                        tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                         music_url=forgery_py.internet.email_address(),
                         music_title=forgery_py.lorem_ipsum.word(),
                         music_img_url=forgery_py.internet.email_address(),
@@ -346,7 +353,6 @@ class Interaction(db.Model):
                             author=u,
                             time=forgery_py.date.date(True),
                             description=forgery_py.lorem_ipsum.paragraph(),
-                            tag=forgery_py.lorem_ipsum.words(randint(1,10),as_list=True),
                             img_url=[forgery_py.internet.email_address()],
                             body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                             views=randint(0,100))
@@ -530,12 +536,18 @@ class PostTag(db.Model):
         pic_count = Picture.query.count()
         int_count = Interaction.query.count()
         for j in range(count):
-            t = Tag.query.offset(randint(0,tag_count-1)).first()
+            nt = Tag.query.offset(randint(0,tag_count-1)).first()
+            at = Tag.query.offset(randint(0,tag_count-1)).first()
+            pt = Tag.query.offset(randint(0,tag_count-1)).first()
+            it = Tag.query.offset(randint(0,tag_count-1)).first()
             n = News.query.offset(randint(0,news_count-1)).first()
             a = Article.query.offset(randint(0,art_count-1)).first()
             p = Picture.query.offset(randint(0,pic_count-1)).first()
             i = Interaction.query.offset(randint(0,int_count-1)).first()
-            pt = PostTag(tags=t,
+            pt = PostTag(news_tags=nt,
+                         article_tags=at,
+                         picture_tags=pt,
+                         interaction_tags=it,
                          news=n,
                          articles=a,
                          pictures=p,
@@ -544,8 +556,6 @@ class PostTag(db.Model):
             db.session.add(pt)
             db.session.commit()
 
-    def __repr__(self):
-        return "PostTag %r>" % self.id
 
 class Tag(db.Model):
     __tablename__ = 'tags'
@@ -553,9 +563,9 @@ class Tag(db.Model):
     count = db.Column(db.Integer,default=0)
     body = db.Column(db.String(64),default="")
     news = db.relationship("PostTag", backref="news_tags", lazy="dynamic",cascade='all')
-    pictures = db.relationship("PostTag", backref="pictures_tags", lazy="dynamic",cascade='all')
-    articles = db.relationship("PostTag", backref="articles_tags", lazy="dynamic",cascade='all')
-    interactions = db.relationship("PostTag", backref="interactions_tags", lazy="dynamic",cascade='all')
+    pictures = db.relationship("PostTag", backref="picture_tags", lazy="dynamic",cascade='all')
+    articles = db.relationship("PostTag", backref="article_tags", lazy="dynamic",cascade='all')
+    interactions = db.relationship("PostTag", backref="interaction_tags", lazy="dynamic",cascade='all')
 
     @staticmethod
     def generate_fake(count=100):
@@ -566,6 +576,8 @@ class Tag(db.Model):
         for i in range(count):
             t=Tag(count=randint(0,100),
                   body=forgery_py.lorem_ipsum.title(1))
+            db.session.add(t)
+            db.session.commit()
 
     def __repr__(self):
         return "<Tag %r>" % self.id

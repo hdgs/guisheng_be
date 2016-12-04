@@ -1,11 +1,11 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
 import json
-from ..models import Role,User,News
+from ..models import Role,User,News,PostTag,Tag
 from . import api
 
 
-@api.route('/news/<int:id>/', methods=['GET'])
+@api.route('/news/<int:id>', methods=['GET'])
 def get_news(id):
     news = News.query.get_or_404(id)
     return Response(json.dumps({
@@ -15,23 +15,24 @@ def get_news(id):
         "body":news.body,
         }),mimetype='application/json')
 
-@api.route('/news/', methods=['GET','POST'])
+@api.route('/news', methods=['GET','POST'])
 def command_news():
-    n_id = request.get_json().get('article_id',type=int)
-    news_tag = PostTag.query.filter_by(news_id=n_id).first()
-    tag_id = news_tag.tag_id
-    tag_news = News.query.filter_by(tag_id=tag_id).order_by(News.views.desc()).all()
-    command_news = []
-    for n in all_news:
-        if n.tag[0]==news_tag:
-            command_news.append(n)
+    news_id = int(request.get_json().get('article_id'))
+    now_news = News.query.get_or_404(n_id)
+    tag_id = now_news.tag[0].tag_id
+    tag = Tag.query.get_or_404(tag_id)
+    news = []
+    for _news in tag.news:
+        news.append(_news.news_id)
+    sortlist = sorted(news,key=lambda id: News.query.get_or_404(id).views,reverse=True)
+    command_news = sortlist[:3]
     return Response(json.dumps([{
-            "title":news.title,
-            "description":news.description,
-            "author":User.query.get_or_404(news.author_id).name,
-            "tag":news.tag[0],
-            "views":news.views
-        }for news in command_news]
+            "title":News.query.get_or_404(news_id).title,
+            "description":News.query.get_or_404(news_id).description,
+            "author":User.query.get_or_404(News.query.get_or_404(news_id).author_id).name,
+            "tag":tag.body,
+             "views":News.query.get_or_404(news_id).views
+        }for news_id in command_news]
     ),mimetype='application/json')
 
-
+ 

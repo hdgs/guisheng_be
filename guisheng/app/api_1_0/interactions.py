@@ -6,7 +6,6 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 
 
-
 @api.route('/interaction/<int:id>/',methods=['GET'])
 def get_interaction(id):
     interaction = Interaction.query.get_or_404(id)
@@ -19,18 +18,16 @@ def get_interaction(id):
 
 @api.route('/interactions/',methods=['GET','POST'])
 def command_interactions():
-    interaction_id = request.get_json().get('article_id')
-    interaction_tag = Interaction.query.get_or_404(interaction_id).tag[0]
-    all_interactions = Interaction.query.order_by(Interaction.views.desc()).all()
-    command_interactions = []
-    for i in all_interactions:
-        if i.tag[0]==interaction_tag:
-            command_interactions.append(i)
+    i_id = request.get_json().get('article_id',type=int)
+    interact_tag = PostTag.query.filter_by(interaction_id=i_id).first()
+    pagination = interact_tag.interactions.order_by(Interaction.views.desc()).paginate(
+            0,per_page=3,error_out=False)
+    command_interactions = pagination.items
     return Response(json.dumps([{
             "title":interaction.title,
             "description":interaction.description,
             "author":User.query.get_or_404(interaction.author_id).name,
-            "tag":interaction.tag[0],
+            "tag":interact_tag,
             "views":interaction.views
         }for interaction in command_interactions]
     ),mimetype='application/json')
