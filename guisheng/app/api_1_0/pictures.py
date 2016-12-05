@@ -6,7 +6,7 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 
 
-@api.route('/pics/<int:id>/', methods=['GET','POST'])
+@api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
     return Response(json.dumps({

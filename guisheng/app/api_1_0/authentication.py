@@ -1,5 +1,5 @@
 from flask import g, jsonify
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 from ..models import User, AnonymousUser
 from .errors import forbidden
 from . import api

@@ -5,7 +5,7 @@ from ..models import Role,User,Article
 from . import api
 
 
-@api.route('/article/<int:id>/', methods=['GET','POST'])
+@api.route('/article/<int:id>/', methods=['GET'])
 def get_article(id):
     article = Article.query.get_or_404(id)
     return Response(json.dumps({
