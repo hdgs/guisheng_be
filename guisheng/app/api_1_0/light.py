@@ -20,4 +20,7 @@ def light():
         light.interaction_id = request.get_json().get("article_id")
     db.session.add(light)
     db.session.commit()
+    return jsonify({
+        "status":200
+    })
 
