@@ -26,7 +26,7 @@ def command_pics():
     pics = []
     for _pic in tag.pictures:
         pics.append(_pic.picture_id)
-    sortlist = sorted(news,key=lambda id: News.query.get_or_404(id).views,reverse=True) 
+    sortlist = sorted(pics,key=lambda id: News.query.get_or_404(id).views,reverse=True) 
     command_pics = sortlist[:3]
     return Response(json.dumps([{
             "img_url":pic.img_url,
