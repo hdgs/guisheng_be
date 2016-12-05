@@ -26,11 +26,13 @@ def verify_password(email_or_token, password):
 def auth_error():
     return unauthorized('Invalid credentials')
 
+'''
 @api.before_request
 @auth.login_required
 def before_request():
     if g.current_user.is_anonymous: 
         return forbidden('Unconfirmed account')
+'''
 
 @api.route('/token',methods=['GET'])
 @auth.login_required

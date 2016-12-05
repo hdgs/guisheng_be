@@ -34,8 +34,8 @@ project management
 
 import sys
 import os
-from flask.ext.script import Manager, Shell
-from flask.ext.migrate import Migrate, MigrateCommand
+from flask_script import Manager, Shell
+from flask_migrate import Migrate, MigrateCommand
 from app import db, app
 from app.models import User, Role, News, Everydaypic, Article,\
         Picture, Interaction, Comment, Like, Light, Collect,PostTag,Tag

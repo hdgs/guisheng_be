@@ -14,11 +14,12 @@ def get_news(id):
         "time":news.time.strftime('%m/%d/%Y'),
         "body":news.body,
         }),mimetype='application/json')
+    
 
 @api.route('/news', methods=['GET','POST'])
 def command_news():
     news_id = int(request.get_json().get('article_id'))
-    now_news = News.query.get_or_404(n_id)
+    now_news = News.query.get_or_404(news_id)
     tag_id = now_news.tag[0].tag_id
     tag = Tag.query.get_or_404(tag_id)
     news = []

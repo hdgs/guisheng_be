@@ -38,7 +38,7 @@ def command_articles():
             "title":article.title,
             "description":article.description,
             "author":User.query.get_or_404(article.author_id).name,
-            "tag":article_tag,
+            "tag":tag.body,
             "views":article.views
         }for article in command_articles]
     ),mimetype='application/json')

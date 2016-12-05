@@ -33,7 +33,7 @@ def command_pics():
             "title":pic.title,
             "author":User.query.get_or_404(pic.author_id).name,
             "views":pic.views,
-            "tag":pic_tag,
+            "tag":tag.body,
         } for pic in command_pics]
     ),mimetype='application/json')
 

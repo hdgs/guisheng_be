@@ -26,13 +26,13 @@ def command_interactions():
     interactions = []
     for _interaction in tag.interactions:
         interactions.append(_interaction.interaction_id)
-    sortlist = sorted(interactions，key=lambda id: Interaction.query.get_or_404(id).views,reverse=True)
+    sortlist = sorted(interactions, key=lambda id: Interaction.query.get_or_404(id).views,reverse=True)
     command_interactions = sortlist[:3]
     return Response(json.dumps([{
             "title":interaction.title,
             "description":interaction.description,
             "author":User.query.get_or_404(interaction.author_id).name,
-            "tag":interact_tag,
+            "tag":tag.body,
             "views":interaction.views
         }for interaction in command_interactions]
     ),mimetype='application/json')
