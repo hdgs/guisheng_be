@@ -15,14 +15,19 @@ def get_interaction(id):
         "time":interaction.time.strftime('%m/%d/%Y'),
         "body":interaction.body,
         }),mimetype='application/json')
+    
 
 @api.route('/interactions/',methods=['GET','POST'])
 def command_interactions():
-    i_id = request.get_json().get('article_id',type=int)
-    interact_tag = PostTag.query.filter_by(interaction_id=i_id).first()
-    pagination = interact_tag.interactions.order_by(Interaction.views.desc()).paginate(
-            0,per_page=3,error_out=False)
-    command_interactions = pagination.items
+    interact_id = int(request.get_json().get('article_id'))
+    now_interact = Interaction.query.get_or_404(interact_id)
+    tag_id = now_interact.tag[0].tag_id
+    tag = Tag.query.get_or_404(tag_id)
+    interactions = []
+    for _interaction in tag.interactions:
+        interactions.append(_interaction.interaction_id)
+    sortlist = sorted(interactions，key=lambda id: Interaction.query.get_or_404(id).views,reverse=True)
+    command_interactions = sortlist[:3]
     return Response(json.dumps([{
             "title":interaction.title,
             "description":interaction.description,
@@ -31,5 +36,4 @@ def command_interactions():
             "views":interaction.views
         }for interaction in command_interactions]
     ),mimetype='application/json')
-
 
