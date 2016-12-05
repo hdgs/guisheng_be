@@ -25,11 +25,15 @@ def get_article(id):
 
 @api.route('/articles/',methods=['GET','POST'])
 def command_articles():
-    a_id = request.get_json().get('article_id',type=int)
-    article_tag = PostTag.query.filter_by(article_id=a_id).first()
-    pagination = article_tag.articles.order_by(Article.views.desc()).paginate(
-            0,per_page=3,error_out=False)
-    command_articles = pagination.items
+    a_id = int(request.get_json().get('article_id'))
+    now_a = Article.query.get_or_404(a_id)
+    tag_id = now_a.tag[0].tag_id
+    tag = Tag.query.get_404(tag_id)
+    articles = []
+    for _article in tag.articles:
+        articles.append(_article.article_id)
+    sortlist = sorted(articles,key=lambda id: Article.query.get_or_404(id).views,reverse=True)
+    command_articles = sortlist[:3]
     return Response(json.dumps([{
             "title":article.title,
             "description":article.description,
