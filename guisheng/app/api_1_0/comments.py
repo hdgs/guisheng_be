@@ -13,8 +13,9 @@ def get_comments():
     a_id = request.args.get('article_id')
     post = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind).query.get_or_404(a_id)
     _ids = {1: "news_id", 2: "picture_id", 3: "article_id", 4: "interaction_id" }.get(kind)
-    comments = Comment.query.filter_by(ast.literal_eval(_ids)=a_id).order_by(Comment.time.asc()).all()
-    responses = Comment.query.filter_by(ast.literal_eval(_ids)=a_id).order_by(Comment.time.asc()).all()
+    c_id = ast.literal_eval(_ids)
+    comments = Comment.query.filter_by(c_id=a_id).order_by(Comment.time.asc()).all()
+    responses = Comment.query.filter_by(c_id=a_id).order_by(Comment.time.asc()).all()
     return Response(json.dumps([{
             "article_id":a_id,
             "img_url":(User.query.get_or_404(comment.author_id)).img_url,

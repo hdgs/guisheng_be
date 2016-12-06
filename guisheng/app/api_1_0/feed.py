@@ -8,9 +8,9 @@ from operator import attrgetter
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
-    kind = int(request.args.get('kind')
-    page = int(request.args.get('page')
-    count = int(request.args.get('count')
+    kind = int(request.args.get('kind'))
+    page = int(request.args.get('page'))
+    count = int(request.args.get('count'))
     if kind == 0:
         tolist = []
         for n in News.query.order_by(News.time.desc()).limit(count):
@@ -29,7 +29,7 @@ def main_page():
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
-                "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id)
+                "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id),
                 "description":content.description,
                 } for content in tolist[:count-1]]
         ),mimetype='application/json')
@@ -43,7 +43,7 @@ def main_page():
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name,
                 "views":_post.views,
-                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(content.id).tag[0].tag_id)
+                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(content.id).tag[0].tag_id),
                 "description":_post.description,
             } for _post in posts]
         ),mimetype='application/json')
@@ -51,7 +51,7 @@ def main_page():
 @api.route('/feed/', methods=['GET','POST'])
 def search():
     if request.method == 'POST':
-        count = int(request.args.get('count')
+        count = int(request.args.get('count'))
         content = int(request.get_json().get("content"))
         alist = []
         for n in News.query.order_by(News.time.desc()).all():
