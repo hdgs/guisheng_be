@@ -20,20 +20,23 @@ def get_pic(id):
 @api.route('/photos/', methods=['GET','POST'])
 def command_pics():
     pic_id = int(request.get_json().get('article_id'))
-    now_pic = Picture.query.get_or_404(p_id)
-    tag_id = now_pic.tag[0].tag_id
-    tag = Tag.query.get_or_404(tag_id)
-    pics = []
-    for _pic in tag.pictures:
-        pics.append(_pic.picture_id)
-    sortlist = sorted(pics,key=lambda id: News.query.get_or_404(id).views,reverse=True) 
-    command_pics = sortlist[:3]
+    now_pic = Picture.query.get_or_404(pic_id)
+    try:
+        tag_id = now_pic.tag[0].tag_id
+        tag = Tag.query.get_or_404(tag_id)
+        pics = []
+        for _pic in tag.pictures:
+            pics.append(_pic.picture_id)
+        sortlist = sorted(pics,key=lambda id: News.query.get_or_404(id).views,reverse=True) 
+        command_pics = sortlist[:3] if len(sortlist)>=4 else sortlist
+    except:
+        command_pics = []
     return Response(json.dumps([{
-            "img_url":pic.img_url,
-            "title":pic.title,
-            "author":User.query.get_or_404(pic.author_id).name,
-            "views":pic.views,
+            "img_url":Picture.query.get_or_404(pic_id).img_url,
+            "title":Picture.query.get_or_404(pic_id).title,
+            "author":User.query.get_or_404(Picture.query.get_or_404(pic_id).author_id).name,
+            "views":Picture.query.get_or_404(pic_id).views,
             "tag":tag.body,
-        } for pic in command_pics]
+        } for pic_id in command_pics]
     ),mimetype='application/json')
 
