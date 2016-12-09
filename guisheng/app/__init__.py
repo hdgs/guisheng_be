@@ -30,12 +30,12 @@ login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
-from .models import News,Article,Picture,Interaction
+from .models import News,Article,Picture,Interaction,Tag
 whooshalchemy.whoosh_index(app, News)
 whooshalchemy.whoosh_index(app, Article)
 whooshalchemy.whoosh_index(app, Picture)
 whooshalchemy.whoosh_index(app, Interaction)
-
+whooshalchemy.whoosh_index(app, Tag)
 
 
 

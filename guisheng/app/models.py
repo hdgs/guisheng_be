@@ -563,6 +563,7 @@ class PostTag(db.Model):
 
 class Tag(db.Model):
     __tablename__ = 'tags'
+    __searchable__ = ['body']
     id = db.Column(db.Integer,primary_key=True)
     count = db.Column(db.Integer,default=0)
     body = db.Column(db.String(64),default="")
