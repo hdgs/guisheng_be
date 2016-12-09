@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_moment import Moment
 from flask_debugtoolbar import DebugToolbarExtension
 from config import config
+import flask.ext.whooshalchemy as whooshalchemy
 
 
 app = Flask(__name__)
@@ -28,6 +29,14 @@ moment = Moment(app)
 login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+
+from .models import News,Article,Picture,Interaction
+whooshalchemy.whoosh_index(app, News)
+whooshalchemy.whoosh_index(app, Article)
+whooshalchemy.whoosh_index(app, Picture)
+whooshalchemy.whoosh_index(app, Interaction)
+
+
 
 
 # admin site
