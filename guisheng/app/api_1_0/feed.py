@@ -54,32 +54,6 @@ def search():
         count = int(request.args.get('count'))
         content = request.get_json().get("content")
         alist = []
-        blist=[]
-        '''
-        for n in News.query.order_by(News.time.desc()).all():
-            if n.title==content:
-                alist.append(n)
-        for p in Picture.query.order_by(Picture.time.desc()).all():
-            if p.title==content:
-                alist.append(p)
-        for a in Article.query.order_by(Article.time.desc()).all():
-            if a.title==content:
-                alist.append(a)
-        for i in Interaction.query.order_by(Interaction.time.desc()).all():
-            if i.title==content:
-                alist.append(i)
-        for t in Tag.query.order_by(Tag.time.desc()).all():
-            if t.body==content:
-                for _news in tag.news:
-                    alist.append(_news)
-                for _article in tag.articles:
-                    alist.append(_article)
-                for _pic in tag.pictures:
-                    alist.append(_pic)
-                for _interaction in tag.interactions:
-                    alist.append(_article)
-        alist.sort(key=attrgetter('time'),reverse=True)
-        '''
         for n in News.query.whoosh_search(content):
             alist.append(n)
         for p in Picture.query.whoosh_search(content):
@@ -98,7 +72,6 @@ def search():
             for _interaction in t.interactions:
                 alist.append(Interaction.query.get_or_404(_article.interaction_id))
         alist.sort(key=attrgetter('time'),reverse=True)
-
         return Response(json.dumps([{
                 "article_id":post.id,
                 "img_url":post.img_url[0],
