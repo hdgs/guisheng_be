@@ -1,8 +1,7 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
 import json
-from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment
+from ..models import Role,User,Picture,Tag,PostTag
 from . import api
 
 
@@ -27,10 +26,10 @@ def command_pics():
         pics = []
         for _pic in tag.pictures:
             pics.append(_pic.picture_id)
-        sortlist = sorted(pics,key=lambda id: News.query.get_or_404(id).views,reverse=True) 
+        sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True) 
         command_pics = sortlist[:3] if len(sortlist)>=4 else sortlist
     except:
-        command_pics = []
+       command_pics = []
     return Response(json.dumps([{
             "img_url":Picture.query.get_or_404(pic_id).img_url,
             "title":Picture.query.get_or_404(pic_id).title,
