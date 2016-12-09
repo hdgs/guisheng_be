@@ -170,6 +170,7 @@ def load_user(user_id):
 #新闻
 class News(db.Model):
     __tablename__ = 'news'
+    __searchable__ = ['title']
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -234,6 +235,7 @@ class Everydaypic(db.Model):
 #图片集
 class Picture(db.Model):
     __tablename__ = 'pictures'
+    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.Column(db.PickleType,default=[""])
     title = db.Column(db.String(64),default="")
@@ -246,6 +248,7 @@ class Picture(db.Model):
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
     collect = db.relationship('Collect',backref='picture', lazy='dynamic')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
 
     @staticmethod
     def generate_fake(count=100):
@@ -272,6 +275,7 @@ class Picture(db.Model):
 #水墨文章
 class Article(db.Model):
     __tablename__ = 'articles'
+    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164),default="")
     img_url = db.Column(db.PickleType,default=[""])
@@ -326,6 +330,7 @@ class Article(db.Model):
 #互动话题
 class Interaction(db.Model):
     __tablename__ = 'interactions'
+    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164), default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -514,13 +519,13 @@ class PostTag(db.Model):
     tag_id = db.Column(db.Integer,db.ForeignKey('tags.id', ondelete="CASCADE"),
                        primary_key=True)
     news_id = db.Column(db.Integer,db.ForeignKey('news.id',ondelete="CASCADE"),
-                        primary_key=True)
+                        primary_key=True,default=0)
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"),
-                           primary_key=True)
+                           primary_key=True,default=0)
     picture_id = db.Column(db.Integer,db.ForeignKey('pictures.id',ondelete="CASCADE"),
-                           primary_key=True)
+                           primary_key=True,default=0)
     interaction_id = db.Column(db.Integer,db.ForeignKey('interactions.id',ondelete="CASCADE"),
-                               primary_key=True)
+                               primary_key=True,default=0)
     count = db.Column(db.Integer,default=0)
 
     @staticmethod
