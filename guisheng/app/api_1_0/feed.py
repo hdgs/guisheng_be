@@ -2,7 +2,7 @@
 from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment
+        Collect,Like,Light,Comment,PostTag,Tag
 from . import api
 from operator import attrgetter
 
@@ -54,6 +54,7 @@ def search():
         count = int(request.args.get('count'))
         content = request.get_json().get("content")
         alist = []
+        blist=[]
         '''
         for n in News.query.order_by(News.time.desc()).all():
             if n.title==content:
@@ -87,19 +88,26 @@ def search():
             alist.append(a)
         for i in Interaction.query.whoosh_search(content):
             alist.append(i)
+        for t in Tag.query.whoosh_search(content):
+            for _news in t.news:
+                alist.append(News.query.get_or_404(_news.news_id))
+            for _article in t.articles:
+                alist.append(Article.query.get_or_404(_article.article_id))
+            for _pic in t.pictures:
+                alist.append(Picture.query.get_or_404(_pic.picture_id))
+            for _interaction in t.interactions:
+                alist.append(Interaction.query.get_or_404(_article.interaction_id))
         alist.sort(key=attrgetter('time'),reverse=True)
 
-
         return Response(json.dumps([{
-            #         "kind":kind,
-                "article_id":content.id,
-                "img_url":content.img_url[0],
-                "title":content.title,
-                "author":User.query.get_or_404(content.author_id).name,
-                "views":content.views,
-                # "tag":content.tag[0],
-                "description":content.description,
-                "time":content.time.strftime('%m/%d/%Y'),
-                } for content in alist[:count-1]]
+                "article_id":post.id,
+                "img_url":post.img_url[0],
+                "title":post.title,
+                "author":User.query.get_or_404(post.author_id).name,
+                "views":post.views,
+                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
+                "description":post.description,
+                "time":post.time.strftime('%m/%d/%Y'),
+                } for post in alist[:count-1]]
         ),mimetype='application/json')
 
