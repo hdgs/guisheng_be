@@ -52,8 +52,9 @@ def main_page():
 def search():
     if request.method == 'POST':
         count = int(request.args.get('count'))
-        content = int(request.get_json().get("content"))
+        content = request.get_json().get("content")
         alist = []
+        '''
         for n in News.query.order_by(News.time.desc()).all():
             if n.title==content:
                 alist.append(n)
@@ -77,8 +78,20 @@ def search():
                 for _interaction in tag.interactions:
                     alist.append(_article)
         alist.sort(key=attrgetter('time'),reverse=True)
+        '''
+        for n in News.query.whoosh_search(content):
+            alist.append(n)
+        for p in Picture.query.whoosh_search(content):
+            alist.append(p)
+        for a in Article.query.whoosh_search(content):
+            alist.append(a)
+        for i in Interaction.query.whoosh_search(content):
+            alist.append(i)
+        alist.sort(key=attrgetter('time'),reverse=True)
+
+
         return Response(json.dumps([{
-                "kind":kind,
+            #         "kind":kind,
                 "article_id":content.id,
                 "img_url":content.img_url[0],
                 "title":content.title,
