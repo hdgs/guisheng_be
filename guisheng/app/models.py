@@ -182,7 +182,9 @@ class News(db.Model):
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
-    description = db.Column(db.Text,default="")
+#    description = db.Column(db.Text,default="")
+    kind = 1
+    published = db.Column(db.Integer,default=0)
 
     @staticmethod
     def generate_fake(count=100):
@@ -199,7 +201,8 @@ class News(db.Model):
                      views=randint(0,100),
                      time=forgery_py.date.date(True),
                      img_url=[forgery_py.internet.email_address()],
-                     description=forgery_py.lorem_ipsum.paragraph(),)
+                     # description=forgery_py.lorem_ipsum.paragraph(),
+                     published=randint(0,1))
             db.session.add(n)
             db.session.commit()
 
@@ -243,12 +246,13 @@ class Picture(db.Model):
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer)
     introduction = db.Column(db.PickleType,default="")
-    description = db.Column(db.Text,default="")
+ #   description = db.Column(db.Text,default="")
     like = db.relationship('Like',backref='picture', lazy='dynamic')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
     collect = db.relationship('Collect',backref='picture', lazy='dynamic')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-
+    kind = 2
+    published = db.Column(db.Integer,default=0)
 
     @staticmethod
     def generate_fake(count=100):
@@ -264,8 +268,9 @@ class Picture(db.Model):
                         author=u,
                         views=randint(0,100),
                         introduction=forgery_py.lorem_ipsum.paragraph(),
-                        description=forgery_py.lorem_ipsum.paragraph(),
-                        time=forgery_py.date.date(True))
+                        # description=forgery_py.lorem_ipsum.paragraph(),
+                        time=forgery_py.date.date(True),
+                        published=randint(0,1))
             db.session.add(p)
             db.session.commit()
 
@@ -295,6 +300,8 @@ class Article(db.Model):
     film_url = db.Column(db.String(164),default="")
     film_img_url = db.Column(db.String(164),default="")
     scores = db.Column(db.Integer)
+    kind = 3
+    published = db.Column(db.Integer,default=0)
 
 
     @staticmethod
@@ -319,7 +326,8 @@ class Article(db.Model):
                         film_url=forgery_py.internet.email_address(),
                         film_img_url=forgery_py.internet.email_address(),
                         scores = randint(0,10),
-                        views = randint(0,100))
+                        views = randint(0,100),
+                        published=randint(0,1))
             db.session.add(a)
             db.session.commit()
 
@@ -343,6 +351,8 @@ class Interaction(db.Model):
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
     img_url = db.Column(db.PickleType,default=[""])
+    kind = 4
+    published = db.Column(db.Integer,default=0)
 
     @staticmethod
     def generate_fake(count=100):
@@ -359,7 +369,8 @@ class Interaction(db.Model):
                             description=forgery_py.lorem_ipsum.paragraph(),
                             img_url=[forgery_py.internet.email_address()],
                             body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
-                            views=randint(0,100))
+                            views=randint(0,100),
+                            published = randint(0,1))
             db.session.add(t)
             db.session.commit()
 
@@ -586,3 +597,4 @@ class Tag(db.Model):
 
     def __repr__(self):
         return "<Tag %r>" % self.id
+
