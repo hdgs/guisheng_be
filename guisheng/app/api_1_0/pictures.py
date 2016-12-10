@@ -8,6 +8,8 @@ from . import api
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
+    pic.views+=1
+    db.session.commit()
     return Response(json.dumps({
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,
