@@ -8,6 +8,8 @@ from . import api
 @api.route('/article/<int:id>/', methods=['GET'])
 def get_article(id):
     article = Article.query.get_or_404(id)
+    article.views+=1
+    db.session.commit()
     return Response(json.dumps({
         "title":article.title,
         "img_url":article.img_url,
