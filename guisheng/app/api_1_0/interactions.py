@@ -16,7 +16,7 @@ def get_interaction(id):
         "time":interaction.time.strftime('%m/%d/%Y'),
         "body":interaction.body,
         }),mimetype='application/json')
- 
+
 
 @api.route('/interactions/',methods=['GET','POST'])
 def command_interactions():

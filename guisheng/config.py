@@ -4,6 +4,7 @@
 
 # project base path
 import os
+from celery.schedules import crontab
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 """
@@ -31,6 +32,12 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    CELERYBEAT_SCHEDULE = {
+        'restart_redis_every_month': {
+        'task': 'restart_hottags_redis',
+        'schedule': crontab(day_of_month='1')
+        },
+    }
 
     @staticmethod
     def init_app(app):
@@ -42,13 +49,6 @@ development configuration
  -- SQLALCHEMY_DATABASE_URI:
     -- The database URI that should be used for the connection.
 
-more connection URI format:
- -- Postgres:
-    -- postgresql://scott:tiger@localhost/mydatabase
- -- MySQL:
-    -- mysql://scott:tiger@localhost/mydatabase
- -- Oracle:
-    -- oracle://scott:tiger@127.0.0.1:1521/sidname
 """
 class DevelopmentConfig(Config):
     """development configuration"""
