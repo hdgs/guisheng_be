@@ -32,6 +32,8 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    CELERY_BROKER_URL = 'redis://localhost:6382/2'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6382/2'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'restart_hottags_redis',
