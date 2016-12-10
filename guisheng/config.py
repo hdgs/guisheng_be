@@ -55,6 +55,15 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
 
+
+# production configuration
+class ProductionConfig(Config):
+    """production configuration"""
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data.sqlite")
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+
 """
 testing configuration
  -- TESTING: True
@@ -66,14 +75,6 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data-test.sqlite")
     WTF_CSRF_ENABLED = False
-
-# production configuration
-class ProductionConfig(Config):
-    """production configuration"""
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data.sqlite")
-    @classmethod
-    def init_app(cls, app):
-        Config.init_app(app)
 
 
 config = {
