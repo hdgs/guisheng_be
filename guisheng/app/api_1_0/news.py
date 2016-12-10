@@ -8,6 +8,8 @@ from . import api
 @api.route('/news/<int:id>', methods=['GET'])
 def get_news(id):
     news = News.query.get_or_404(id)
+    news.views+=1
+    db.session.commit()
     return Response(json.dumps({
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
