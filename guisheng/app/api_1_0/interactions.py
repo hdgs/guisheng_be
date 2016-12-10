@@ -8,6 +8,8 @@ from . import api
 @api.route('/interaction/<int:id>/',methods=['GET'])
 def get_interaction(id):
     interaction = Interaction.query.get_or_404(id)
+    interaction.views+=1
+    db.session.commit()
     return Response(json.dumps({
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
