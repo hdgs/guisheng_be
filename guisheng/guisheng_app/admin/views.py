@@ -13,11 +13,11 @@ import flask_admin as admin
 from flask_login import current_user
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
-from guisheng_app import app, db
+#from .. import db,app
 from guisheng_app.models import AnonymousUser
 from flask import redirect, flash, url_for
 
-
+'''
 class MyAdminIndexView(admin.AdminIndexView):
     def is_accessible(self):
         return login.current_user.is_admin()
@@ -41,4 +41,4 @@ admin.add_view(ModelView(User, db.session))
 
 from guisheng_app.models import Role
 admin.add_view(ModelView(Role, db.session))
-
+'''
