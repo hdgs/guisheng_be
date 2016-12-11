@@ -5,6 +5,7 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
         Collect,Like,Light,Comment,PostTag,Tag
 from . import api
 from operator import attrgetter
+from app import rds
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
@@ -53,6 +54,13 @@ def search():
     if request.method == 'POST':
         count = int(request.args.get('count'))
         content = request.get_json().get("content")
+        #存储热门标签
+        if Tag.query.filter_by(body=content).first():
+            if rds.get(content) is None:
+                rds.set(content, 1)
+            else:
+                rds.incr(content)
+        #返回搜索结果
         alist = []
         for n in News.query.whoosh_search(content):
             alist.append(n)
@@ -71,7 +79,7 @@ def search():
                 alist.append(Picture.query.get_or_404(_pic.picture_id))
             for _interaction in t.interactions:
                 alist.append(Interaction.query.get_or_404(_article.interaction_id))
-        alist.sort(key=attrgetter('time'),reverse=True)
+#        alist.sort(key=attrgetter('time'),reverse=True)
         return Response(json.dumps([{
                 "article_id":post.id,
                 "img_url":post.img_url[0],
@@ -84,3 +92,10 @@ def search():
                 } for post in alist[:count-1]]
         ),mimetype='application/json')
 
+@api.route('/hottag/',methods=['GET'])
+def get_hottag():
+    tags = rds.keys()
+    hot_tags = sorted(tags, key=lambda w: int(rds.get(w)), reverse=True)[:10]
+    return Response(json.dumps({
+        "hot_tag":hot_tags
+    }))
