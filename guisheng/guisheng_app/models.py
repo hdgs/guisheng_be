@@ -182,7 +182,7 @@ class News(db.Model):
     views = db.Column(db.Integer)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
-#    description = db.Column(db.Text,default="")
+    description = db.Column(db.Text,default="")
     kind = 1
     published = db.Column(db.Integer,default=0)
 
@@ -201,7 +201,7 @@ class News(db.Model):
                      views=randint(0,100),
                      time=forgery_py.date.date(True),
                      img_url=[forgery_py.internet.email_address()],
-                     # description=forgery_py.lorem_ipsum.paragraph(),
+                     description="",
                      published=randint(0,1))
             db.session.add(n)
             db.session.commit()
@@ -246,7 +246,7 @@ class Picture(db.Model):
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer)
     introduction = db.Column(db.PickleType,default="")
- #   description = db.Column(db.Text,default="")
+    description = db.Column(db.Text,default="")
     like = db.relationship('Like',backref='picture', lazy='dynamic')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
     collect = db.relationship('Collect',backref='picture', lazy='dynamic')
@@ -268,7 +268,7 @@ class Picture(db.Model):
                         author=u,
                         views=randint(0,100),
                         introduction=forgery_py.lorem_ipsum.paragraph(),
-                        # description=forgery_py.lorem_ipsum.paragraph(),
+                        description="",
                         time=forgery_py.date.date(True),
                         published=randint(0,1))
             db.session.add(p)
