@@ -34,7 +34,6 @@ login_manager.login_view = 'auth.login'
 #redis site
 rds = redis.StrictRedis(host='localhost', port=6380, db=0)
 
-
 #to search
 from .models import News,Article,Picture,Interaction,Tag
 whooshalchemy.whoosh_index(app, News)
@@ -61,3 +60,15 @@ app.register_blueprint(auth, url_prefix="/auth")
 
 from api_1_0 import api
 app.register_blueprint(api, url_prefix="/api/v1.0")
+
+def make_celery(app):
+    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
