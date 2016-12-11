@@ -4,3 +4,4 @@ data-dev.sqlite
 migrations
 .DS_Store
 whoosh_index
+dump.rdb

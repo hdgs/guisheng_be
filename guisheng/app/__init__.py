@@ -7,6 +7,8 @@ from flask_moment import Moment
 from flask_debugtoolbar import DebugToolbarExtension
 from config import config
 import flask.ext.whooshalchemy as whooshalchemy
+import redis
+from celery import Celery
 
 
 app = Flask(__name__)
@@ -23,21 +25,23 @@ app.config.from_object(config[config_name])
 config[config_name].init_app(app)
 toolbar = DebugToolbarExtension(app)
 
-
 db = SQLAlchemy(app)
 moment = Moment(app)
 login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
+#redis site
+rds = redis.StrictRedis(host='localhost', port=6380, db=0)
+
+
+#to search
 from .models import News,Article,Picture,Interaction,Tag
 whooshalchemy.whoosh_index(app, News)
 whooshalchemy.whoosh_index(app, Article)
 whooshalchemy.whoosh_index(app, Picture)
 whooshalchemy.whoosh_index(app, Interaction)
 whooshalchemy.whoosh_index(app, Tag)
-
-
 
 # admin site
 from admin import views
