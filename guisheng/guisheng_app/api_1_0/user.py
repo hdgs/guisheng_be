@@ -1,11 +1,11 @@
 # coding: utf-8
 
 from . import api
-from app import db
+from guisheng_app import db
 from flask import request,jsonify,Response
 from flask_login import login_user, logout_user, current_user, login_required
-from app.models import User
-from app.decorators import admin_required
+from guisheng_app.models import User
+from guisheng_app.decorators import admin_required
 
 @api.route('/register',methods=['GET','POST'])
 @admin_required

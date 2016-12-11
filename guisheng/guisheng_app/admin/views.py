@@ -13,8 +13,8 @@ import flask_admin as admin
 from flask_login import current_user
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
-from app import app, db
-from app.models import AnonymousUser
+from guisheng_app import app, db
+from guisheng_app.models import AnonymousUser
 from flask import redirect, flash, url_for
 
 
@@ -36,9 +36,9 @@ admin = Admin(
 
 
 # sql models management
-from app.models import User
+from guisheng_app.models import User
 admin.add_view(ModelView(User, db.session))
 
-from app.models import Role
+from guisheng_app.models import Role
 admin.add_view(ModelView(Role, db.session))
 

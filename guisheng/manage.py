@@ -36,8 +36,8 @@ import sys
 import os
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
-from app import db, app
-from app.models import User, Role, News, Everydaypic, Article,\
+from guisheng_app import db, app
+from guisheng_app.models import User, Role, News, Everydaypic, Article,\
         Picture, Interaction, Comment, Like, Light, Collect,PostTag,Tag
 
 # 编码设置

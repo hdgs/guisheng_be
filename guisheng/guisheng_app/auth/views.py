@@ -3,7 +3,7 @@
 from . import auth
 from flask import render_template, url_for, redirect, flash
 from flask_login import login_user, logout_user, current_user, login_required
-from app.models import User
+from guisheng_app.models import User
 from .forms import LoginForm
 
 

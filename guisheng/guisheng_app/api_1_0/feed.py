@@ -5,7 +5,7 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
         Collect,Like,Light,Comment,PostTag,Tag
 from . import api
 from operator import attrgetter
-from app import rds
+from guisheng_app import rds
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
