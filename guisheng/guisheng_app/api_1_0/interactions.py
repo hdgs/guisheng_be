@@ -3,7 +3,7 @@ from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,Interaction,Tag,PostTag
 from . import api
-
+from .. import db
 
 @api.route('/interaction/<int:id>/',methods=['GET'])
 def get_interaction(id):

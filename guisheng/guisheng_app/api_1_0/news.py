@@ -3,9 +3,9 @@ from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,News,PostTag,Tag
 from . import api
+from .. import db
 
-
-@api.route('/news/<int:id>', methods=['GET'])
+@api.route('/news/<int:id>/', methods=['GET'])
 def get_news(id):
     news = News.query.get_or_404(id)
     news.views+=1

@@ -15,4 +15,3 @@ def get_everydaypic():
         }),mimetype='application/json')
 
 
- 

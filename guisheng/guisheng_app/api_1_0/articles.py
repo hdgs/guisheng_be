@@ -3,6 +3,7 @@ from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,Article,Tag
 from . import api
+from .. import db
 
 
 @api.route('/article/<int:id>/', methods=['GET'])
