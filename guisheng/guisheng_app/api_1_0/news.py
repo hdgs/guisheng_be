@@ -4,6 +4,7 @@ import json
 from ..models import Role,User,News,PostTag,Tag
 from . import api
 from .. import db
+from guisheng_app.decorators import admin_required
 
 @api.route('/news/<int:id>/', methods=['GET'])
 def get_news(id):
@@ -40,5 +41,16 @@ def command_news():
             "views":News.query.filter_by(id=news_id).first().views
         }for news_id in command_news]
     ),mimetype='application/json')
+
+@api.route('/news/', methods=["GET", "POST"])
+@admin_required
+def new_course():
+    if request.method == "POST":
+        news = News.from_json(request.get_json())
+        db.session.add(news)
+        db.session.commit()
+        return jsonify({
+            'id': news.id
+        }), 201
 
  

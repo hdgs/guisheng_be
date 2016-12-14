@@ -92,7 +92,7 @@ def admin():
     password = getpass("\_admin password: ")
     u = User(
         email = email,
-        username = username,
+        name = username,
         password = password,
         role_id = 2
     )
@@ -105,19 +105,19 @@ def admin():
 def adduser():
     """add user"""
     from getpass import getpass
-    username = raw_input("\_username: ")
+    name = raw_input("\_username: ")
     email = raw_input("\_email: ")
     role_id = raw_input("\_[1:moderator 2:admin 3:user]: ")
     password = getpass("\_password: ")
     u = User(
         email = email,
-        username = username,
+        name = name,
         password = password,
         role_id = role_id
     )
     db.session.add(u)
     db.session.commit()
-    print "<user %s add in database>" % username
+    print "<user %s add in database>" % name
 
 
 if __name__ == '__main__':
