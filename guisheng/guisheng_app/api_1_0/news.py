@@ -53,15 +53,43 @@ def add_news():
             'id': news.id
         }), 201
 
-@api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
+@api.route('/news/<int:id>/', methods=["GET", "PUT"])
 @admin_required
-def update_news_body():
+def update_news(id):
+    news = News.query.get_or_404(id)
+    json = request.get_json()
     if request.method == "PUT":
-        news = News.from_json(request.get_json())
+        news.title = json.get('title')
+        news.img_url = json.get('img_url')
+        news.author = json.get('author')
+        news.description = json.get('description')
+        news.author =  User.query.get_or_404(json.get('author_id'))
         db.session.add(news)
         db.session.commit()
         return jsonify({
-            'id': news.id
-        }), 201
+            'update': news.id
+        }), 200
 
+@api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
+@admin_required
+def update_news_body(id):
+    news = News.query.get_or_404(id)
+    if request.method == "PUT":
+        news.body = request.get_json().get('body')
+        db.session.add(news)
+        db.session.commit()
+        return jsonify({
+            'update': news.id
+        }), 200
+
+@api.route('/news/<int:id>/', methods=["GET", "DELETE"])
+@admin_required
+def delete_news(id):
+    news = News.query.get_or_404(id)
+    if request.method == "DELETE":
+        db.session.delete(news)
+        db.session.commit()
+        return jsonify({
+            'deleted': news.id
+        }), 200
  

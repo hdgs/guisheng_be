@@ -179,7 +179,7 @@ class News(db.Model):
     light = db.relationship('Light', backref='news', lazy='dynamic')
     collect = db.relationship('Collect', backref='news', lazy='dynamic')
     tag = db.relationship("PostTag", backref="news",lazy="dynamic", cascade='all')
-    views = db.Column(db.Integer)
+    views = db.Column(db.Integer,default=0)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
