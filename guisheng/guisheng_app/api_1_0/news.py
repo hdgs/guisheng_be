@@ -19,7 +19,7 @@ def get_news(id):
         }),mimetype='application/json')
 
 
-@api.route('/news/', methods=['GET','POST'])
+@api.route('/news/recommend/', methods=['GET','POST'])
 def command_news():
     news_id = int(request.get_json().get('article_id'))
     now_news = News.query.get_or_404(news_id)
@@ -44,8 +44,19 @@ def command_news():
 
 @api.route('/news/', methods=["GET", "POST"])
 @admin_required
-def new_course():
+def add_news():
     if request.method == "POST":
+        news = News.from_json(request.get_json())
+        db.session.add(news)
+        db.session.commit()
+        return jsonify({
+            'id': news.id
+        }), 201
+
+@api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
+@admin_required
+def update_news_body():
+    if request.method == "PUT":
         news = News.from_json(request.get_json())
         db.session.add(news)
         db.session.commit()

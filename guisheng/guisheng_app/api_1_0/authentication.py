@@ -34,7 +34,7 @@ def before_request():
         return forbidden('Unconfirmed account')
 '''
 
-@api.route('/token',methods=['GET'])
+@api.route('/token/',methods=['GET'])
 @auth.login_required
 def get_token():
     if g.current_user.is_anonymous or g.token_used:

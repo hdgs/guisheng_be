@@ -187,6 +187,14 @@ class News(db.Model):
     published = db.Column(db.Integer,default=0)
 
     @staticmethod
+    def from_json(json_news):
+        u = User.query.get_or_404(json_news.get('author_id'))
+        title = json_news.get('title')
+        img_url = json_news.get('img_url')
+        description = json_news.get('description')
+        return News(title=title, author=u,
+                    img_url=img_url, description=description)
+    @staticmethod
     def generate_fake(count=100):
         from random import seed,randint
         import forgery_py
