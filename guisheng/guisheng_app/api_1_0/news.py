@@ -9,6 +9,9 @@ from guisheng_app.decorators import admin_required
 @api.route('/news/<int:id>/', methods=['GET'])
 def get_news(id):
     news = News.query.get_or_404(id)
+    like_degree_one = news.light.filter_by(like_degree=0).count()
+    like_degree_two = news.light.filter_by(like_degree=1).count()
+    like_degree_three = news.light.filter_by(like_degree=2).count()
     news.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -17,10 +20,13 @@ def get_news(id):
         "author":User.query.get_or_404(news.author_id).name,
         "time":news.time.strftime('%m/%d/%Y'),
         "body":news.body,
+        "like_degree_one":like_degree_one,
+        "like_degree_two":like_degree_two,
+        "like_degree_three":like_degree_three
         }),mimetype='application/json')
 
 
-@api.route('/recommend_news/recommend/', methods=['GET','POST'])
+@api.route('/recommend_news/', methods=['GET','POST'])
 def recommend_news():
     news_id = int(request.get_json().get('article_id'))
     now_news = News.query.get_or_404(news_id)

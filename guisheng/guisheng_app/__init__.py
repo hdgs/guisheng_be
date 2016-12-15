@@ -30,16 +30,6 @@ login_manager.login_view = 'auth.login'
 #redis site
 rds = redis.StrictRedis(host='localhost', port=6380, db=0)
 
-'''
-#to search
-from .models import News,Article,Picture,Interaction,Tag
-whooshalchemy.whoosh_index(app, News)
-whooshalchemy.whoosh_index(app, Article)
-whooshalchemy.whoosh_index(app, Picture)
-whooshalchemy.whoosh_index(app, Interaction)
-whooshalchemy.whoosh_index(app, Tag)
-'''
-
 
 def create_app(config_name=None, main=True):
     if config_name is None:

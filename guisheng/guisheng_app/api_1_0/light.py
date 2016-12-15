@@ -1,8 +1,7 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
 import json
-from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment
+from ..models import Light
 from . import api
 
 @api.route('/light/',methods=['GET','POST'])
