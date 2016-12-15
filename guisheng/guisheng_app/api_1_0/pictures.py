@@ -75,7 +75,7 @@ def get_pic(id):
         "introduction":pic.introduction,
     }),mimetype='application/json')
 
-@api.route('/pictures/recommend/', methods=['GET','POST'])
+@api.route('/pics/recommend/', methods=['GET','POST'])
 def recommend_pics():
     pic_id = int(request.get_json().get('article_id'))
     now_pic = Picture.query.get_or_404(pic_id)

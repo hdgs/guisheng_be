@@ -329,6 +329,7 @@ class Article(db.Model):
         music_url = json_article.get('music_url')
         music_title = json_article.get('music_title')
         music_img_url = json_article.get('music_img_url')
+        singer = json_article.get('singer')
         film_url = json_article.get('film_url')
         film_img_url = json_article.get('film_img_url')
         return Picture(title=title, author=u,
