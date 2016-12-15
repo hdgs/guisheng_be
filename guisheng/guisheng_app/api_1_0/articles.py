@@ -64,6 +64,9 @@ def update_tags(article):
 @api.route('/article/<int:id>/', methods=['GET'])
 def get_article(id):
     article = Article.query.get_or_404(id)
+    like_degree_one = article.light.filter_by(like_degree=0).count()
+    like_degree_two = article.light.filter_by(like_degree=1).count()
+    like_degree_three = article.light.filter_by(like_degree=2).count()
     article.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -73,6 +76,9 @@ def get_article(id):
         "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%m/%d/%Y'),
         "body":article.body,
+        "like_degree_one":like_degree_one,
+        "like_degree_two":like_degree_two,
+        "like_degree_three":like_degree_three,
         "music":{
             "title":article.music_title,
             "music_url":article.music_url,

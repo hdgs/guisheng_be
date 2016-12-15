@@ -64,6 +64,9 @@ def update_tags(pics):
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
+    like_degree_one = article.light.filter_by(like_degree=0).count()
+    like_degree_two = article.light.filter_by(like_degree=1).count()
+    like_degree_three = article.light.filter_by(like_degree=2).count()
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -73,6 +76,9 @@ def get_pic(id):
         "time":pic.time.strftime('%m/%d/%Y'),
         "pics":pic.img_url,
         "introduction":pic.introduction,
+        "like_degree_one":like_degree_one,
+        "like_degree_two":like_degree_two,
+        "like_degree_three":like_degree_three
     }),mimetype='application/json')
 
 @api.route('/pics/recommend/', methods=['GET','POST'])

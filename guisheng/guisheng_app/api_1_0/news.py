@@ -81,7 +81,7 @@ def get_news(id):
         }),mimetype='application/json')
 
 
-@api.route('/recommend_news/', methods=['GET','POST'])
+@api.route('/news/recommend', methods=['GET','POST'])
 def recommend_news():
     news_id = int(request.get_json().get('article_id'))
     now_news = News.query.get_or_404(news_id)

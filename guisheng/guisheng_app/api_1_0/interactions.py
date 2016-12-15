@@ -8,6 +8,9 @@ from .. import db
 @api.route('/interaction/<int:id>/',methods=['GET'])
 def get_interaction(id):
     interaction = Interaction.query.get_or_404(id)
+    like_degree_one = interaction.light.filter_by(like_degree=0).count()
+    like_degree_two = interaction.light.filter_by(like_degree=1).count()
+    like_degree_three = interaction.light.filter_by(like_degree=2).count()
     interaction.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -16,6 +19,9 @@ def get_interaction(id):
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%m/%d/%Y'),
         "body":interaction.body,
+        "like_degree_one":like_degree_one,
+        "like_degree_two":like_degree_two,
+        "like_degree_three":like_degree_three
         }),mimetype='application/json')
 
 
