@@ -252,8 +252,8 @@ class Picture(db.Model):
     title = db.Column(db.String(64),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
-    views = db.Column(db.Integer)
-    introduction = db.Column(db.PickleType,default="")
+    views = db.Column(db.Integer, default=0)
+    introduction = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
     like = db.relationship('Like',backref='picture', lazy='dynamic')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
@@ -261,6 +261,15 @@ class Picture(db.Model):
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     kind = 2
     published = db.Column(db.Integer,default=0)
+
+    @staticmethod
+    def from_json(json_pic):
+        u = User.query.get_or_404(json_pic.get('author_id'))
+        title = json_pic.get('title')
+        img_url = json_pic.get('img_url')
+        introduction = json_pic.get('introduction')
+        return Picture(title=title, author=u,
+                    img_url=img_url, introduction=introduction)
 
     @staticmethod
     def generate_fake(count=100):
