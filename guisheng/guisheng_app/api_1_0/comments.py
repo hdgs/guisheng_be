@@ -1,5 +1,4 @@
 # coding: utf-8
-import ast
 from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
@@ -7,15 +6,22 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 
 
-@api.route('/comments/',methods=['GET','POST'])
+@api.route('/comments/',methods=['GET'])
 def get_comments():
     kind = request.args.get('kind')
-    a_id = request.args.get('article_id')
-    post = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind).query.get_or_404(a_id)
-    _ids = {1: "news_id", 2: "picture_id", 3: "article_id", 4: "interaction_id" }.get(kind)
-    c_id = ast.literal_eval(_ids)
-    comments = Comment.query.filter_by(c_id=a_id).order_by(Comment.time.asc()).all()
-    responses = Comment.query.filter_by(c_id=a_id).order_by(Comment.time.asc()).all()
+    a_id = request.args.get('article_id',type=int)
+    if kind == 1:
+        comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
+        responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
+    elif kind == 2:
+        comments = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).all()
+        responses = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).all()
+    elif kind == 3:
+        comments = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
+       responses = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
+    else:
+        comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
+        responses = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
     return Response(json.dumps([{
             "article_id":a_id,
             "img_url":(User.query.get_or_404(comment.author_id)).img_url,
@@ -30,6 +36,7 @@ def get_comments():
         } for comment in comments]
     ),mimetype='application/json')
 
+
 @api.route('/comments/',methods=['GET','POST'])
 def create_comments():
     if request.method == 'POST':
@@ -38,11 +45,11 @@ def create_comments():
         if kind == 1:
             comment.news_id = request.get_json().get("article_id")
         if kind == 2:
-            comment.picture_id = request.get_json.get("article_id")
+            comment.picture_id = request.get_json().get("article_id")
         if kind == 3:
-            comment.article_id = request.get_json.get("article_id")
+            comment.article_id = request.get_json().get("article_id")
         if kind == 4:
-            comment.interaction_id = request.get_json.get("article_id")
+            comment.interaction_id = request.get_json().get("article_id")
         comment.comment_id = request.get_json().get("comment_id")
         comment.body = request.get_json().get("message")
         comment.author_id = request.get_json().get("user_id")

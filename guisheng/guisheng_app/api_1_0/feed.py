@@ -81,14 +81,14 @@ def search():
                 alist.append(Picture.query.get_or_404(_pic.picture_id))
             for _interaction in t.interactions:
                 alist.append(Interaction.query.get_or_404(_article.interaction_id))
-#        alist.sort(key=attrgetter('time'),reverse=True)
+        #alist.sort(key=attrgetter('time'),reverse=True)
         return Response(json.dumps([{
                 "article_id":post.id,
                 "img_url":post.img_url[0],
                 "title":post.title,
                 "author":User.query.get_or_404(post.author_id).name,
                 "views":post.views,
-                #                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
+                #"tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
                 "description":post.description,
                 "time":post.time.strftime('%m/%d/%Y'),
                 } for post in alist[:count-1]]
