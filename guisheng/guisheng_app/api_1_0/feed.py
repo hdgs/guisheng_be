@@ -89,7 +89,7 @@ def search():
                 "title":post.title,
                 "author":User.query.get_or_404(post.author_id).name,
                 "views":post.views,
-                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([post.tag]) else "",
+                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([i for i in post.tag]) else "",
                 "description":post.description,
                 "time":post.time.strftime('%m/%d/%Y'),
                 } for post in alist[:count-1]]
