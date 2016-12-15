@@ -7,6 +7,7 @@ from . import api
 from operator import attrgetter
 from guisheng_app import rds
 
+
 @api.route('/feed/', methods=['GET'])
 def main_page():
     kind = int(request.args.get('kind'))
@@ -26,11 +27,11 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":content.id,
-                #"img_url":content.img_url[0],
+                "img_url":content.img_url[0],
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
-                "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id),
+                #"tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id),
                 "description":content.description,
                 } for content in tolist[:count-1]]
         ),mimetype='application/json')
@@ -40,7 +41,7 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
-                #"img_url":_post.img_url[0],
+                "img_url":_post.img_url[0],
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name,
                 "views":_post.views,
@@ -48,6 +49,7 @@ def main_page():
                 "description":_post.description,
             } for _post in posts]
         ),mimetype='application/json')
+
 
 @api.route('/feed/', methods=['GET','POST'])
 def search():
@@ -91,6 +93,7 @@ def search():
                 "time":post.time.strftime('%m/%d/%Y'),
                 } for post in alist[:count-1]]
         ),mimetype='application/json')
+
 
 @api.route('/hottag/',methods=['GET'])
 def get_hottag():
