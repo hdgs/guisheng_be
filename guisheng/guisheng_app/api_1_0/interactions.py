@@ -11,6 +11,7 @@ def get_interaction(id):
     interaction.views+=1
     db.session.commit()
     return Response(json.dumps({
+        "kind":4,
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%m/%d/%Y'),
