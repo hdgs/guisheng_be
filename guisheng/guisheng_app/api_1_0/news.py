@@ -12,6 +12,7 @@ def get_news(id):
     news.views+=1
     db.session.commit()
     return Response(json.dumps({
+        "kind":1,
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
         "time":news.time.strftime('%m/%d/%Y'),
