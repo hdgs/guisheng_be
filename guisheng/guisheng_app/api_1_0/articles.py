@@ -26,8 +26,8 @@ def get_article(id):
             }
         }),mimetype='application/json')
 
-@api.route('/articles/',methods=['GET','POST'])
-def command_articles():
+@api.route('/recommend_articles/',methods=['GET','POST'])
+def recommend_articles():
     a_id = int(request.get_json().get('article_id'))
     now_a = Article.query.get_or_404(a_id)
     try:
@@ -37,16 +37,16 @@ def command_articles():
         for _article in tag.articles:
             articles.append(_article.article_id)
         sortlist = sorted(articles,key=lambda id: Article.query.get_or_404(id).views,reverse=True)
-        command_articles = sortlist[:3] if len(sortlist)>=4 else sortlist
+        recommend_articles = sortlist[:3] if len(sortlist)>=4 else sortlist
     except:
-        command_articles=[]
+        recommend_articles=[]
     return Response(json.dumps([{
             "title":Article.query.filter_by(id=article_id).first().title,
             "description":Article.query.filter_by(id=article_id).first().description,
             "author":User.query.get_or_404(Article.query.filter_by(id=article_id).first().author_id).name,
             "tag":tag.body,
             "views":Article.query.filter_by(id=article_id).first().views
-        }for article_id in command_articles]
+        }for article_id in recommend_articles]
     ),mimetype='application/json')
 
 

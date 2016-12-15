@@ -19,8 +19,8 @@ def get_pic(id):
         "introduction":pic.introduction,
     }),mimetype='application/json')
 
-@api.route('/photos/', methods=['GET','POST'])
-def command_pics():
+@api.route('/recommend_pictures/', methods=['GET','POST'])
+def recommend_pics():
     pic_id = int(request.get_json().get('article_id'))
     now_pic = Picture.query.get_or_404(pic_id)
     try:
@@ -30,15 +30,15 @@ def command_pics():
         for _pic in tag.pictures:
             pics.append(_pic.picture_id)
         sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True) 
-        command_pics = sortlist[:3] if len(sortlist)>=4 else sortlist
+        recommend_pics = sortlist[:3] if len(sortlist)>=4 else sortlist
     except:
-       command_pics = []
+       recommend_pics = []
     return Response(json.dumps([{
             "img_url":Picture.query.get_or_404(pic_id).img_url,
             "title":Picture.query.get_or_404(pic_id).title,
             "author":User.query.get_or_404(Picture.query.get_or_404(pic_id).author_id).name,
             "views":Picture.query.get_or_404(pic_id).views,
             "tag":tag.body,
-        } for pic_id in command_pics]
+        } for pic_id in recommend_pics]
     ),mimetype='application/json')
 

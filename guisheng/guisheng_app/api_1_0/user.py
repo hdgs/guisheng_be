@@ -11,10 +11,10 @@ from guisheng_app.decorators import admin_required
 @admin_required
 def register():
     if request.method == 'POST':
-        username = request.get_json().get("username")
+        name = request.get_json().get("username")
         email = request.get_json().get("email")
         password = request.get_json().get("password")
-        user = User(name=username,
+        user = User(username=username,
                     email=email,
                     password=password)
         db.session.add(user)

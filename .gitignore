@@ -5,3 +5,4 @@ migrations
 .DS_Store
 whoosh_index
 dump.rdb
+celerybeat-schedule.db

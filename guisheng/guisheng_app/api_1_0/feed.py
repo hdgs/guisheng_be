@@ -26,7 +26,7 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":content.id,
-                "img_url":content.img_url[0],
+                #"img_url":content.img_url[0],
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
@@ -40,7 +40,7 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
-                "img_url":_post.img_url[0],
+                #"img_url":_post.img_url[0],
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name,
                 "views":_post.views,
@@ -86,7 +86,7 @@ def search():
                 "title":post.title,
                 "author":User.query.get_or_404(post.author_id).name,
                 "views":post.views,
-                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
+                #                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
                 "description":post.description,
                 "time":post.time.strftime('%m/%d/%Y'),
                 } for post in alist[:count-1]]

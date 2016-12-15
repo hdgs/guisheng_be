@@ -19,8 +19,8 @@ def get_news(id):
         }),mimetype='application/json')
 
 
-@api.route('/news/recommend/', methods=['GET','POST'])
-def command_news():
+@api.route('/recommend_news/recommend/', methods=['GET','POST'])
+def recommend_news():
     news_id = int(request.get_json().get('article_id'))
     now_news = News.query.get_or_404(news_id)
     try:
@@ -30,16 +30,16 @@ def command_news():
         for _news in tag.news:
             news.append(_news.news_id)
         sortlist = sorted(news,key=lambda id: News.query.get_or_404(id).views,reverse=True)
-        command_news = sortlist[:3] if len(sortlist)>=4 else sortlist
+        recommend_news = sortlist[:3] if len(sortlist)>=4 else sortlist
     except:
-        command_news=[]
+        recommend_news=[]
     return Response(json.dumps([{
             "title":News.query.filter_by(id=news_id).first().title,
             "description":News.query.filter_by(id=news_id).first().description,
             "author":User.query.get_or_404(News.query.filter_by(id=news_id).first().author_id).name,
             "tag":tag.body,
             "views":News.query.filter_by(id=news_id).first().views
-        }for news_id in command_news]
+        }for news_id in recommend_news]
     ),mimetype='application/json')
 
 @api.route('/news/', methods=["GET", "POST"])

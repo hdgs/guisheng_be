@@ -5,6 +5,7 @@
 # project base path
 import os
 from celery.schedules import crontab
+from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 """
@@ -37,7 +38,8 @@ class Config:
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'restart_hottags_redis',
-        'schedule': crontab(day_of_month='1')
+        #'schedule': crontab(day_of_month='1')
+        'schedule': timedelta(seconds=30)
         },
     }
 
