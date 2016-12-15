@@ -12,6 +12,7 @@ def get_article(id):
     article.views+=1
     db.session.commit()
     return Response(json.dumps({
+        "kind":3,
         "title":article.title,
         "img_url":article.img_url,
         "author":User.query.get_or_404(article.author_id).name,
