@@ -18,7 +18,7 @@ def get_comments():
         responses = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).all()
     elif kind == 3:
         comments = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
-       responses = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
+        responses = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).all()
     else:
         comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
