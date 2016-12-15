@@ -320,6 +320,14 @@ class Article(db.Model):
     kind = 3
     published = db.Column(db.Integer,default=0)
 
+    @staticmethod
+    def from_json(json_article):
+        u = User.query.get_or_404(json_article.get('author_id'))
+        title = json_article.get('title')
+        img_url = json_article.get('img_url')
+        introduction = json_article.get('introduction')
+        return Picture(title=title, author=u,
+                    img_url=img_url, introduction=introduction)
 
     @staticmethod
     def generate_fake(count=100):
