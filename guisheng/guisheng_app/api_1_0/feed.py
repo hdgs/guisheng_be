@@ -31,7 +31,8 @@ def main_page():
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name,
                 "views":content.views,
-                #"tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id),
+                "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
+                      if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
                 "description":content.description,
                 } for content in tolist[:count-1]]
         ),mimetype='application/json')
@@ -45,7 +46,8 @@ def main_page():
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name,
                 "views":_post.views,
-                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(content.id).tag[0].tag_id),
+                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(content.id).tag[0].tag_id).body\
+                      if len([i for i in post_kind.query.get_or_404(content.id).tag]) else "",
                 "description":_post.description,
             } for _post in posts]
         ),mimetype='application/json')
@@ -81,14 +83,13 @@ def search():
                 alist.append(Picture.query.get_or_404(_pic.picture_id))
             for _interaction in t.interactions:
                 alist.append(Interaction.query.get_or_404(_article.interaction_id))
-        #alist.sort(key=attrgetter('time'),reverse=True)
         return Response(json.dumps([{
                 "article_id":post.id,
                 "img_url":post.img_url[0],
                 "title":post.title,
                 "author":User.query.get_or_404(post.author_id).name,
                 "views":post.views,
-                #"tag":Tag.query.get_or_404(post.tag[0].tag_id).body,
+                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([post.tag]) else "",
                 "description":post.description,
                 "time":post.time.strftime('%m/%d/%Y'),
                 } for post in alist[:count-1]]
