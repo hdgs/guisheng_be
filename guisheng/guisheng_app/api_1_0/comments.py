@@ -42,6 +42,7 @@ def create_comments():
     if request.method == 'POST':
         comment = Comment()
         kind = request.get_json().get("kind")
+
         if kind == 1:
             comment.news_id = request.get_json().get("article_id")
         if kind == 2:
@@ -50,6 +51,7 @@ def create_comments():
             comment.article_id = request.get_json().get("article_id")
         if kind == 4:
             comment.interaction_id = request.get_json().get("article_id")
+
         comment.comment_id = request.get_json().get("comment_id")
         comment.body = request.get_json().get("message")
         comment.author_id = request.get_json().get("user_id")

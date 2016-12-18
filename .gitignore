@@ -6,3 +6,4 @@ migrations
 whoosh_index
 dump.rdb
 celerybeat-schedule.db
+hottag.db

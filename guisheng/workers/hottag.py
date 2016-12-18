@@ -1,5 +1,6 @@
-from .guisheng_app import app
-from guisheng_app import rds
+from .. import rds
+from .. import app
+from .. import celery
 import os
 
 celery = make_celery(app)
