@@ -76,7 +76,6 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(64),default="")
     weibo = db.Column(db.String(164),default="")
     introduction = db.Column(db.Text,default="")
-    suggestion = db.Column(db.Text,default="")
     news = db.relationship('News', backref='author', lazy='dynamic')
     pictures = db.relationship('Picture', backref='author', lazy='dynamic')
     articles = db.relationship('Article', backref='author', lazy='dynamic')
@@ -86,6 +85,7 @@ class User(db.Model, UserMixin):
     likes = db.relationship('Like', backref='author', lazy='dynamic')
     lights = db.relationship('Light', backref='author', lazy='dynamic')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    user_role = db.Column(db.Integer,default=0)
 
     @property
     def password(self):
@@ -624,11 +624,32 @@ class Tag(db.Model):
 
         seed()
         for i in range(count):
-            t=Tag(count=randint(0,100),
+            t = Tag(count=randint(0,100),
                   body=forgery_py.lorem_ipsum.title(1))
             db.session.add(t)
             db.session.commit()
 
     def __repr__(self):
         return "<Tag %r>" % self.id
+
+class Suggestion(db.Model):
+    __tablename__ = 'suggestions'
+    id = db.Column(db.Integer,primary_key=True)
+    body = db.Column(db.Text,default="")
+    contact = db.Column(db.String(164),default="")
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed,randint
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            s = Suggestion(body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
+                           contact=forgery_py.internet.email_address())
+            db.session.add(s)
+            db.session.commit()
+
+    def __repr__(self):
+        return "<Suggestion %r>" % self.id
 
