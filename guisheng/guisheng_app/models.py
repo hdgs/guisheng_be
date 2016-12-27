@@ -82,8 +82,6 @@ class User(db.Model, UserMixin):
     interactions = db.relationship('Interaction', backref='author', lazy='dynamic')
     collection = db.relationship('Collect', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    likes = db.relationship('Like', backref='author', lazy='dynamic')
-    lights = db.relationship('Light', backref='author', lazy='dynamic')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     user_role = db.Column(db.Integer,default=0)
 
@@ -183,6 +181,7 @@ class News(db.Model):
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
+    editor = db.Column()
     kind = 1
     published = db.Column(db.Integer,default=0)
 
@@ -319,6 +318,7 @@ class Article(db.Model):
     scores = db.Column(db.Integer)
     kind = 3
     published = db.Column(db.Integer,default=0)
+
 
     @staticmethod
     def from_json(json_article):
@@ -497,7 +497,6 @@ class Collect(db.Model):
 class Light(db.Model):
     __tablename__ = 'lights'
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
     interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
@@ -509,20 +508,17 @@ class Light(db.Model):
         import forgery_py
 
         seed()
-        user_count = User.query.count()
         news_count = News.query.count()
         art_count = Article.query.count()
         int_count = Interaction.query.count()
         for i in range(count):
-            u = User.query.offset(randint(0,user_count-1)).first()
             n = News.query.offset(randint(0,news_count-1)).first()
             a = Article.query.offset(randint(0,art_count-1)).first()
             t = Interaction.query.offset(randint(0,int_count-1)).first()
-            l = Light(author=u,
-                        news=n,
-                        article=a,
-                        interaction=t,
-                        like_degree=randint(1,5))
+            l = Light(news=n,
+                      article=a,
+                      interaction=t,
+                      like_degree=randint(1,5))
             db.session.add(l)
             db.session.commit()
 
@@ -533,7 +529,6 @@ class Light(db.Model):
 class Like(db.Model):
     __tablename__ = 'likes'
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
     comment_id = db.Column(db.Integer,db.ForeignKey('comments.id'))
 
@@ -543,15 +538,12 @@ class Like(db.Model):
         import forgery_py
 
         seed()
-        user_count = User.query.count()
         pic_count = Picture.query.count()
         com_count = Comment.query.count()
         for i in range(count):
-            u = User.query.offset(randint(0,user_count-1)).first()
             p = Picture.query.offset(randint(0,pic_count-1)).first()
             c = Comment.query.offset(randint(0,pic_count-1)).first()
-            l = Like(author=u,
-                     picture=p,
+            l = Like(picture=p,
                      comment=c)
             db.session.add(l)
             db.session.commit()
