@@ -19,9 +19,7 @@ def get_interaction(id):
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%m/%d/%Y'),
         "body":interaction.body,
-        "like_degree_one":like_degree_one,
-        "like_degree_two":like_degree_two,
-        "like_degree_three":like_degree_three
+        "like":[like_degree_one,like_degree_two,like_degree_three]
         }),mimetype='application/json')
 
 
