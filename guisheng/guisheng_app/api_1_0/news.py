@@ -75,9 +75,7 @@ def get_news(id):
         "author":User.query.get_or_404(news.author_id).name,
         "time":news.time.strftime('%m/%d/%Y'),
         "body":news.body,
-        "like_degree_one":like_degree_one,
-        "like_degree_two":like_degree_two,
-        "like_degree_three":like_degree_three
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three]
         }),mimetype='application/json')
 
 
