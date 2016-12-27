@@ -76,9 +76,8 @@ def get_article(id):
         "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%m/%d/%Y'),
         "body":article.body,
-        "like_degree_one":like_degree_one,
-        "like_degree_two":like_degree_two,
-        "like_degree_three":like_degree_three,
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+        "commentCount":article.comments.filter_by(comment_id=-1).count(),
         "music":{
             "title":article.music_title,
             "music_url":article.music_url,
