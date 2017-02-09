@@ -91,7 +91,7 @@ def search():
                 "views":post.views,
                 "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([i for i in post.tag]) else "",
                 "description":post.description,
-                "time":post.time.strftime('%m/%d/%Y'),
+                "time":post.time.strftime('%Y/%m/%d %H:%M'),
                 } for post in alist[:count-1]]
         ),mimetype='application/json')
 

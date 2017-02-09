@@ -74,7 +74,7 @@ def get_article(id):
         "title":article.title,
         "img_url":article.img_url,
         "author":User.query.get_or_404(article.author_id).name,
-        "time":article.time.strftime('%m/%d/%Y'),
+        "time":article.time.strftime('%Y/%m/%d %H:%M'),
         "body":article.body,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "commentCount":article.comments.filter_by(comment_id=-1).count(),
@@ -169,5 +169,4 @@ def delete_article(id):
         return jsonify({
             'deleted': article.id
         }), 200
-
 

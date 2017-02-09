@@ -17,7 +17,7 @@ def get_interaction(id):
         "kind":4,
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
-        "time":interaction.time.strftime('%m/%d/%Y'),
+        "time":interaction.time.strftime('%Y/%m/%d %H:%M'),
         "body":interaction.body,
         "like":[like_degree_one,like_degree_two,like_degree_three]
         }),mimetype='application/json')

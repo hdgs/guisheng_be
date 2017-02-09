@@ -70,7 +70,7 @@ def get_pic(id):
         "kind":2,
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,
-        "time":pic.time.strftime('%m/%d/%Y'),
+        "time":pic.time.strftime('%Y/%m/%d %H:%M'),
         "pics":pic.img_url,
         "introduction":pic.introduction,
         "likes":pic.like.count(),
