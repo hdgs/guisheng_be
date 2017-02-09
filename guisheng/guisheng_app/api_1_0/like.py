@@ -17,6 +17,7 @@ def like_picture():
         })
 
 @api.route('/like/comment/', methods=['GET','POST'])
+def like_comment():
     if request.method == 'POST':
         like = Like()
         like.comment_id = int(request.get_json().get('comment_id'))
