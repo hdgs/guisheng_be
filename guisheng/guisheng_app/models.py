@@ -631,7 +631,7 @@ class Suggestion(db.Model):
     __tablename__ = 'suggestions'
     id = db.Column(db.Integer,primary_key=True)
     body = db.Column(db.Text,default="")
-    contact = db.Column(db.String(164),default="")
+    contact_information = db.Column(db.String(164),default="")
 
     @staticmethod
     def generate_fake(count=100):
@@ -641,7 +641,7 @@ class Suggestion(db.Model):
         seed()
         for i in range(count):
             s = Suggestion(body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
-                           contact=forgery_py.internet.email_address())
+                           contact_information=forgery_py.internet.email_address())
             db.session.add(s)
             db.session.commit()
 

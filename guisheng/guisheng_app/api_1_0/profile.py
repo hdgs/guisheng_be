@@ -2,8 +2,9 @@
 from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment
+        Collect,Like,Light,Comment,Suggestion
 from . import api
+from .. import db
 
 @api.route('/profile/<int:id>/',methods=['GET'])
 def get_profile(id):
@@ -82,5 +83,18 @@ def get_collections(id):
             "description":content.description,
         }for content in alist]
     ),mimetype='application/json')
+
+
+@api.route('/profile/<int:id>/suggestions/',methods=['GET','POST'])
+def suggest():
+    if request.method == 'POST':
+        suggestion = Suggestion()
+        suggestion.body = request.get_json().get("body")
+        suggestion.contact_information = request.get_json().get("contact_information")
+        db.session.add(suggestion)
+        db.session.commit()
+        return Response(json.dumps({
+            'status':200
+            }),mimetype='application/json')
 
 
