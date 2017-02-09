@@ -38,7 +38,7 @@ def edit_profile(id):
 @api.route('/profile/<int:id>/works/',methods=['GET'])
 def get_works(id):
     user= User.query.get_or_404(id)
-    articles = [for article in user.articles.all()]
+    articles = [article for article in user.articles.all()]
     articles.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
             "article_id":_article.id,

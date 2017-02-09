@@ -181,7 +181,7 @@ class News(db.Model):
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
-    editor = db.Column()
+    editor = db.Column(db.String(64),default="")
     kind = 1
     published = db.Column(db.Integer,default=0)
 
@@ -258,6 +258,7 @@ class Picture(db.Model):
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
     collect = db.relationship('Collect',backref='picture', lazy='dynamic')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    editor = db.Column(db.String(64),default="")
     kind = 2
     published = db.Column(db.Integer,default=0)
 
@@ -316,6 +317,7 @@ class Article(db.Model):
     film_url = db.Column(db.String(164),default="")
     film_img_url = db.Column(db.String(164),default="")
     scores = db.Column(db.Integer)
+    editor = db.Column(db.String(64),default="")
     kind = 3
     published = db.Column(db.Integer,default=0)
 
@@ -385,6 +387,7 @@ class Interaction(db.Model):
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
     img_url = db.Column(db.PickleType,default=[""])
+    editor = db.Column(db.String(64),default="")
     kind = 4
     published = db.Column(db.Integer,default=0)
 
