@@ -64,6 +64,7 @@ def update_tags(pics):
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
+    user_role = -1 if g.current_user.is_anonymous else 0
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -75,7 +76,9 @@ def get_pic(id):
         "introduction":pic.introduction,
         "likes":pic.like.count(),
         "views":pic.views,
-        "commentCount":pic.comments.filter_by(comment_id=-1).count()
+        "commentCount":pic.comments.filter_by(comment_id=-1).count(),
+        "editor":pic.editor,
+        "user_role":user_role
     }),mimetype='application/json')
 
 @api.route('/pics/recommend/', methods=['GET','POST'])

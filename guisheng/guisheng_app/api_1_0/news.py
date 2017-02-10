@@ -67,6 +67,7 @@ def get_news(id):
     like_degree_one = news.light.filter_by(like_degree=0).count()
     like_degree_two = news.light.filter_by(like_degree=1).count()
     like_degree_three = news.light.filter_by(like_degree=2).count()
+    user_role=-1 if g.current_user.is_anonymous else 0
     news.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -75,7 +76,9 @@ def get_news(id):
         "author":User.query.get_or_404(news.author_id).name,
         "time":news.time.strftime('%Y/%m/%d %H:%M'),
         "body":news.body,
-        "like_degree":[like_degree_one,like_degree_two,like_degree_three]
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+        "editor":news.editor,
+        "user_role":user_role
         }),mimetype='application/json')
 
 

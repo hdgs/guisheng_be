@@ -14,7 +14,8 @@ def get_profile(id):
         "bg_url":user.bg_url,
         "name":user.name,
         "weibo":user.weibo,
-        "introduction":user.introduction
+        "introduction":user.introduction,
+        "role":user.user_role
     }),mimetype='application/json')
 
 @api.route('/profile/<int:id>/edit/',methods=['GET','PUT'])

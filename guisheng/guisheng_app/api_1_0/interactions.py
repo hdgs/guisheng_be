@@ -11,6 +11,7 @@ def get_interaction(id):
     like_degree_one = interaction.light.filter_by(like_degree=0).count()
     like_degree_two = interaction.light.filter_by(like_degree=1).count()
     like_degree_three = interaction.light.filter_by(like_degree=2).count()
+    user_role = -1 if g.current_user.is_anonymous else 0
     interaction.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -19,7 +20,8 @@ def get_interaction(id):
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%Y/%m/%d %H:%M'),
         "body":interaction.body,
-        "like":[like_degree_one,like_degree_two,like_degree_three]
+        "like":[like_degree_one,like_degree_two,like_degree_three],
+        "editor":interaction.editor
         }),mimetype='application/json')
 
 
