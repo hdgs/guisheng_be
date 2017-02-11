@@ -9,13 +9,15 @@ from .. import db
 @api.route('/profile/<int:id>/',methods=['GET'])
 def get_profile(id):
     user=User.query.get_or_404(id)
+    user_role = 1 if g.current_user.user_role==1 else 0
     return Response(json.dumps({
         "img_url":user.img_url,
         "bg_url":user.bg_url,
         "name":user.name,
         "weibo":user.weibo,
         "introduction":user.introduction,
-        "role":user.user_role
+        "role":user.user_role,
+        "user_role":user_role
     }),mimetype='application/json')
 
 @api.route('/profile/<int:id>/edit/',methods=['GET','PUT'])
