@@ -74,7 +74,7 @@ def get_news(id):
         "kind":1,
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
-        "time":news.time.strftime('%Y/%m/%d %H:%M'),
+        "time":news.time.strftime('%Y-%m-%d'),
         "body":news.body,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "editor":news.editor,

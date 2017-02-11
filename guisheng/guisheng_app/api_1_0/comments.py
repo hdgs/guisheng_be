@@ -4,12 +4,28 @@ import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
         Collect,Like,Light,Comment
 from . import api
+from datetime import datetime,timedelta
+
+def get_time(comment_time):
+    nowtime = datetime.utcnow()
+    today = datetime.date(now_time)
+    comment_date = datetime.date(comment_time)
+    if now_time.strftime('%Y') == comment_time.strftime('%Y'):
+        if comment_date==today:
+            time = comment_time.strftime('%H:%M')
+        elif comment_date==today+timedelta(days=-1):
+            time = " ".join(u"昨天",comment_time.strftime('%H:%M'))
+        else:
+            time = comment_time.strftime('%m-%d')
+    else:
+        time = comment_time.strftime('%Y-%m-%d')
 
 
 @api.route('/comments/',methods=['GET'])
 def get_comments():
     kind = request.args.get('kind')
-    a_id = request.args.get('article_id',type=int)
+    a_id = int(request.args.get('article_id'))
+    now_
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
@@ -33,6 +49,7 @@ def get_comments():
                "likes":response.like.count(),
                 }for response in responses],
             "likes":comment.like.count(),
+            "time":get_time(comment.time)
         } for comment in comments]
     ),mimetype='application/json')
 

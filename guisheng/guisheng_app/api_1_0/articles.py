@@ -5,6 +5,7 @@ from ..models import Role,User,Article,Tag
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
+from datetime import datetime
 
 def add_tags(article, tags, update):
     """
@@ -68,6 +69,7 @@ def get_article(id):
     like_degree_two = article.light.filter_by(like_degree=1).count()
     like_degree_three = article.light.filter_by(like_degree=2).count()
     user_role = -1 if g.current_user.is_anonymous else 0
+    if nt.strftime('%Y')
     article.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -75,7 +77,7 @@ def get_article(id):
         "title":article.title,
         "img_url":article.img_url,
         "author":User.query.get_or_404(article.author_id).name,
-        "time":article.time.strftime('%Y/%m/%d %H:%M'),
+        "time":article.time.strftime('%Y-%m-%d'),
         "body":article.body,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "commentCount":article.comments.filter_by(comment_id=-1).count(),
