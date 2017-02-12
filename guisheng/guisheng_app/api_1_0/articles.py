@@ -1,5 +1,6 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
+from flask_login import current_user
 import json
 from ..models import Role,User,Article,Tag
 from . import api
@@ -68,8 +69,7 @@ def get_article(id):
     like_degree_one = article.light.filter_by(like_degree=0).count()
     like_degree_two = article.light.filter_by(like_degree=1).count()
     like_degree_three = article.light.filter_by(like_degree=2).count()
-    user_role = -1 if g.current_user.is_anonymous else 0
-    if nt.strftime('%Y')
+    user_role = -1 if current_user.is_anonymous else 0
     article.views+=1
     db.session.commit()
     return Response(json.dumps({
