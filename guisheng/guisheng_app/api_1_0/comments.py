@@ -48,7 +48,8 @@ def get_comments():
                "likes":response.like.count(),
                 }for response in responses],
             "likes":comment.like.count(),
-            "time":get_time(comment.time)
+            "time":get_time(comment.time),
+            "user_id":comment.author_id
         } for comment in comments]
     ),mimetype='application/json')
 
