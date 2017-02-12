@@ -1,5 +1,6 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
+from flask_login import current_user
 import json
 from ..models import Role,User,Picture,Tag,PostTag
 from . import api
@@ -64,7 +65,7 @@ def update_tags(pics):
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
-    user_role = -1 if g.current_user.is_anonymous else 0
+    user_role = -1 if current_user.is_anonymous else 0
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
