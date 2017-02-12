@@ -1,5 +1,6 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
+from flask_login import current_user
 import json
 from ..models import Role,User,News,PostTag,Tag
 from . import api
@@ -67,7 +68,7 @@ def get_news(id):
     like_degree_one = news.light.filter_by(like_degree=0).count()
     like_degree_two = news.light.filter_by(like_degree=1).count()
     like_degree_three = news.light.filter_by(like_degree=2).count()
-    user_role=-1 if g.current_user.is_anonymous else 0
+    user_role=-1 if current_user.is_anonymous else 0
     news.views+=1
     db.session.commit()
     return Response(json.dumps({
