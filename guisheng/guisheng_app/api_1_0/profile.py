@@ -1,5 +1,6 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
+from flask_login import current_user
 import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
         Collect,Like,Light,Comment,Suggestion
@@ -9,7 +10,7 @@ from .. import db
 @api.route('/profile/<int:id>/',methods=['GET'])
 def get_profile(id):
     user=User.query.get_or_404(id)
-    user_role = 1 if g.current_user.user_role==1 else 0
+    user_role = 1 if current_user.user_role==1 else 0
     return Response(json.dumps({
         "img_url":user.img_url,
         "bg_url":user.bg_url,
