@@ -7,7 +7,7 @@ from . import api
 from datetime import datetime,timedelta
 
 def get_time(comment_time):
-    nowtime = datetime.utcnow()
+    now_time = datetime.utcnow()
     today = datetime.date(now_time)
     comment_date = datetime.date(comment_time)
     if now_time.strftime('%Y') == comment_time.strftime('%Y'):
@@ -25,7 +25,6 @@ def get_time(comment_time):
 def get_comments():
     kind = request.args.get('kind')
     a_id = int(request.args.get('article_id'))
-    now_
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
