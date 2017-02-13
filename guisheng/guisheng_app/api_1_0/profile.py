@@ -101,4 +101,16 @@ def suggest():
             'status':200
             }),mimetype='application/json')
 
+@api.route('/profile/<int:id>/upload_pic/', methods=['GET','POST'])
+def upload_pic():
+    if request.method == 'POST':
+        file = request.files['file']
+        fname = [str(int(time.time())),file.filename.split('.',1)[1]]
+        upload_time ='.'.join(fname)
+        if file and ('.' in filename and filename.split('.',1)[1] in current_app.config['ALLOWED_EXTENSIONS']):
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],uploadtime))
+            pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],uploadtime)
+            return jsonify({
+                'pic_url':pic_url
+            })
 

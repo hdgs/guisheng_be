@@ -1,0 +1,35 @@
+#-------------------- guisheng ------------------------
+guisheng:
+    build: .
+    env_file:
+        - guisheng.env
+    command: python manage.py runserver
+    ports:
+        - "7777:7777"
+    links:
+        - redis1
+
+#------------------- celery ---------------------------
+celery:
+    build: .
+    env_file:
+        - guisheng.env
+    command: celery -a guisheng.workers.hottag.celery beat --loglevel=info
+    links:
+        - redis1
+
+#------------------- celery beats----------------------
+celery_beats:
+    build: .
+    env_file:
+        - guisheng.env
+    command: celery -A guisheng.workers.hottag.celery beat --loglevel=INFO
+    links:
+        - redis1
+
+#------------------ redis ----------------------------
+redis1:     #储存热门搜索
+    image: redis
+    command: redis-server --port 6380
+    ports:
+        - "7380:6380"

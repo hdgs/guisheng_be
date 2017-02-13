@@ -1,4 +1,4 @@
-# coding: utf-8
+#coding: utf-8
 
 # config
 
@@ -33,6 +33,8 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    UPLOAD_FOLDER = '/home/guisheng_pictures/'
+    ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
     CELERY_BROKER_URL = 'redis://localhost:6380/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'
     CELERYBEAT_SCHEDULE = {
