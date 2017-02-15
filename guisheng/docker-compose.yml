@@ -3,9 +3,9 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: python manage.py runserver
+    command: python wsgi.py runserver
     ports:
-        - "7777:7777"
+        - "8888:8888"
     links:
         - redis1
 

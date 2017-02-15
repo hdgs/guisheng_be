@@ -46,8 +46,8 @@ def main_page():
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name,
                 "views":_post.views,
-                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(content.id).tag[0].tag_id).body\
-                      if len([i for i in post_kind.query.get_or_404(content.id).tag]) else "",
+                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
+                      if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
                 "description":_post.description,
             } for _post in posts]
         ),mimetype='application/json')
