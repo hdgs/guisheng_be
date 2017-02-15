@@ -1,6 +1,6 @@
 from .. import rds
 from .. import app
-from .. import celery
+from .. import make_celery
 import os
 
 celery = make_celery(app)
