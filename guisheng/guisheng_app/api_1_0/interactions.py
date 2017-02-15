@@ -22,7 +22,9 @@ def get_interaction(id):
         "time":interaction.time.strftime('%Y-%m-%d'),
         "body":interaction.body,
         "like":[like_degree_one,like_degree_two,like_degree_three],
-        "editor":interaction.editor
+        "editor":interaction.editor,
+        "user_role":user_role,
+        "author_id":interaction.author_id
         }),mimetype='application/json')
 
 

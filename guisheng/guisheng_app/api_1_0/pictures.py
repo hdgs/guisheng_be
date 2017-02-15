@@ -79,7 +79,8 @@ def get_pic(id):
         "views":pic.views,
         "commentCount":pic.comments.filter_by(comment_id=-1).count(),
         "editor":pic.editor,
-        "user_role":user_role
+        "user_role":user_role,
+        "author_id":pic.author_id
     }),mimetype='application/json')
 
 @api.route('/pics/recommend/', methods=['GET','POST'])

@@ -89,7 +89,8 @@ def get_article(id):
             "film_url":article.film_url,
             },
         "editor":article.editor,
-        "user_role":user_role
+        "user_role":user_role,
+        "author_id":article.author_id
         }),mimetype='application/json')
 
 @api.route('/articles/recommend/',methods=['GET','POST'])

@@ -79,7 +79,8 @@ def get_news(id):
         "body":news.body,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "editor":news.editor,
-        "user_role":user_role
+        "user_role":user_role,
+        "author_id":news.author_id
         }),mimetype='application/json')
 
 
