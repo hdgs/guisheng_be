@@ -5,7 +5,8 @@ import os
 
 celery = make_celery(app)
 
-@celery.task(name='restart_hottags_redis')
-def restart_hottagss_redis():
+@celery.task(name='delete_hottags')
+def delete_hottags():
     rds.flushdb()
+    rds.set("hi",1)
     rds.save()

@@ -108,11 +108,13 @@ def recommend_articles():
     except:
         recommend_articles=[]
     return Response(json.dumps([{
-            "title":Article.query.filter_by(id=article_id).first().title,
-            "description":Article.query.filter_by(id=article_id).first().description,
-            "author":User.query.get_or_404(Article.query.filter_by(id=article_id).first().author_id).name,
+            "title":Article.query.get_or_404(article_id).title,
+            "description":Article.query.get_or_404(article_id).description,
+            "author":User.query.get_or_404(Article.query.get_or_404(article_id).author_id).name,
             "tag":tag.body,
-            "views":Article.query.filter_by(id=article_id).first().views
+            "views":Article.query.get_or_404(article_id).views,
+            "kind":Article.query.get_or_404(article_id).kind,
+            "article_id":Article.query.get_or_404(article_id).id
         }for article_id in recommend_articles]
     ),mimetype='application/json')
 

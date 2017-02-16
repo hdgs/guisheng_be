@@ -99,11 +99,13 @@ def recommend_news():
     except:
         recommend_news=[]
     return Response(json.dumps([{
-            "title":News.query.filter_by(id=news_id).first().title,
-            "description":News.query.filter_by(id=news_id).first().description,
-            "author":User.query.get_or_404(News.query.filter_by(id=news_id).first().author_id).name,
+            "title":News.query.get_or_404(news_id).title,
+            "description":News.query.get_or_404(news_id).description,
+            "author":User.query.get_or_404(News.query.get_or_404(news_id).author_id).name,
             "tag":tag.body,
-            "views":News.query.filter_by(id=news_id).first().views
+            "views":News.query.get_or_404(news_id).views,
+            "kind":News.query.get_or_404(news_id).kind,
+            "article_id":News.query.get_or_404(news_id).id
         }for news_id in recommend_news]
     ),mimetype='application/json')
 

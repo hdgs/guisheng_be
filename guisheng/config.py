@@ -39,7 +39,7 @@ class Config:
     CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
-        'task': 'restart_hottags_redis',
+        'task': 'delete_hottags',
         #'schedule': crontab(day_of_month='1')
         'schedule': timedelta(seconds=30)
         },

@@ -43,11 +43,13 @@ def recommend_interactions():
     except:
         recommend_interactions = []
     return Response(json.dumps([{
-            "title":Interaction.query.filter_by(id=interaction_id).first().title,
-            "description":Interaction.query.filter_by(id=interaction_id).first().description,
-            "author":User.query.get_or_404(Interaction.query.filter_by(id=interaction_id).first().author_id).name,
+            "title":Interaction.query.get_or_404(interaction_id).title,
+            "description":Interaction.query.get_or_404(interaction_id).description,
+            "author":User.query.get_or_404(Interaction.query.get_or_404(interaction_id).author_id).name,
             "tag":tag.body,
-            "views":Interaction.query.filter_by(id=interaction_id).first().views
+            "views":Interaction.query.get_or_404(interaction_id).views,
+            "kind":Interaction.query.get_or_404(interaction_id).kind,
+            "article_id":Interaction.query.get_or_404(interaction_id).id
         }for interaction_id in recommend_interactions]
     ),mimetype='application/json')
 

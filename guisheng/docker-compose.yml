@@ -14,7 +14,7 @@ celery:
     build: .
     env_file:
         - guisheng.env
-    command: celery -a guisheng_app.workers.hottag.celery beat --loglevel=info
+    command: celery worker -A guisheng_app.workers.hottag.celery --loglevel=info
     links:
         - redis1
 

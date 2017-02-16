@@ -103,6 +103,8 @@ def recommend_pics():
             "author":User.query.get_or_404(Picture.query.get_or_404(pic_id).author_id).name,
             "views":Picture.query.get_or_404(pic_id).views,
             "tag":tag.body,
+            "kind":Picture.query.get_or_404(pic_id).kind,
+            "article_id":Picture.query.get_or_404(pic_id).id
         } for pic_id in recommend_pics]
     ),mimetype='application/json')
 
