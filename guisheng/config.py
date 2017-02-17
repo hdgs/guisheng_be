@@ -35,8 +35,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = '/home/guisheng_pictures/'
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
-    CELERY_BROKER_URL = 'redis://localhost:6380/0'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'
+    CELERY_BROKER_URL = 'redis://127.0.0.1:6380/0'
+    CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6380/0'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'delete_hottags',
