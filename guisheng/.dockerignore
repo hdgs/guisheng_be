@@ -1,3 +1,6 @@
 .git
-
+venv/
+migrations/
 .dockerignore
+dump.rdb
+celerybeat.pid
