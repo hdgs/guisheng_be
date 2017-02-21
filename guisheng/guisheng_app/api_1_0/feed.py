@@ -25,7 +25,7 @@ def main_page():
             tolist.append(i)
         tolist.sort(key=attrgetter('time'),reverse=True)
         return Response(json.dumps([{
-                "kind":kind,
+                "kind":content.kind,
                 "article_id":content.id,
                 "img_url":content.img_url[0],
                 "title":content.title,
