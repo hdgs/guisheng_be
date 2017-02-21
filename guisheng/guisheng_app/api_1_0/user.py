@@ -7,7 +7,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from guisheng_app.models import User
 from guisheng_app.decorators import admin_required
 
-@api.route('/register',methods=['GET','POST'])
+@api.route('/register/',methods=['GET','POST'])
 @admin_required
 def register():
     if request.method == 'POST':
@@ -24,7 +24,7 @@ def register():
                 "created":user_id,
             })
 
-@api.route('/login', methods=['GET', 'POST'])
+@api.route('/login/', methods=['GET', 'POST'])
 def login():
     email = request.get_json().get("email")
     password = request.get_json().get("password")
