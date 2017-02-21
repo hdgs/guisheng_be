@@ -39,7 +39,7 @@ class Config:
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'delete_hottags',
-        'schedule': timedelta(seconds=30)
+        'schedule': timedelta(seconds=2592000)
         },
     }
 
