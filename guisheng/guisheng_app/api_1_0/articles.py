@@ -93,7 +93,7 @@ def get_article(id):
         "author_id":article.author_id
         }),mimetype='application/json')
 
-@api.route('/articles/recommend/',methods=['GET','POST'])
+@api.route('/article/recommend/',methods=['GET','POST'])
 def recommend_articles():
     a_id = int(request.get_json().get('article_id'))
     now_a = Article.query.get_or_404(a_id)

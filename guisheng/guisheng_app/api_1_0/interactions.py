@@ -28,7 +28,7 @@ def get_interaction(id):
         }),mimetype='application/json')
 
 
-@api.route('/interactions/recommend/',methods=['GET','POST'])
+@api.route('/interaction/recommend/',methods=['GET','POST'])
 def recommend_interactions():
     interact_id = int(request.get_json().get('article_id'))
     now_interact = Interaction.query.get_or_404(interact_id)
