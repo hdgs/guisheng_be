@@ -4,7 +4,6 @@
 
 # project base path
 import os
-from celery.schedules import crontab
 from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -35,12 +34,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = '/home/guisheng_pictures/'
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
-    CELERY_BROKER_URL = 'redis://127.0.0.1:6380/0'
-    CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6380/0'
+    CELERY_BROKER_URL = 'redis://120.24.4.254:6380/0'
+    CELERY_RESULT_BACKEND = 'redis://120.24.4.254:6380/0'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'delete_hottags',
-        #'schedule': crontab(day_of_month='1')
         'schedule': timedelta(seconds=30)
         },
     }

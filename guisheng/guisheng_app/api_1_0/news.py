@@ -62,6 +62,10 @@ def update_tags(news):
             db.session.delete(post_tag)
             db.session.commit()
 
+@api.route('/',methods=['GET'])
+def index():
+	return "hi"
+
 @api.route('/news/<int:id>/', methods=['GET'])
 def get_news(id):
     news = News.query.get_or_404(id)

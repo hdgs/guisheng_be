@@ -3,9 +3,9 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: python wsgi.py runserver
+    command: uwsgi --http 0.0.0.0:5432 --wsgi-file wsgi.py --callable app --processes 1 --threads 2
     ports:
-        - "8888:8888"
+        - "5432:5432"
     links:
         - redis1
 
@@ -14,7 +14,7 @@ celery:
     build: .
     env_file:
         - guisheng.env
-    command: celery worker -A guisheng_app.workers.hottag.celery --loglevel=info
+    command: celery worker -A guisheng_app.workers.hottag.celery --loglevel=INFO
     links:
         - redis1
 
@@ -32,4 +32,4 @@ redis1:     #储存热门搜索
     image: redis
     command: redis-server --port 6380
     ports:
-        - "7380:6380"
+        - "6380:6380"
