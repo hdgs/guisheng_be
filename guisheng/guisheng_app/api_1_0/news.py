@@ -16,14 +16,10 @@ def add_tags(news, tags, update):
     # add tag
     for tag in tags:
         tag_in_db = Tag.query.filter_by(body=tag).first()
-        if tag_in_db:
-            if (not update):
-                tag_in_db.count += 1
-                db.session.add(tag_in_db)
-        else:
-            add_tag = Tag(body=tag, count=1)
+        if not tag_in_db:
+            add_tag = Tag(body=tag)
             db.session.add(add_tag)
-        db.session.commit()
+            db.session.commit()
     # add course & tag
     for tag in tags:
         get_tag = Tag.query.filter_by(body=tag).first()
@@ -62,9 +58,6 @@ def update_tags(news):
             db.session.delete(post_tag)
             db.session.commit()
 
-@api.route('/',methods=['GET'])
-def index():
-	return "hi"
 
 @api.route('/news/<int:id>/', methods=['GET'])
 def get_news(id):
@@ -84,7 +77,19 @@ def get_news(id):
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "editor":news.editor,
         "user_role":user_role,
-        "author_id":news.author_id
+        "author_id":news.author_id,
+	"commentCount":news.comments.count(),
+        "music":{
+                "title":"",
+                "music_img_url":"",
+                "music_url":"",
+                "singer":""
+        },
+        "film":{
+               "film_url":"",
+               "scores":"",
+               "film_img_url":""
+        }
         }),mimetype='application/json')
 
 

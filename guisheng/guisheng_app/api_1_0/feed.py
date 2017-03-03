@@ -33,7 +33,7 @@ def main_page():
                 "views":content.views,
                 "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
                       if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
-                "description":content.description,
+                "description":content.description
                 } for content in tolist[:count-1]]
         ),mimetype='application/json')
     else:
@@ -48,7 +48,7 @@ def main_page():
                 "views":_post.views,
                 "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
                       if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
-                "description":_post.description,
+                "description":_post.description
             } for _post in posts]
         ),mimetype='application/json')
 
@@ -56,7 +56,6 @@ def main_page():
 @api.route('/feed/', methods=['GET','POST'])
 def search():
     if request.method == 'POST':
-        count = int(request.args.get('count'))
         content = request.get_json().get("content")
         #存储热门标签
         if Tag.query.filter_by(body=content).first():
@@ -64,6 +63,7 @@ def search():
                 rds.set(content, 1)
             else:
                 rds.incr(content)
+        rds.save()
         #返回搜索结果
         alist = []
         for n in News.query.whoosh_search(content):
@@ -91,8 +91,8 @@ def search():
                 "views":post.views,
                 "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([i for i in post.tag]) else "",
                 "description":post.description,
-                "time":post.time.strftime('%Y/%m/%d %H:%M'),
-                } for post in alist[:count-1]]
+                "time":post.time.strftime('%Y/%m/%d %H:%M')
+                } for post in alist[:9]]
         ),mimetype='application/json')
 
 
@@ -102,4 +102,4 @@ def get_hottag():
     hot_tags = sorted(tags, key=lambda w: int(rds.get(w)), reverse=True)[:10]
     return Response(json.dumps({
         "hot_tag":hot_tags
-    }))
+    }),mimetype='application/json')

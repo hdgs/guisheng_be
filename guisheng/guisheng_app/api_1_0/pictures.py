@@ -69,6 +69,8 @@ def get_pic(id):
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
+        
+        "id":pic.id,
         "kind":2,
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,

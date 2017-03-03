@@ -3,10 +3,11 @@ from flask import render_template,jsonify,Response,g,request
 import json
 from ..models import Light
 from . import api
+from guisheng_app import db
 
 @api.route('/light/',methods=['GET','POST'])
 def light():
-    if requset.method == 'POST':
+    if request.method == 'POST':
         light = Light()
         light.like_degree = int(request.get_json().get("like_degree"))
         kind = int(request.get_json().get("kind"))

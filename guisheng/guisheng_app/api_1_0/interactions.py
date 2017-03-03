@@ -24,7 +24,18 @@ def get_interaction(id):
         "like":[like_degree_one,like_degree_two,like_degree_three],
         "editor":interaction.editor,
         "user_role":user_role,
-        "author_id":interaction.author_id
+        "author_id":interaction.author_id,
+        "music":{
+                "title":"",
+                "music_img_url":"",
+                "music_url":"",
+                "singer":""
+        },
+        "film":{
+               "film_url":"",
+               "scores":"",
+               "film_img_url":""
+        }
         }),mimetype='application/json')
 
 

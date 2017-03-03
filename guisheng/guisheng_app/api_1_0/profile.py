@@ -1,16 +1,22 @@
 # coding: utf-8
-from flask import render_template,jsonify,Response,g,request
+from flask import render_template,jsonify,Response,g,request,current_app,send_from_directory
 from flask_login import current_user
 import json
 from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
-        Collect,Like,Light,Comment,Suggestion
+        Collect,Like,Light,Comment,Suggestion,Tag
 from . import api
 from .. import db
+import os
+from operator import attrgetter
+import time
 
 @api.route('/profile/<int:id>/',methods=['GET'])
 def get_profile(id):
     user=User.query.get_or_404(id)
-    user_role = 1 if current_user.user_role==1 else 0
+    try:
+    	user_role = 1 if current_user.user_role==1 else 0
+    except:
+        user_role = 0
     return Response(json.dumps({
         "img_url":user.img_url,
         "bg_url":user.bg_url,
@@ -91,7 +97,7 @@ def get_collections(id):
 
 
 @api.route('/profile/<int:id>/suggestions/',methods=['GET','POST'])
-def suggest():
+def suggest(id):
     if request.method == 'POST':
         suggestion = Suggestion()
         suggestion.body = request.get_json().get("body")
@@ -102,16 +108,23 @@ def suggest():
             'status':200
             }),mimetype='application/json')
 
-@api.route('/profile/<int:id>/upload_pic/', methods=['GET','POST'])
-def upload_pic():
+@api.route('/profile/<int:id>/edit/upload_pic/', methods=['GET','POST'])
+def upload_pic(id):
     if request.method == 'POST':
         file = request.files['file']
-        fname = [str(int(time.time())),file.filename.split('.',1)[1]]
-        upload_time ='.'.join(fname)
-        if file and ('.' in filename and filename.split('.',1)[1] in current_app.config['ALLOWED_EXTENSIONS']):
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],uploadtime))
-            pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],uploadtime)
-            return jsonify({
+        fname = '.'.join([str(int(time.time())),file.filename.split('.',1)[1]])
+        if file:#and ('.' in filename and filename.split('.',1)[1] in current_app.config['ALLOWED_EXTENSIONS']):
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],fname))
+            #file.save('guisheng/pics/a.jpg')
+            pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],fname)
+            print pic_url
+            print fname
+            print current_app.config['UPLOAD_FOLDER']
+            return Response(json.dumps({
                 'pic_url':pic_url
-            })
+            }),mimetype='application/json')
+
+@api.route('/guisheng/pics/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'],filename)
 

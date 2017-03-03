@@ -5,6 +5,7 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
         Collect,Like,Light,Comment
 from . import api
 from datetime import datetime,timedelta
+from guisheng_app import db
 
 def get_time(comment_time):
     now_time = datetime.utcnow()
@@ -23,8 +24,8 @@ def get_time(comment_time):
 
 @api.route('/comments/',methods=['GET'])
 def get_comments():
-    kind = request.args.get('kind')
-    a_id = int(request.args.get('article_id'))
+    kind = int(request.args.get("kind"))
+    a_id = int(request.args.get("article_id"))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
@@ -38,14 +39,20 @@ def get_comments():
         comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).all()
     return Response(json.dumps([{
+            "name":(User.query.get_or_404(comment.author_id)).name,
             "article_id":a_id,
+            "comment_id":comment.id,
             "img_url":(User.query.get_or_404(comment.author_id)).img_url,
             "message":comment.body,
+            "user_role":(User.query.get_or_404(comment.author_id)).user_role,
             "comments":[{
+                "name":(User.query.get_or_404(comment.author_id)).name,
                 "article_id":a_id,
+                "comment_id":response.id,
                 "img_url":(User.query.get_or_404(response.author_id)).img_url,
                 "message":response.body,
-               "likes":response.like.count(),
+                "user_role":(User.query.get_or_404(comment.author_id)).user_role,
+                "likes":response.like.count(),
                 }for response in responses],
             "likes":comment.like.count(),
             "time":get_time(comment.time),

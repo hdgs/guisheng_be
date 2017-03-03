@@ -32,10 +32,12 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    UPLOAD_FOLDER = '/home/guisheng_pictures/'
+    UPLOAD_FOLDER = os.path.join(basedir,"pics")
+    #UPLOAD_FOLDER = "/guisheng/pics"
+    #UPLOAD_FOLDER = "pics"
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
-    CELERY_BROKER_URL = 'redis://120.24.4.254:6380/0'
-    CELERY_RESULT_BACKEND = 'redis://120.24.4.254:6380/0'
+    CELERY_BROKER_URL = 'redis://redis2:6381/1'
+    CELERY_RESULT_BACKEND = 'redis://redis2:6381/1'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'delete_hottags',

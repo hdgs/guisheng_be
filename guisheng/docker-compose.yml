@@ -3,11 +3,12 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: uwsgi --http 0.0.0.0:5432 --wsgi-file wsgi.py --callable app --processes 1 --threads 2
+    command: uwsgi --http 0.0.0.0:5432 --wsgi-file wsgi.py --callable app --processes 2 --threads 2
     ports:
         - "5432:5432"
     links:
         - redis1
+        - redis2
 
 #------------------- celery ---------------------------
 celery:
@@ -17,6 +18,7 @@ celery:
     command: celery worker -A guisheng_app.workers.hottag.celery --loglevel=INFO
     links:
         - redis1
+        - redis2
 
 #------------------- celery beats----------------------
 celery_beats:
@@ -26,6 +28,7 @@ celery_beats:
     command: celery -A guisheng_app.workers.hottag.celery beat --loglevel=INFO
     links:
         - redis1
+        - redis2
 
 #------------------ redis ----------------------------
 redis1:     #储存热门搜索
@@ -33,3 +36,9 @@ redis1:     #储存热门搜索
     command: redis-server --port 6380
     ports:
         - "6380:6380"
+
+redis2:     # celery/celery-beat
+    image: redis
+    command: redis-server --port 6381
+    ports:
+        - "6381:6381"
