@@ -65,7 +65,7 @@ def recommend_interactions():
     ),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------
-@api.route('/interaction/',methods=['POST'])
+@api.route('/interaction/',methods=['GET','POST'])
 def add_interaction():
     if request.method == 'POST':
         interaction = Interaction.from_json(request.get_json())
@@ -80,11 +80,38 @@ def add_interaction():
             get_tag = Tag.query.filter_by(body=tag).first()
             interaction_tags = [t.tag_id for t in interaction.tag.all()]
             if get_tag.id not in interaction_tags:
-                post_tag = PostTag(tag_id=get_tag.id,interaction_id=interaction.id)
+                post_tag = PostTag(interaction_tags=get_tag,interactions=interaction)
                 db.session.add(post_tag)
                 db.session.commit()
         return jsonify({
             'id':interaction.id
         }), 201
 
+@api.route('/interaction/<int:id>/',methods=['GET','PUT'])
+def update_interaction(id):
+    interaction = Interaction.query.get_or_404(id)
+    if request.method == 'PUT':
+        interaction.title = request.get_json().get('title')
+        interaction.img_url = request.get_json().get('img_url')
+        interaction.author = User.query.get_or_404(request.get_json().get('author_id'))
+        interaction.description = request.get_json().get('description')
+        db.session.add(interaction)
+        db.session.commit()
+
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            interaction_tags = [t.tag_id for t in interaction.tag.all()]
+            if get_tag.id not in interaction_tags:
+                post_tag = PostTag(interaction_tags=get_tag,interactions=interaction)
+                db.session.add(post_tag)
+                db.session.commit()
+
+#        tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
+#        interaction_tag_ids = [t.tag_id for t in interaction.tag.all()]
+#        for interaction_tag_id in interaction_tag_ids:
 
