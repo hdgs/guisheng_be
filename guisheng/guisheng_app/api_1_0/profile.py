@@ -117,7 +117,7 @@ def upload_pic(id):
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],fname))
             pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],fname)
             return jsonify({
-                'pic_url':request.form
+                'pic_url':pic_url
             })
 
 @api.route('/guisheng/pics/<filename>')
