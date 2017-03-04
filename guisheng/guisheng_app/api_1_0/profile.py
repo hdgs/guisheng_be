@@ -112,17 +112,13 @@ def suggest(id):
 def upload_pic(id):
     if request.method == 'POST':
         file = request.files['file']
-        fname = '.'.join([str(int(time.time())),file.filename.split('.',1)[1]])
         if file:#and ('.' in filename and filename.split('.',1)[1] in current_app.config['ALLOWED_EXTENSIONS']):
+            fname = '.'.join([str(int(time.time())),file.filename.split('.',1)[1]])
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],fname))
-            #file.save('guisheng/pics/a.jpg')
             pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],fname)
-            print pic_url
-            print fname
-            print current_app.config['UPLOAD_FOLDER']
-            return Response(json.dumps({
-                'pic_url':pic_url
-            }),mimetype='application/json')
+            return jsonify({
+                'pic_url':request.form
+            })
 
 @api.route('/guisheng/pics/<filename>')
 def uploaded_file(filename):
