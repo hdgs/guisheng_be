@@ -64,4 +64,27 @@ def recommend_interactions():
         }for interaction_id in recommend_interactions]
     ),mimetype='application/json')
 
+#-----------------------------------后台管理API---------------------------------------
+@api.route('/interaction/',methods=['POST'])
+def add_interaction():
+    if request.method == 'POST':
+        interaction = Interaction.from_json(request.get_json())
+        db.session.add(interaction)
+        db.session.commit()
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            interaction_tags = [t.tag_id for t in interaction.tag.all()]
+            if get_tag.id not in interaction_tags:
+                post_tag = PostTag(tag_id=get_tag.id,interaction_id=interaction.id)
+                db.session.add(post_tag)
+                db.session.commit()
+        return jsonify({
+            'id':interaction.id
+        }), 201
+
 

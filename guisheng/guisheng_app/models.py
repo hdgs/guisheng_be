@@ -378,7 +378,7 @@ class Interaction(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164), default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    views = db.Column(db.Integer)
+    views = db.Column(db.Integer,default=0)
     comments = db.relationship('Comment',backref='interaction', lazy='dynamic')
     light = db.relationship('Light',backref='interaction', lazy='dynamic')
     collect = db.relationship('Collect',backref='interaction', lazy='dynamic')
@@ -390,6 +390,15 @@ class Interaction(db.Model):
     editor = db.Column(db.String(64),default="")
     kind = 4
     published = db.Column(db.Integer,default=0)
+
+    @staticmethod
+    def from_json(json_interaction):
+        u = User.query.get_or_404(json_interaction.get('author_id'))
+        title = json_interaction.get('title')
+        img_url = json_interaction.get('img_url')
+        description = json_interaction.get('description')
+        return Interaction(title=title, author=u,
+                           img_url=img_url, description=description)
 
     @staticmethod
     def generate_fake(count=100):
