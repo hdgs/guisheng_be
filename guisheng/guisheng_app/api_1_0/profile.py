@@ -19,7 +19,6 @@ def get_profile(id):
         user_role = 0
     return Response(json.dumps({
         "img_url":user.img_url,
-        "bg_url":user.bg_url,
         "name":user.name,
         "weibo":user.weibo,
         "introduction":user.introduction,
@@ -33,15 +32,20 @@ def edit_profile(id):
     if request.method == 'PUT':
         user = User.query.get_or_404(id)
         user.img_url = request.get_json().get("img_url")
-        user.bg_url = request.get_json().get("bg_url")
         user.name = request.get_json().get("name")
         user.weibo = request.get_json().get("weibo")
-        user.ntroduction = request.get_json().get("introduction")
+        user.introduction = request.get_json().get("introduction")
         db.session.add(user)
         db.session.commit()
+        try:
+            user_role = 1 if current_user.user_role==1 else 0
+        except:
+            user_role = 0
         return Response(json.dumps({
+            "user_id":user.id,
+            "role":user.user_role,
+            "user_role":user_role,
             "img_url":user.img_url,
-            "bg_url":user.bg_url,
             "name":user.name,
             "weibo":user.weibo,
             "introduction":user.introduction,
@@ -97,15 +101,16 @@ def get_collections(id):
 
 
 @api.route('/profile/<int:id>/suggestions/',methods=['GET','POST'])
-def suggest(id):
+def suggeston(id):
     if request.method == 'POST':
-        suggestion = Suggestion()
-        suggestion.body = request.get_json().get("body")
-        suggestion.contact_information = request.get_json().get("contact_information")
-        db.session.add(suggestion)
+        s = Suggestion()
+        s.body = request.get_json().get("body")
+        s.contact_information = request.get_json().get("contact_information")
+        db.session.add(s)
         db.session.commit()
         return Response(json.dumps({
-            'status':200
+            'status':200,
+            's_id':s.id
             }),mimetype='application/json')
 
 @api.route('/profile/<int:id>/edit/upload_pic/', methods=['GET','POST'])
@@ -119,8 +124,4 @@ def upload_pic(id):
             return jsonify({
                 'pic_url':pic_url
             })
-
-@api.route('/guisheng/pics/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'],filename)
 

@@ -33,8 +33,6 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = os.path.join(basedir,"pics")
-    #UPLOAD_FOLDER = "/guisheng/pics"
-    #UPLOAD_FOLDER = "pics"
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
     CELERY_BROKER_URL = 'redis://redis2:6381/1'
     CELERY_RESULT_BACKEND = 'redis://redis2:6381/1'
