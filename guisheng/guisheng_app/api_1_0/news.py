@@ -67,90 +67,68 @@ def recommend_news():
     ),mimetype='application/json')
 
 #----------------------------后台管理API---------------------------------
-def add_tags(news, tags, update):
-    """
-    判断
-        向数据库中添加tag实例
-        向数据库中添加tag和news关系
-    """
-    # add tag
-    for tag in tags:
-        tag_in_db = Tag.query.filter_by(body=tag).first()
-        if not tag_in_db:
-            add_tag = Tag(body=tag)
-            db.session.add(add_tag)
-            db.session.commit()
-    # add course & tag
-    for tag in tags:
-        get_tag = Tag.query.filter_by(body=tag).first()
-        post_tags = [t.tag_id for t in news.tag.all()]
-        if get_tag.id in post_tags:
-            if (not update):
-                post_tag = PostTag.query.filter_by(
-                    tag_id=get_tag.id, news_id=news.id,
-                ).first()
-                post_tag.count += 1
-                db.session.add(post_tag)
-        else:
-            post_tag = PostTag(
-                tag_id=get_tag.id, news_id=news.id, count=1
-            )
-            db.session.add(post_tag)
-        db.session.commit()
-
-def update_tags(news):
-    """
-        向数据库中更新tag实例
-        向数据库中更新tag和news关系
-    """
-    tags = request.json.get("tags").split()
-    tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
-    post_tag_ids = [t.tag_id for t in news.tag.all()]
-    # update tag && postTag
-    for post_tag_id in post_tag_ids:
-        if  post_tag_id not in tags_id:
-            tag = Tag.query.filter_by(id=post_tag_id).first()
-            tag.count -= 1
-            db.session.add(tag)
-            post_tag = PostTag.query.filter_by(
-                tag_id=post_tag_id, news_id=news.id,
-            ).first()
-            db.session.delete(post_tag)
-            db.session.commit()
-
 @api.route('/news/', methods=["GET", "POST"])
-@admin_required
+#@admin_required
 def add_news():
     if request.method == "POST":
         news = News.from_json(request.get_json())
         db.session.add(news)
         db.session.commit()
-        add_tags(news, request.json.get("tags").split(), False)
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            news_tags = [t.tag_id for t in news.tag.all()]
+            if get_tag.id not in news_tags:
+                post_tag = PostTag(news_tags=get_tag,news=news)
+                db.session.add(post_tag)
+                db.session.commit()
         return jsonify({
             'id': news.id
         }), 201
 
 @api.route('/news/<int:id>/', methods=["GET", "PUT"])
-@admin_required
+#@admin_required
 def update_news(id):
     news = News.query.get_or_404(id)
-    json = request.get_json()
     if request.method == "PUT":
-        news.title = json.get('title')
-        news.img_url = json.get('img_url')
-        news.author = json.get('author')
-        news.description = json.get('description')
-        news.author =  User.query.get_or_404(json.get('author_id'))
+        news.title = request.get_json().get('title')
+        news.img_url = request.get_json().get('img_url')
+        news.description = request.get_json().get('description')
+        news.author =  User.query.get_or_404(request.get_json().get('author_id'))
         db.session.add(news)
         db.session.commit()
-        add_tags(news, request.json.get("tags").split(), True)
-        update_tags(news)
+
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            news_tags = [t.tag_id for t in news.tag.all()]
+            if get_tag.id not in news_tags:
+                post_tag = PostTag(news_tags=get_tag,news=news)
+                db.session.add(post_tag)
+                db.session.commit()
+
+        tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
+        news_tag_ids = [t.tag_id for t in news.tag.all()]
+        for news_tag_id in news_tag_ids:
+            if  news_tag_id not in tags_id:
+                n_tag = Tag.query.get_or_404(news_tag_id)
+                post_tag = PostTag.query.filter_by(news_tags=n_tag,news=news)
+                db.session.delete(post_tag)
+                db.session.commit()
         return jsonify({
             'update': news.id
         }), 200
 
 @api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
-@admin_required
+#@admin_required
 def update_news_body(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
@@ -162,7 +140,7 @@ def update_news_body(id):
         }), 200
 
 @api.route('/news/<int:id>/', methods=["GET", "DELETE"])
-@admin_required
+#@admin_required
 def delete_news(id):
     news = News.query.get_or_404(id)
     if request.method == "DELETE":
