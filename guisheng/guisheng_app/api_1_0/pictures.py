@@ -7,61 +7,6 @@ from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
-def add_tags(pics, tags, update):
-    """
-    判断
-        向数据库中添加tag实例
-        向数据库中添加tag和pics关系
-    """
-    # add tag
-    for tag in tags:
-        tag_in_db = Tag.query.filter_by(body=tag).first()
-        if tag_in_db:
-            if (not update):
-                tag_in_db.count += 1
-                db.session.add(tag_in_db)
-        else:
-            add_tag = Tag(body=tag, count=1)
-            db.session.add(add_tag)
-        db.session.commit()
-    # add course & tag
-    for tag in tags:
-        get_tag = Tag.query.filter_by(body=tag).first()
-        post_tags = [t.tag_id for t in pics.tag.all()]
-        if get_tag.id in post_tags:
-            if (not update):
-                post_tag = PostTag.query.filter_by(
-                    tag_id=get_tag.id, picture_id=pics.id,
-                ).first()
-                post_tag.count += 1
-                db.session.add(post_tag)
-        else:
-            post_tag = PostTag(
-                tag_id=get_tag.id, picture_id=pics.id, count=1
-            )
-            db.session.add(post_tag)
-        db.session.commit()
-
-def update_tags(pics):
-    """
-        向数据库中更新tag实例
-        向数据库中更新tag和pics关系
-    """
-    tags = request.json.get("tags").split()
-    tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
-    post_tag_ids = [t.tag_id for t in pics.tag.all()]
-    # update tag && postTag
-    for post_tag_id in post_tag_ids:
-        if  post_tag_id not in tags_id:
-            tag = Tag.query.filter_by(id=post_tag_id).first()
-            tag.count -= 1
-            db.session.add(tag)
-            post_tag = PostTag.query.filter_by(
-                tag_id=post_tag_id, picture_id=pics.id,
-            ).first()
-            db.session.delete(post_tag)
-            db.session.commit()
-
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
@@ -69,7 +14,6 @@ def get_pic(id):
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
-        
         "id":pic.id,
         "kind":2,
         "title":pic.title,
@@ -110,39 +54,69 @@ def recommend_pics():
         } for pic_id in recommend_pics]
     ),mimetype='application/json')
 
-@api.route('/pics/', methods=['GET','POST'])
-@admin_required
+#-----------------------------------后台管理API---------------------------------------
+@api.route('/pics/',methods=['GET','POST'])
+#@admin_required
 def add_pics():
-    if request.method == "POST":
+    if request.method == 'POST':
         pics = Picture.from_json(request.get_json())
         db.session.add(pics)
         db.session.commit()
-        add_tags(pics, request.json.get("tags").split(), False)
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            pics_tags = [t.tag_id for t in pics.tag.all()]
+            if get_tag.id not in pics_tags:
+                post_tag = PostTag(picture_tags=get_tag,pictures=pics)
+                db.session.add(post_tag)
+                db.session.commit()
         return jsonify({
-            'id': pics.id
+            'id':pics.id
         }), 201
 
-@api.route('/pics/<int:id>/', methods=["GET", "PUT"])
-@admin_required
+@api.route('/pics/<int:id>/',methods=['GET','PUT'])
+#@admin_required
 def update_pics(id):
     pics = Picture.query.get_or_404(id)
-    json = request.get_json()
-    if request.method == "PUT":
-        pics.title = json.get('title')
-        pics.img_url = json.get('img_url')
-        pics.author = json.get('author')
-        pics.introduction = json.get('introduction')
-        pics.author =  User.query.get_or_404(json.get('author_id'))
+    if request.method == 'PUT':
+        pics.title = request.get_json().get('title')
+        pics.img_url = request.get_json().get('img_url')
+        pics.introduction = request.get_json().get('introduction')
+        pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
         db.session.add(pics)
         db.session.commit()
-        add_tags(pics, request.json.get("tags").split(), True)
-        update_tags(pics)
+
+        tags = request.get_json().get('tags').split()
+        for tag in tags:
+            if not Tag.query.filter_by(body=tag).first():
+                t = Tag(body=tag)
+                db.session.add(t)
+                db.session.commit()
+            get_tag = Tag.query.filter_by(body=tag).first()
+            pics_tags = [t.tag_id for t in pics.tag.all()]
+            if get_tag.id not in pics_tags:
+                post_tag = PostTag(pics_tags=get_tag,pictures=pics)
+                db.session.add(post_tag)
+                db.session.commit()
+
+        tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
+        pics_tag_ids = [t.tag_id for t in pics.tag.all()]
+        for pics_tag_id in pics_tag_ids:
+            if  pics_tag_id not in tags_id:
+                p_tag = Tag.query.get_or_404(pics_tag_id)
+                post_tag = PostTag.query.filter_by(picture_tags=p_tag,pictures=pics)
+                db.session.delete(post_tag)
+                db.session.commit()
         return jsonify({
             'update': pics.id
-        }), 200
+        }),200
 
 @api.route('/pics/<int:id>/', methods=["GET", "DELETE"])
-@admin_required
+#@admin_required
 def delete_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == "DELETE":

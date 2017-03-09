@@ -65,6 +65,7 @@ def recommend_articles():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/article/',methods=['GET','POST'])
+#@admin_required
 def add_article():
     if request.method == 'POST':
         article = Article.from_json(request.get_json())
@@ -87,6 +88,7 @@ def add_article():
         }), 201
 
 @api.route('/article/<int:id>/',methods=['GET','PUT'])
+#@admin_required
 def update_article(id):
     article = Article.query.get_or_404(id)
     if request.method == 'PUT':
@@ -129,6 +131,7 @@ def update_article(id):
         }),200
 
 @api.route('/article/<int:id>/body/', methods=["GET", "PUT"])
+#@admin_required
 def update_article_body(id):
     article = Article.query.get_or_404(id)
     if request.method == "PUT":
@@ -140,6 +143,7 @@ def update_article_body(id):
         }), 200
 
 @api.route('/article/<int:id>/', methods=["GET", "DELETE"])
+#@admin_required
 def delete_article(id):
     article = Article.query.get_or_404(id)
     if request.method == "DELETE":

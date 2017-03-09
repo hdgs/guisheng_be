@@ -66,6 +66,7 @@ def recommend_interactions():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/interaction/',methods=['GET','POST'])
+#@admin_required
 def add_interaction():
     if request.method == 'POST':
         interaction = Interaction.from_json(request.get_json())
@@ -88,6 +89,7 @@ def add_interaction():
         }), 201
 
 @api.route('/interaction/<int:id>/',methods=['GET','PUT'])
+#@admin_required
 def update_interaction(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == 'PUT':
@@ -124,6 +126,7 @@ def update_interaction(id):
         }),200
 
 @api.route('/interaction/<int:id>/body/', methods=["GET", "PUT"])
+#@admin_required
 def update_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == "PUT":
@@ -135,6 +138,7 @@ def update_interaction_body(id):
         }), 200
 
 @api.route('/interaction/<int:id>/', methods=["GET", "DELETE"])
+#@admin_required
 def delete_interaction(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == "DELETE":
