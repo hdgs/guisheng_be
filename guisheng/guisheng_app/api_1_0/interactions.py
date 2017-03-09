@@ -122,3 +122,24 @@ def update_interaction(id):
         return jsonify({
             'update': interaction.id
         }),200
+
+@api.route('/interaction/<int:id>/body/', methods=["GET", "PUT"])
+def update_interaction_body(id):
+    interaction = Interaction.query.get_or_404(id)
+    if request.method == "PUT":
+        interaction.body = request.get_json().get('body')
+        db.session.add(interaction)
+        db.session.commit()
+        return jsonify({
+            'update': interaction.id
+        }), 200
+
+@api.route('/interaction/<int:id>/', methods=["GET", "DELETE"])
+def delete_interaction(id):
+    interaction = Interaction.query.get_or_404(id)
+    if request.method == "DELETE":
+        db.session.delete(interaction)
+        db.session.commit()
+        return jsonify({
+            'deleted': interaction.id
+        }), 200
