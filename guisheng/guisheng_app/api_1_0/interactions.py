@@ -111,7 +111,14 @@ def update_interaction(id):
                 db.session.add(post_tag)
                 db.session.commit()
 
-#        tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
-#        interaction_tag_ids = [t.tag_id for t in interaction.tag.all()]
-#        for interaction_tag_id in interaction_tag_ids:
-
+        tags_id = [Tag.query.filter_by(body=tag).first().id for tag in tags]
+        interaction_tag_ids = [t.tag_id for t in interaction.tag.all()]
+        for interaction_tag_id in interaction_tag_ids:
+            if  interaction_tag_id not in tags_id:
+                i_tag = Tag.query.get_or_404(interaction_tag_id)
+                post_tag = PostTag.query.filter_by(interaction_tags=i_tag,interactions=interaction)
+                db.session.delete(post_tag)
+                db.session.commit()
+        return jsonify({
+            'update': interaction.id
+        }),200
