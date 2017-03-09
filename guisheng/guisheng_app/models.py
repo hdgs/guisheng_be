@@ -224,6 +224,16 @@ class Everydaypic(db.Model):
     climate = db.Column(db.String(164))
     climate_url = db.Column(db.String(64))
     date = db.Column(db.String(164),default="")
+    time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+
+    @staticmethod
+    def from_json(json_everydaypic):
+        img_url = json_everydaypic.get('img_url')
+        climate_url = json_everydaypic.get('climate_url')
+        climate = json_everydaypic.get('climate')
+        date = json_everydaypic.get('date')
+        return Everydaypic(img_url=img_url,climate_url=climate_url,
+                           climate=climate,date=date)
 
     @staticmethod
     def generate_fake(count=100):
@@ -235,7 +245,8 @@ class Everydaypic(db.Model):
             e = Everydaypic(img_url=forgery_py.internet.email_address(),
                             climate = "sunny",
                             climate_url = forgery_py.internet.email_address(),
-                            date = forgery_py.date.date(True))
+                            date = forgery_py.date.date(True),
+                            time=forgery_py.date.date(True))
             db.session.add(e)
             db.session.commit()
 
