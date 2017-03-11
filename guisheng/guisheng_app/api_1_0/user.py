@@ -21,8 +21,8 @@ def register():
         db.session.commit()
         user_id=User.query.filter_by(email=email).first().id
         return jsonify({
-                "created":user_id,
-            })
+            "created":user_id,
+        })
 
 @api.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -40,4 +40,25 @@ def login():
         return jsonify({
             "uid":user.id,
             "token":token,
-            })
+        })
+
+#-----------------------------------后台管理API---------------------------------------
+@api.route('/role/author/<int:id>/', methods=['GET'])
+def change_to_author(id):
+    user = User.query.get_or_404(id)
+    user.user_role = 1
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({
+        "update":user.id,
+    )}
+
+@api.route('/role/user/<int:id>/', methods=['GET'])
+def change_to_common_user(id):
+    user = User.query.get_or_404(id)
+    user.user_role = 0
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({
+        "update":user.id,
+    )}

@@ -93,4 +93,15 @@ def get_comment_likes(id):
         "likes":likes,
         }),mimetype='application/json')
 
+#-----------------------------------后台管理API---------------------------------------
+@api.route('/comments/<int:id>/', methods=["GET","DELETE"])
+#@admin_required
+def delete_comment(id):
+    comment = Comment.query.get_or_404(id)
+    if request.method == "DELETE":
+        db.session.delete(comment)
+        db.session.commit()
+        return jsonify({
+            'deleted': comment.id
+        )}, 200
 

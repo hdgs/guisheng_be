@@ -48,7 +48,8 @@ def main_page():
                 "views":_post.views,
                 "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
                       if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
-                "description":_post.description
+                "description":_post.description,
+                "published":_post.published
             } for _post in posts]
         ),mimetype='application/json')
 
@@ -95,7 +96,6 @@ def search():
                 } for post in alist[:9]]
         ),mimetype='application/json')
 
-
 @api.route('/hottag/',methods=['GET'])
 def get_hottag():
     tags = rds.keys()
@@ -103,3 +103,4 @@ def get_hottag():
     return Response(json.dumps({
         "hot_tag":hot_tags
     }),mimetype='application/json')
+
