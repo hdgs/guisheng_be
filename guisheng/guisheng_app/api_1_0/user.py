@@ -51,7 +51,7 @@ def change_to_author(id):
     db.session.commit()
     return jsonify({
         "update":user.id,
-    )}
+        }),200
 
 @api.route('/role/user/<int:id>/', methods=['GET'])
 def change_to_common_user(id):
@@ -61,4 +61,4 @@ def change_to_common_user(id):
     db.session.commit()
     return jsonify({
         "update":user.id,
-    )}
+        }),200

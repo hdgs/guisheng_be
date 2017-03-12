@@ -103,5 +103,5 @@ def delete_comment(id):
         db.session.commit()
         return jsonify({
             'deleted': comment.id
-        )}, 200
+        }), 200
 
