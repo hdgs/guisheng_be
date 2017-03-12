@@ -34,7 +34,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = os.path.join(basedir,"pics")
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
-    CELERY_BROKER_URL = 'redis://redis2:6381/1'
+    CELERY_BROKER_URL = 'redis://redis1:6380/1'
     CELERY_RESULT_BACKEND = 'redis://redis2:6381/1'
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
