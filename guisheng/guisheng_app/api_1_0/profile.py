@@ -113,16 +113,4 @@ def suggeston(id):
             's_id':s.id
             }),mimetype='application/json')
 
-@api.route('/profile/<int:id>/edit/upload_pic/', methods=['GET','POST'])
-def upload_pic(id):
-    if request.method == 'POST':
-        file = request.files['file']
-        if file:#and ('.' in filename and filename.split('.',1)[1] in current_app.config['ALLOWED_EXTENSIONS']):
-            fname = '.'.join([str(int(time.time())),file.filename.split('.',1)[1]])
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],fname))
-            pic_url = os.path.join(current_app.config['UPLOAD_FOLDER'],fname)
-            return jsonify({
-                'pic_url':pic_url
-            })
 #-----------------------------------后台管理API---------------------------------------
-
