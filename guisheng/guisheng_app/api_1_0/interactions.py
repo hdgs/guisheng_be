@@ -81,7 +81,7 @@ def add_interaction():
             get_tag = Tag.query.filter_by(body=tag).first()
             interaction_tags = [t.tag_id for t in interaction.tag.all()]
             if get_tag.id not in interaction_tags:
-                post_tag = PostTag(interaction_tags=get_tag,interactions=interaction)
+                post_tag = PostTag(tag_id=get_tag.id,interaction_id=interaction.id)
                 db.session.add(post_tag)
                 db.session.commit()
         return jsonify({

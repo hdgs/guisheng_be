@@ -12,6 +12,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin, current_user
 from itsdangerous import JSONWebSignatureSerializer as Serializer
 from datetime import datetime
+from markdown import markdown
+import bleach
 
 # permissions
 class Permission:
@@ -184,6 +186,7 @@ class News(db.Model):
     editor = db.Column(db.String(64),default="")
     kind = 1
     published = db.Column(db.Integer,default=0)
+    body_html = db.Column(db.Text,default="")
 
     @staticmethod
     def from_json(json_news):
@@ -213,8 +216,21 @@ class News(db.Model):
             db.session.add(n)
             db.session.commit()
 
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+
     def __repr__(self):
         return "<News %r>" % self.id
+
+db.event.listen(News.body, 'set', News.on_changed_body)
+
 
 #每日一图
 class Everydaypic(db.Model):
@@ -332,7 +348,6 @@ class Article(db.Model):
     kind = 3
     published = db.Column(db.Integer,default=0)
 
-
     @staticmethod
     def from_json(json_article):
         u = User.query.get_or_404(json_article.get('author_id'))
@@ -378,9 +393,19 @@ class Article(db.Model):
             db.session.add(a)
             db.session.commit()
 
-    def __repr__(self):
-        return "<Post %r>" % self.id
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
 
+    def __repr__(self):
+        return "<Article %r>" % self.id
+
+db.event.listen(Article.body, 'set', Article.on_changed_body)
 
 #互动话题
 class Interaction(db.Model):
@@ -431,8 +456,22 @@ class Interaction(db.Model):
             db.session.add(t)
             db.session.commit()
 
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+
+
     def __repr__(self):
         return "<Interaction %r>" % self.id
+
+db.event.listen(Interaction.body, 'set', Interaction.on_changed_body)
 
 #评论
 class Comment(db.Model):
@@ -576,16 +615,12 @@ class Like(db.Model):
 
 class PostTag(db.Model):
     __tablename__ = 'posttags'
-    tag_id = db.Column(db.Integer,db.ForeignKey('tags.id', ondelete="CASCADE"),
-                       primary_key=True)
-    news_id = db.Column(db.Integer,db.ForeignKey('news.id',ondelete="CASCADE"),
-                        primary_key=True,default=0)
-    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"),
-                           primary_key=True,default=0)
-    picture_id = db.Column(db.Integer,db.ForeignKey('pictures.id',ondelete="CASCADE"),
-                           primary_key=True,default=0)
-    interaction_id = db.Column(db.Integer,db.ForeignKey('interactions.id',ondelete="CASCADE"),
-                               primary_key=True,default=0)
+    id = db.Column(db.Integer, primary_key=True)
+    tag_id = db.Column(db.Integer,db.ForeignKey('tags.id', ondelete="CASCADE"))
+    news_id = db.Column(db.Integer,db.ForeignKey('news.id',ondelete="CASCADE"))
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"))
+    picture_id = db.Column(db.Integer,db.ForeignKey('pictures.id',ondelete="CASCADE"))
+    interaction_id = db.Column(db.Integer,db.ForeignKey('interactions.id',ondelete="CASCADE"))
     count = db.Column(db.Integer,default=0)
 
     @staticmethod

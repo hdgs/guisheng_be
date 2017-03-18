@@ -23,7 +23,7 @@ def get_article(id):
         "img_url":article.img_url,
         "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%Y-%m-%d'),
-        "body":article.body,
+        "body":article.body_html,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "commentCount":article.comments.filter_by(comment_id=-1).count(),
         "music":{
