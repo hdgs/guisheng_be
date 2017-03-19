@@ -62,7 +62,7 @@ def add_pics():
         pics = Picture.from_json(request.get_json())
         db.session.add(pics)
         db.session.commit()
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)
@@ -86,11 +86,12 @@ def update_pics(id):
         pics.title = request.get_json().get('title')
         pics.img_url = request.get_json().get('img_url')
         pics.introduction = request.get_json().get('introduction')
+        pics.author = User.query.filter_by(name=request.get_json().get('name')).first()
         pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
         db.session.add(pics)
         db.session.commit()
 
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)

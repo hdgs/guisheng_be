@@ -72,7 +72,7 @@ def add_interaction():
         interaction = Interaction.from_json(request.get_json())
         db.session.add(interaction)
         db.session.commit()
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)
@@ -95,12 +95,12 @@ def update_interaction(id):
     if request.method == 'PUT':
         interaction.title = request.get_json().get('title')
         interaction.img_url = request.get_json().get('img_url')
-        interaction.author = User.query.get_or_404(request.get_json().get('author_id'))
+        interaction.author = User.query.filter_by(name=request.get_json().get('name')).first()
         interaction.description = request.get_json().get('description')
         db.session.add(interaction)
         db.session.commit()
 
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)

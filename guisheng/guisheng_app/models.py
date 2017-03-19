@@ -75,7 +75,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(164))
     img_url = db.Column(db.String(164),default="")
     bg_url = db.Column(db.String(164),default="")
-    name = db.Column(db.String(64),default="")
+    name = db.Column(db.String(64),default="",unique=True,index=True)
     weibo = db.Column(db.String(164),default="")
     introduction = db.Column(db.Text,default="")
     news = db.relationship('News', backref='author', lazy='dynamic')
@@ -190,7 +190,7 @@ class News(db.Model):
 
     @staticmethod
     def from_json(json_news):
-        u = User.query.get_or_404(json_news.get('author_id'))
+        u=User.query.filter_by(name=json_news.get('name')).first()
         title = json_news.get('title')
         img_url = json_news.get('img_url')
         description = json_news.get('description')
@@ -291,7 +291,7 @@ class Picture(db.Model):
 
     @staticmethod
     def from_json(json_pic):
-        u = User.query.get_or_404(json_pic.get('author_id'))
+        u = User.query.filter_by(name=json_pic.get('name')).first()
         title = json_pic.get('title')
         img_url = json_pic.get('img_url')
         introduction = json_pic.get('introduction')
@@ -350,7 +350,7 @@ class Article(db.Model):
 
     @staticmethod
     def from_json(json_article):
-        u = User.query.get_or_404(json_article.get('author_id'))
+        u = User.query.filter_by(name=json_article.get('name')).first()
         title = json_article.get('title')
         img_url = json_article.get('img_url')
         description = json_article.get('description')
@@ -429,7 +429,7 @@ class Interaction(db.Model):
 
     @staticmethod
     def from_json(json_interaction):
-        u = User.query.get_or_404(json_interaction.get('author_id'))
+        u = User.query.filter_by(name=json_interaction.get('name')).first()
         title = json_interaction.get('title')
         img_url = json_interaction.get('img_url')
         description = json_interaction.get('description')

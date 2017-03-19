@@ -71,7 +71,7 @@ def add_article():
         article = Article.from_json(request.get_json())
         db.session.add(article)
         db.session.commit()
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)
@@ -94,7 +94,7 @@ def update_article(id):
     if request.method == 'PUT':
         article.title = request.get_json().get('title')
         article.img_url = request.get_json().get('img_url')
-        article.author =  User.query.get_or_404(request.get_json().get('author_id'))
+        article.author = User.query.filter_by(name=request.get_json().get('name')).first()
         article.description = request.get_json().get('description')
         article.music_url = request.get_json().get('music_url')
         article.music_title = request.get_json().get('music_title')
@@ -105,7 +105,7 @@ def update_article(id):
         db.session.add(article)
         db.session.commit()
 
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)

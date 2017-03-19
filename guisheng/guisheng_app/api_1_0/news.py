@@ -74,7 +74,7 @@ def add_news():
         news = News.from_json(request.get_json())
         db.session.add(news)
         db.session.commit()
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)
@@ -98,11 +98,11 @@ def update_news(id):
         news.title = request.get_json().get('title')
         news.img_url = request.get_json().get('img_url')
         news.description = request.get_json().get('description')
-        news.author =  User.query.get_or_404(request.get_json().get('author_id'))
+        news.author = User.query.filter_by(name=request.get_json().get('name')).first()
         db.session.add(news)
         db.session.commit()
 
-        tags = request.get_json().get('tags').split()
+        tags = request.get_json().get('tags')
         for tag in tags:
             if not Tag.query.filter_by(body=tag).first():
                 t = Tag(body=tag)
