@@ -147,7 +147,7 @@ def delete_pics(id):
 def delete_one_pic(id,index):
     pics = Picture.query.get_or_404(id)
     pics.img_url = pics.img_url[0:index]+pics.img_url[index+1:]
-    pics.introduction = pics.introduction[:index]
+    pics.introduction = pics.introduction[0:index]+pics.introduction[index+1:]
     db.session.add(pics)
     db.session.commit()
     return jsonify({
