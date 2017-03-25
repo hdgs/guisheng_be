@@ -275,7 +275,7 @@ class Picture(db.Model):
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.Column(db.PickleType,default=[""])
-    title = db.Column(db.String(64),default="")
+    title = db.Column(db.String(64),default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer, default=0)
@@ -294,7 +294,7 @@ class Picture(db.Model):
         u = User.query.filter_by(name=json_pic.get('name')).first()
         title = json_pic.get('title')
         img_url = json_pic.get('img_url')
-        introduction = json_pic.get('introduction')
+        introduction = json_pic.get('description')
         return Picture(title=title, author=u,
                     img_url=img_url, introduction=introduction)
 

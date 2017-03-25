@@ -29,7 +29,7 @@ def main_page():
                 "article_id":content.id,
                 "img_url":content.img_url[0],
                 "title":content.title,
-                "author":User.query.get_or_404(content.author_id).name,
+                "author":User.query.get_or_404(content.author_id).name if content.author_id else None,
                 "views":content.views,
                 "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
                       if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
@@ -44,15 +44,14 @@ def main_page():
                 "article_id":_post.id,
                 "img_url":_post.img_url[0],
                 "title":_post.title,
-                "author":User.query.get_or_404(_post.author_id).name,
+                "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
                 "views":_post.views,
                 "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
-                      if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
+                        if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
                 "description":_post.description,
                 "published":_post.published
             } for _post in posts]
         ),mimetype='application/json')
-
 
 @api.route('/feed/', methods=['GET','POST'])
 def search():

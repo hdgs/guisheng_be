@@ -26,7 +26,7 @@ def get_pic(id):
         "commentCount":pic.comments.filter_by(comment_id=-1).count(),
         "editor":pic.editor,
         "user_role":user_role,
-        "author_id":pic.author_id
+        "author_id":pic.author_id,
     }),mimetype='application/json')
 
 @api.route('/pics/recommend/', methods=['GET','POST'])
@@ -55,37 +55,53 @@ def recommend_pics():
     ),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------
-@api.route('/pics/',methods=['GET','POST'])
+@api.route('/pics/',methods=['POST'])
 #@admin_required
 def add_pics():
     if request.method == 'POST':
-        pics = Picture.from_json(request.get_json())
-        db.session.add(pics)
-        db.session.commit()
-        tags = request.get_json().get('tags')
-        for tag in tags:
-            if not Tag.query.filter_by(body=tag).first():
-                t = Tag(body=tag)
-                db.session.add(t)
-                db.session.commit()
-            get_tag = Tag.query.filter_by(body=tag).first()
-            pics_tags = [t.tag_id for t in pics.tag.all()]
-            if get_tag.id not in pics_tags:
-                post_tag = PostTag(picture_tags=get_tag,pictures=pics)
-                db.session.add(post_tag)
-                db.session.commit()
+        title = request.get_json().get('title')
+        if Picture.query.filter_by(title=title).first():
+            pics = Picture.query.filter_by(title=title).first()
+            img_url = request.get_json().get('img_url')
+            introduction = request.get_json().get('description')
+            img_list = []
+            img_list.extend(pics.img_url)
+            img_list.append(img_url)
+            pics.img_url = img_list
+            intr_list = []
+            intr_list.extend(pics.introduction)
+            intr_list.append(introduction)
+            pics.introduction = intr_list
+            db.session.add(pics)
+            db.session.commit()
+        else:
+            pics = Picture.from_json(request.get_json())
+            db.session.add(pics)
+            db.session.commit()
+            tags = request.get_json().get('tags')
+            for tag in tags:
+                if not Tag.query.filter_by(body=tag).first():
+                    t = Tag(body=tag)
+                    db.session.add(t)
+                    db.session.commit()
+                get_tag = Tag.query.filter_by(body=tag).first()
+                pics_tags = [t.tag_id for t in pics.tag.all()]
+                if get_tag.id not in pics_tags:
+                    post_tag = PostTag(picture_tags=get_tag,pictures=pics)
+                    db.session.add(post_tag)
+                    db.session.commit()
         return jsonify({
-            'id':pics.id
+            'id':pics.id,
         }), 201
 
-@api.route('/pics/<int:id>/',methods=['GET','PUT'])
+@api.route('/pics/<int:id>/',methods=['PUT'])
 #@admin_required
 def update_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == 'PUT':
         pics.title = request.get_json().get('title')
-        pics.img_url = request.get_json().get('img_url')
-        pics.introduction = request.get_json().get('introduction')
+       # pics.img_url = request.get_json().get('img_url')
+        pics.introduction = request.get_json().get('description')
         pics.author = User.query.filter_by(name=request.get_json().get('name')).first()
         pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
         db.session.add(pics)
@@ -116,14 +132,25 @@ def update_pics(id):
             'update': pics.id
         }),200
 
-@api.route('/pics/<int:id>/', methods=["GET", "DELETE"])
+@api.route('/pics/<int:id>/', methods=['DELETE'])
 #@admin_required
 def delete_pics(id):
     pics = Picture.query.get_or_404(id)
-    if request.method == "DELETE":
-        db.session.delete(pics)
-        db.session.commit()
-        return jsonify({
-            'deleted': pics.id
-        }), 200
+    db.session.delete(pics)
+    db.session.commit()
+    return jsonify({
+        'deleted': pics.id
+    }), 200
 
+@api.route('/pics/<int:id>/pic/<int:index>', methods=['DELETE'])
+#@admin_required
+def delete_one_pic(id,index):
+    pics = Picture.query.get_or_404(id)
+    pics.img_url = pics.img_url[:index]
+    pics.introduction = pics.introduction[:index]
+    db.session.add(pics)
+    db.session.commit()
+    return jsonify({
+        'deleted': pics.id,
+        'index':index
+    }),200
