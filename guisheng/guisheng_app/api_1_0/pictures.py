@@ -142,11 +142,11 @@ def delete_pics(id):
         'deleted': pics.id
     }), 200
 
-@api.route('/pics/<int:id>/pic/<int:index>', methods=['DELETE'])
+@api.route('/pics/<int:id>/pic/<int:index>/', methods=['DELETE'])
 #@admin_required
 def delete_one_pic(id,index):
     pics = Picture.query.get_or_404(id)
-    pics.img_url = pics.img_url[:index]
+    pics.img_url = pics.img_url[0:index]+pics.img_url[index+1:]
     pics.introduction = pics.introduction[:index]
     db.session.add(pics)
     db.session.commit()
