@@ -33,12 +33,15 @@ def main_page():
                 "views":content.views,
                 "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
                       if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
+                "tags":[Tag.query.get_or_404(t.tag_id).body for t in content.__class__.query.get_or_404(content.id).tag]\
+                       if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
+                "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description
                 } for content in tolist[:count-1]]
         ),mimetype='application/json')
     else:
         post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
-        posts = post_kind.query.order_by(post_kind.time.desc()).limit(count)
+        posts = post_kind.query.order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
@@ -47,7 +50,10 @@ def main_page():
                 "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
                 "views":_post.views,
                 "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
-                        if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
+                      if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
+                "tags":[Tag.query.get_or_404(t.tag_id).body for t in post_kind.query.get_or_404(_post.id).tag]\
+                       if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else [""],
+                "time":_post.time.strftime('%Y-%m-%d'),
                 "description":_post.description,
                 "published":_post.published
             } for _post in posts]
