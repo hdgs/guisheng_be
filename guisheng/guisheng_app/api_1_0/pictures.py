@@ -60,39 +60,41 @@ def recommend_pics():
 def add_pics():
     if request.method == 'POST':
         title = request.get_json().get('title')
-        if Picture.query.filter_by(title=title).first():
-            pics = Picture.query.filter_by(title=title).first()
-            img_url = request.get_json().get('img_url')
-            introduction = request.get_json().get('description')
-            img_list = []
-            img_list.extend(pics.img_url)
-            img_list.append(img_url)
-            pics.img_url = img_list
-            intr_list = []
-            intr_list.extend(pics.introduction)
-            intr_list.append(introduction)
-            pics.introduction = intr_list
-            db.session.add(pics)
-            db.session.commit()
-        else:
-            pics = Picture.from_json(request.get_json())
-            db.session.add(pics)
-            db.session.commit()
-            tags = request.get_json().get('tags')
-            for tag in tags:
-                if not Tag.query.filter_by(body=tag).first():
-                    t = Tag(body=tag)
-                    db.session.add(t)
-                    db.session.commit()
-                get_tag = Tag.query.filter_by(body=tag).first()
-                pics_tags = [t.tag_id for t in pics.tag.all()]
-                if get_tag.id not in pics_tags:
-                    post_tag = PostTag(picture_tags=get_tag,pictures=pics)
-                    db.session.add(post_tag)
-                    db.session.commit()
-        return jsonify({
-            'id':pics.id,
-        }), 201
+        author = request.get_json().get('name')
+        if User.query.filter_by(name=author).first():
+            if Picture.query.filter_by(title=title).first():
+                pics = Picture.query.filter_by(title=title).first()
+                img_url = request.get_json().get('img_url')
+                introduction = request.get_json().get('description')
+                img_list = []
+                img_list.extend(pics.img_url)
+                img_list.append(img_url)
+                pics.img_url = img_list
+                intr_list = []
+                intr_list.extend(pics.introduction)
+                intr_list.append(introduction)
+                pics.introduction = intr_list
+                db.session.add(pics)
+                db.session.commit()
+            else:
+                pics = Picture.from_json(request.get_json())
+                db.session.add(pics)
+                db.session.commit()
+                tags = request.get_json().get('tags')
+                for tag in tags:
+                    if not Tag.query.filter_by(body=tag).first():
+                        t = Tag(body=tag)
+                        db.session.add(t)
+                        db.session.commit()
+                    get_tag = Tag.query.filter_by(body=tag).first()
+                    pics_tags = [t.tag_id for t in pics.tag.all()]
+                    if get_tag.id not in pics_tags:
+                        post_tag = PostTag(picture_tags=get_tag,pictures=pics)
+                        db.session.add(post_tag)
+                        db.session.commit()
+            return jsonify({
+                'id':pics.id,
+            }), 201
 
 @api.route('/pics/<int:id>/',methods=['PUT'])
 #@admin_required
