@@ -8,13 +8,13 @@ from guisheng_app.models import User
 from guisheng_app.decorators import admin_required
 
 @api.route('/register/',methods=['GET','POST'])
-@admin_required
+#@admin_required
 def register():
     if request.method == 'POST':
         name = request.get_json().get("username")
         email = request.get_json().get("email")
         password = request.get_json().get("password")
-        user = User(username=username,
+        user = User(name=name,
                     email=email,
                     password=password)
         db.session.add(user)
@@ -36,7 +36,7 @@ def login():
     if user is not None and user.verify_password(password):
         login_user(user)
         uid = user.id
-        token = user.generate_auth_token(expiration=86400)
+        token = user.generate_auth_token()
         return jsonify({
             "uid":user.id,
             "token":token,

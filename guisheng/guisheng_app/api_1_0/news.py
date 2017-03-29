@@ -26,7 +26,7 @@ def get_news(id):
         "editor":news.editor,
         "user_role":user_role,
         "author_id":news.author_id,
-	"commentCount":news.comments.count(),
+    	"commentCount":news.comments.count(),
         "music":{
                 "title":"",
                 "music_img_url":"",

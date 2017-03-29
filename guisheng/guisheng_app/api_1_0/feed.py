@@ -55,8 +55,9 @@ def main_page():
                        if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else [""],
                 "time":_post.time.strftime('%Y-%m-%d'),
                 "description":_post.description,
-                "published":_post.published
-            } for _post in posts]
+                "published":_post.published,
+                "count":post_kind.query.count()
+            } for _post in posts],
         ),mimetype='application/json')
 
 @api.route('/feed/', methods=['GET','POST'])
