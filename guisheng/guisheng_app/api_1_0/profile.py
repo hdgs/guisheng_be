@@ -58,7 +58,7 @@ def get_works(id):
     articles.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
             "article_id":_article.id,
-            "img_url":_article.img_url[0],
+            "img_url":_article.img_url,
             "title":_article.title,
             "author":user.name,
             "views":_article.views,
@@ -88,8 +88,10 @@ def get_collections(id):
             alist.append(interaction)
     alist.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
+            "kind":content.kind,
             "article_id":content.id,
-            "img_url":content.img_url[0],
+            "img_url":content.img_url if content.__class__!=Picture \
+                      else [i for i in content.img_url][0].img_url,
             "title":content.title,
             "author":user.name,
             "views":content.views,

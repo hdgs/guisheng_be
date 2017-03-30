@@ -2,7 +2,7 @@
 from flask import render_template,jsonify,Response,g,request
 from flask_login import current_user
 import json
-from ..models import Role,User,Picture,Tag,PostTag
+from ..models import Role,User,Picture,Tag,PostTag,Image
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
@@ -10,6 +10,8 @@ from guisheng_app.decorators import admin_required
 @api.route('/pics/<int:id>/', methods=['GET'])
 def get_pic(id):
     pic = Picture.query.get_or_404(id)
+    pics = [p.img_url for p in pic.img_url]
+    introductions = [p.introduction for p in pic.img_url]
     user_role = -1 if current_user.is_anonymous else 0
     pic.views+=1
     db.session.commit()
@@ -19,8 +21,8 @@ def get_pic(id):
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,
         "time":pic.time.strftime('%Y-%m-%d'),
-        "pics":pic.img_url,
-        "introduction":pic.introduction,
+        "pics":pics,
+        "introduction":introductions,
         "likes":pic.like.count(),
         "views":pic.views,
         "commentCount":pic.comments.filter_by(comment_id=-1).count(),
@@ -44,7 +46,7 @@ def recommend_pics():
     except:
        recommend_pics = []
     return Response(json.dumps([{
-            "img_url":Picture.query.get_or_404(pic_id).img_url,
+            "img_url":[p.img_url for p in Picture.query.get_or_404(pic_id).img_url][0],
             "title":Picture.query.get_or_404(pic_id).title,
             "author":User.query.get_or_404(Picture.query.get_or_404(pic_id).author_id).name,
             "views":Picture.query.get_or_404(pic_id).views,
@@ -64,34 +66,27 @@ def add_pics():
         if User.query.filter_by(name=author).first():
             if Picture.query.filter_by(title=title).first():
                 pics = Picture.query.filter_by(title=title).first()
-                img_url = request.get_json().get('img_url')
-                introduction = request.get_json().get('description')
-                img_list = []
-                img_list.extend(pics.img_url)
-                img_list.append(img_url)
-                pics.img_url = img_list
-                intr_list = []
-                intr_list.extend(pics.introduction)
-                intr_list.append(introduction)
-                pics.introduction = intr_list
-                db.session.add(pics)
-                db.session.commit()
             else:
                 pics = Picture.from_json(request.get_json())
                 db.session.add(pics)
                 db.session.commit()
-                tags = request.get_json().get('tags')
-                for tag in tags:
-                    if not Tag.query.filter_by(body=tag).first():
-                        t = Tag(body=tag)
-                        db.session.add(t)
-                        db.session.commit()
-                    get_tag = Tag.query.filter_by(body=tag).first()
-                    pics_tags = [t.tag_id for t in pics.tag.all()]
-                    if get_tag.id not in pics_tags:
-                        post_tag = PostTag(picture_tags=get_tag,pictures=pics)
-                        db.session.add(post_tag)
-                        db.session.commit()
+            img_url = request.get_json().get('img_url')
+            introduction = request.get_json().get('description')
+            image = Image(img_url=img_url,introduction=introduction,picture=pics)
+            db.session.add(image)
+            db.session.commit()
+            tags = request.get_json().get('tags')
+            for tag in tags:
+                if not Tag.query.filter_by(body=tag).first():
+                    t = Tag(body=tag)
+                    db.session.add(t)
+                    db.session.commit()
+                get_tag = Tag.query.filter_by(body=tag).first()
+                pics_tags = [t.tag_id for t in pics.tag.all()]
+                if get_tag.id not in pics_tags:
+                    post_tag = PostTag(picture_tags=get_tag,pictures=pics)
+                    db.session.add(post_tag)
+                    db.session.commit()
             return jsonify({
                 'id':pics.id,
             }), 201
@@ -102,10 +97,10 @@ def update_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == 'PUT':
         pics.title = request.get_json().get('title')
-       # pics.img_url = request.get_json().get('img_url')
-        pics.introduction = request.get_json().get('description')
+        #pics.img_url = request.get_json().get('img_url')
+        #pics.introduction = request.get_json().get('description')
         pics.author = User.query.filter_by(name=request.get_json().get('name')).first()
-        pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
+        #pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
         db.session.add(pics)
         db.session.commit()
 
@@ -118,7 +113,7 @@ def update_pics(id):
             get_tag = Tag.query.filter_by(body=tag).first()
             pics_tags = [t.tag_id for t in pics.tag.all()]
             if get_tag.id not in pics_tags:
-                post_tag = PostTag(pics_tags=get_tag,pictures=pics)
+                post_tag = PostTag(picture_tags=get_tag,pictures=pics)
                 db.session.add(post_tag)
                 db.session.commit()
 
@@ -127,7 +122,7 @@ def update_pics(id):
         for pics_tag_id in pics_tag_ids:
             if  pics_tag_id not in tags_id:
                 p_tag = Tag.query.get_or_404(pics_tag_id)
-                post_tag = PostTag.query.filter_by(picture_tags=p_tag,pictures=pics)
+                post_tag = PostTag.query.filter_by(picture_tags=p_tag,pictures=pics).first()
                 db.session.delete(post_tag)
                 db.session.commit()
         return jsonify({
@@ -148,9 +143,9 @@ def delete_pics(id):
 #@admin_required
 def delete_one_pic(id,index):
     pics = Picture.query.get_or_404(id)
-    pics.img_url = pics.img_url[0:index]+pics.img_url[index+1:]
-    pics.introduction = pics.introduction[0:index]+pics.introduction[index+1:]
-    db.session.add(pics)
+    imgs = [i.id for i in pics.img_url]
+    image = Image.query.get_or_404(imgs[index])
+    db.session.delete(image)
     db.session.commit()
     return jsonify({
         'deleted': pics.id,

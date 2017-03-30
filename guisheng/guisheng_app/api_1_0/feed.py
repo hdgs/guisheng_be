@@ -27,7 +27,8 @@ def main_page():
         return Response(json.dumps([{
                 "kind":content.kind,
                 "article_id":content.id,
-                "img_url":content.img_url[0],
+                "img_url":content.img_url if content.__class__!=Picture \
+                          else [i for i in content.img_url][0].img_url,
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name if content.author_id else None,
                 "views":content.views,
@@ -45,7 +46,8 @@ def main_page():
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
-                "img_url":_post.img_url[0],
+                "img_url":_post.img_url if _post.__class__!=Picture \
+                          else [i for i in _post.img_url][0].img_url,
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
                 "views":_post.views,
@@ -91,14 +93,19 @@ def search():
             for _interaction in t.interactions:
                 alist.append(Interaction.query.get_or_404(_article.interaction_id))
         return Response(json.dumps([{
+                "kind":content.kind,
                 "article_id":post.id,
-                "img_url":post.img_url[0],
+                "img_url":post.img_url if post.__class__!=Picture \
+                         else [i for i in post.img_url][0].img_url,
                 "title":post.title,
-                "author":User.query.get_or_404(post.author_id).name,
+                "author":User.query.get_or_404(post.author_id).name if post.author_id else None,
                 "views":post.views,
-                "tag":Tag.query.get_or_404(post.tag[0].tag_id).body if len([i for i in post.tag]) else "",
                 "description":post.description,
-                "time":post.time.strftime('%Y/%m/%d %H:%M')
+                "time":post.time.strftime('%Y-%m-%d'),
+                "tag":Tag.query.get_or_404(post.__class__.query.get_or_404(post.id).tag[0].tag_id).body\
+                      if len([i for i in post.__class__.query.get_or_404(post.id).tag]) else "",
+                "tags":[Tag.query.get_or_404(t.tag_id).body for t in post.__class__.query.get_or_404(post.id).tag]\
+                      if len([i for i in post.__class__.query.get_or_404(post.id).tag]) else [""], 
                 } for post in alist[:9]]
         ),mimetype='application/json')
 

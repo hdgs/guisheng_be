@@ -37,7 +37,7 @@ import os
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from guisheng_app import db, app
-from guisheng_app.models import User, Role, News, Everydaypic, Article,\
+from guisheng_app.models import User, Role, News, Everydaypic, Article,Image,\
         Picture, Interaction, Comment, Like, Light, Collect,PostTag,Tag,Suggestion
 
 # 编码设置
@@ -68,7 +68,8 @@ def make_shell_context():
         Light = Light,
         PostTag = PostTag,
         Tag = Tag,
-        Suggestion = Suggestion
+        Suggestion = Suggestion,
+        Image = Image
     )
 
 

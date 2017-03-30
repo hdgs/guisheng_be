@@ -2,7 +2,7 @@
 from flask import render_template,jsonify,Response,g,request
 from flask_login import current_user
 import json
-from ..models import Role,User,Article,Tag
+from ..models import Role,User,Article,Tag,PostTag
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
@@ -84,7 +84,7 @@ def add_article():
                 db.session.add(post_tag)
                 db.session.commit()
         return jsonify({
-            'id':interaction.id
+            'id':article.id
         }), 201
 
 @api.route('/article/<int:id>/',methods=['GET','PUT'])
@@ -114,7 +114,7 @@ def update_article(id):
             get_tag = Tag.query.filter_by(body=tag).first()
             article_tags = [t.tag_id for t in article.tag.all()]
             if get_tag.id not in article_tags:
-                post_tag = PostTag(article_tags=get_tag,articles=interaction)
+                post_tag = PostTag(article_tags=get_tag,articles=article)
                 db.session.add(post_tag)
                 db.session.commit()
 
@@ -123,9 +123,10 @@ def update_article(id):
         for article_tag_id in article_tag_ids:
             if  article_tag_id not in tags_id:
                 a_tag = Tag.query.get_or_404(article_tag_id)
-                post_tag = PostTag.query.filter_by(article_tags=a_tag,articles=article)
+                post_tag = PostTag.query.filter_by(article_tags=a_tag,articles=article).first()
                 db.session.delete(post_tag)
                 db.session.commit()
+
         return jsonify({
             'update': article.id
         }),200

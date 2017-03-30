@@ -96,7 +96,6 @@ def update_news(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.title = request.get_json().get('title')
-        news.img_url = request.get_json().get('img_url')
         news.description = request.get_json().get('description')
         news.author = User.query.filter_by(name=request.get_json().get('name')).first()
         db.session.add(news)
@@ -120,9 +119,10 @@ def update_news(id):
         for news_tag_id in news_tag_ids:
             if  news_tag_id not in tags_id:
                 n_tag = Tag.query.get_or_404(news_tag_id)
-                post_tag = PostTag.query.filter_by(news_tags=n_tag,news=news)
+                post_tag = PostTag.query.filter_by(news_tags=n_tag,news=news).first()
                 db.session.delete(post_tag)
                 db.session.commit()
+
         return jsonify({
             'update': news.id
         }), 200

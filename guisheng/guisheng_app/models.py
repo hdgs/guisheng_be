@@ -181,7 +181,8 @@ class News(db.Model):
     tag = db.relationship("PostTag", backref="news",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer,default=0)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
-    img_url = db.Column(db.PickleType,default=[""])
+    img_url = db.Column(db.String(164),default="")
+    # img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
     editor = db.Column(db.String(64),default="")
     kind = 1
@@ -192,10 +193,9 @@ class News(db.Model):
     def from_json(json_news):
         u=User.query.filter_by(name=json_news.get('name')).first()
         title = json_news.get('title')
-        img_url = json_news.get('img_url')
         description = json_news.get('description')
         return News(title=title, author=u,
-                    img_url=img_url, description=description)
+                    description=description)
     @staticmethod
     def generate_fake(count=100):
         from random import seed,randint
@@ -210,7 +210,7 @@ class News(db.Model):
                      body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                      views=randint(0,100),
                      time=forgery_py.date.date(True),
-                     img_url=[forgery_py.internet.email_address()],
+                     img_url=forgery_py.internet.email_address(),
                      description="",
                      published=randint(0,1))
             db.session.add(n)
@@ -274,12 +274,13 @@ class Picture(db.Model):
     __tablename__ = 'pictures'
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
-    img_url = db.Column(db.PickleType,default=[""])
+    img_url = db.relationship('Image', backref='picture', lazy='dynamic')
+    # img_url = db.Column(db.PickleType,default=[""])
     title = db.Column(db.String(64),default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer, default=0)
-    introduction = db.Column(db.PickleType,default=[""])
+    # introduction = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
     like = db.relationship('Like',backref='picture', lazy='dynamic')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
@@ -293,10 +294,9 @@ class Picture(db.Model):
     def from_json(json_pic):
         u = User.query.filter_by(name=json_pic.get('name')).first()
         title = json_pic.get('title')
-        img_url = json_pic.get('img_url')
-        introduction = json_pic.get('description')
-        return Picture(title=title, author=u,
-                    img_url=img_url, introduction=introduction)
+        # img_url = json_pic.get('img_url')
+        # introduction = json_pic.get('description')
+        return Picture(title=title, author=u)
 
     @staticmethod
     def generate_fake(count=100):
@@ -307,11 +307,11 @@ class Picture(db.Model):
         user_count = User.query.count()
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
-            p = Picture(img_url=[forgery_py.internet.email_address()],
-                        title=forgery_py.lorem_ipsum.title(randint(1,4)),
+            p = Picture(title=forgery_py.lorem_ipsum.title(randint(1,4)),
+                        # img_url=[forgery_py.internet.email_address()],
                         author=u,
                         views=randint(0,100),
-                        introduction=forgery_py.lorem_ipsum.paragraph(),
+                        # introduction=forgery_py.lorem_ipsum.paragraph(),
                         description="",
                         time=forgery_py.date.date(True),
                         published=randint(0,1))
@@ -327,7 +327,8 @@ class Article(db.Model):
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164),default="")
-    img_url = db.Column(db.PickleType,default=[""])
+    # img_url = db.Column(db.PickleType,default=[""])
+    img_url = db.Column(db.String(164),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body = db.Column(db.Text,default="")
     comments = db.relationship('Comment',backref='article', lazy='dynamic')
@@ -347,6 +348,7 @@ class Article(db.Model):
     editor = db.Column(db.String(64),default="")
     kind = 3
     published = db.Column(db.Integer,default=0)
+    body_html = db.Column(db.Text,default="")
 
     @staticmethod
     def from_json(json_article):
@@ -360,9 +362,9 @@ class Article(db.Model):
         singer = json_article.get('singer')
         film_url = json_article.get('film_url')
         film_img_url = json_article.get('film_img_url')
-        return Picture(title=title, author=u,
-                    img_url=img_url, description=description,
-                    music_url=music_url, music_title=music_title,
+        return Article(title=title, author=u,
+                    description=description,img_url=img_url,
+                    music_url=music_url,music_title=music_title,
                     music_img_url=music_img_url, film_url=film_url,
                     film_img_url=film_img_url)
 
@@ -376,7 +378,8 @@ class Article(db.Model):
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             a = Article(title=forgery_py.lorem_ipsum.title(randint(1,4)),
-                        img_url=[forgery_py.internet.email_address()],
+                        # img_url=[forgery_py.internet.email_address()],
+                        img_url=forgery_py.internet.email_address(),
                         author=u,
                         body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                         time=forgery_py.date.date(True),
@@ -422,7 +425,8 @@ class Interaction(db.Model):
     description = db.Column(db.Text,default="")
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
-    img_url = db.Column(db.PickleType,default=[""])
+    # img_url = db.Column(db.PickleType,default=[""])
+    img_url = db.Column(db.String(164),default="")
     editor = db.Column(db.String(64),default="")
     kind = 4
     published = db.Column(db.Integer,default=0)
@@ -431,10 +435,9 @@ class Interaction(db.Model):
     def from_json(json_interaction):
         u = User.query.filter_by(name=json_interaction.get('name')).first()
         title = json_interaction.get('title')
-        img_url = json_interaction.get('img_url')
         description = json_interaction.get('description')
         return Interaction(title=title, author=u,
-                           img_url=img_url, description=description)
+                           description=description)
 
     @staticmethod
     def generate_fake(count=100):
@@ -449,7 +452,7 @@ class Interaction(db.Model):
                             author=u,
                             time=forgery_py.date.date(True),
                             description=forgery_py.lorem_ipsum.paragraph(),
-                            img_url=[forgery_py.internet.email_address()],
+                            img_url=forgery_py.internet.email_address(),
                             body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
                             views=randint(0,100),
                             published = randint(0,1))
@@ -472,6 +475,30 @@ class Interaction(db.Model):
         return "<Interaction %r>" % self.id
 
 db.event.listen(Interaction.body, 'set', Interaction.on_changed_body)
+
+#图片
+class Image(db.Model):
+    __tablename__ = 'images'
+    id = db.Column(db.Integer, primary_key=True)
+    img_url = db.Column(db.String(164),default="")
+    introduction = db.Column(db.Text,default="")
+    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id',ondelete="CASCADE"))
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            img = Image(img_url=forgery_py.internet.email_address(),
+                        introduction=forgery_py.lorem_ipsum.paragraph())
+            db.session.add(img)
+            db.session.commit()
+
+
+    def __repr__(self):
+        return "<Image %r>" % self.id
 
 #评论
 class Comment(db.Model):
