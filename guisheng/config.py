@@ -57,8 +57,8 @@ development configuration
 class DevelopmentConfig(Config):
     """development configuration"""
     DEBUG = True
-#    SQLALCHEMY_DATABASE_URI = os.environ.get('MYSQL_URI')
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
+    SQLALCHEMY_DATABASE_URI = os.environ.get('MYSQL_URI')
+#    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
 
 
 # production configuration
