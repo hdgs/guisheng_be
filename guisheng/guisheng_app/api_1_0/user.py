@@ -14,15 +14,16 @@ def register():
         name = request.get_json().get("username")
         email = request.get_json().get("email")
         password = request.get_json().get("password")
-        user = User(name=name,
+        if not User.query.filter_by(username=username):
+            user = User(name=name,
                     email=email,
                     password=password)
-        db.session.add(user)
-        db.session.commit()
-        user_id=User.query.filter_by(email=email).first().id
-        return jsonify({
-            "created":user_id,
-        })
+            db.session.add(user)
+            db.session.commit()
+            user_id=User.query.filter_by(email=email).first().id
+            return jsonify({
+                "created":user_id,
+            })
 
 @api.route('/login/', methods=['GET', 'POST'])
 def login():
