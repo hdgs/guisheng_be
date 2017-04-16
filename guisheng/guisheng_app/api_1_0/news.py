@@ -139,7 +139,7 @@ def update_news_body(id):
             'update': news.id
         }), 200
 
-@api.route('/news/<int:id>/', methods=["GET", "DELETE"])
+@api.route('/news/<int:id>/', methods=["DELETE"])
 #@admin_required
 def delete_news(id):
     news = News.query.get_or_404(id)
