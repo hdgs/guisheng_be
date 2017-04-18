@@ -66,7 +66,7 @@ def recommend_news():
 
 #----------------------------后台管理API---------------------------------
 @api.route('/news/', methods=["GET", "POST"])
-#@admin_required
+@admin_required
 def add_news():
     if request.method == "POST":
         news = News.from_json(request.get_json())
@@ -89,7 +89,7 @@ def add_news():
         }), 201
 
 @api.route('/news/<int:id>/', methods=["GET", "PUT"])
-#@admin_required
+@admin_required
 def update_news(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
@@ -126,7 +126,7 @@ def update_news(id):
         }), 200
 
 @api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
-#@admin_required
+@admin_required
 def update_news_body(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
@@ -138,7 +138,7 @@ def update_news_body(id):
         }), 200
 
 @api.route('/news/<int:id>/', methods=["DELETE"])
-#@admin_required
+@admin_required
 def delete_news(id):
     news = News.query.get_or_404(id)
     if request.method == "DELETE":

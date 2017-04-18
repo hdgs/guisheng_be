@@ -9,6 +9,7 @@ from .. import db
 import os
 from operator import attrgetter
 import time
+from guisheng_app.decorators import admin_required
 
 @api.route('/profile/<int:id>/',methods=['GET','POST'])
 def get_profile(id):

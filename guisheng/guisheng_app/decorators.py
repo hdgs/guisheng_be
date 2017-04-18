@@ -11,7 +11,7 @@ def admin_required(f):
         if token_header:
             token_hash = token_header[6:]
             decode_token = base64.b64decode(token_hash)
-            token = decode_token[:-1]
+            token = decode_token
             g.current_user = User.verify_auth_token(token)
             if not g.current_user.is_administrator():
                 return jsonify({'message': '403 Forbidden'}), 403

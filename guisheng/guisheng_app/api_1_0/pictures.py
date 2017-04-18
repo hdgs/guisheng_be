@@ -56,7 +56,7 @@ def recommend_pics():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/pics/',methods=['POST'])
-#@admin_required
+@admin_required
 def add_pics():
     if request.method == 'POST':
         title = request.get_json().get('title')
@@ -90,7 +90,7 @@ def add_pics():
             }), 201
 
 @api.route('/pics/<int:id>/',methods=['PUT'])
-#@admin_required
+@admin_required
 def update_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == 'PUT':
@@ -128,7 +128,7 @@ def update_pics(id):
         }),200
 
 @api.route('/pics/<int:id>/', methods=['DELETE'])
-#@admin_required
+@admin_required
 def delete_pics(id):
     pics = Picture.query.get_or_404(id)
     db.session.delete(pics)
@@ -138,7 +138,7 @@ def delete_pics(id):
     }), 200
 
 @api.route('/pics/<int:id>/pic/<int:index>/', methods=['DELETE'])
-#@admin_required
+@admin_required
 def delete_one_pic(id,index):
     pics = Picture.query.get_or_404(id)
     imgs = [i.id for i in pics.img_url]
