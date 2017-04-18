@@ -10,22 +10,21 @@ import os
 from operator import attrgetter
 import time
 
-@api.route('/profile/<int:id>/',methods=['GET'])
+@api.route('/profile/<int:id>/',methods=['GET','POST'])
 def get_profile(id):
-    user=User.query.get_or_404(id)
-    try:
-    	user_role = 1 if current_user.user_role==1 else 0
-    except:
-        user_role = 0
-    return Response(json.dumps({
-        "img_url":user.img_url,
-        "name":user.name,
-        "weibo":user.weibo,
-        "introduction":user.introduction,
-        "role":user.user_role,
-        "user_role":user_role,
-        "user_id":user.id
-    }),mimetype='application/json')
+    if request.method == 'POST':
+        my_id = int(request.get_json().get("my_id"))
+        user=User.query.get_or_404(id)
+        my_user=User.query.get_or_404(my_id)
+        return Response(json.dumps({
+            "img_url":user.img_url,
+            "name":user.name,
+            "weibo":user.weibo,
+            "introduction":user.introduction,
+            "role":user.user_role,
+            "user_role":my_user.user_role,
+            "user_id":user.id
+        }),mimetype='application/json')
 
 @api.route('/profile/<int:id>/edit/',methods=['GET','PUT'])
 def edit_profile(id):
@@ -37,14 +36,10 @@ def edit_profile(id):
         user.introduction = request.get_json().get("introduction")
         db.session.add(user)
         db.session.commit()
-        try:
-            user_role = 1 if current_user.user_role==1 else 0
-        except:
-            user_role = 0
         return Response(json.dumps({
             "user_id":user.id,
             "role":user.user_role,
-            "user_role":user_role,
+            "user_role":user.user_role,
             "img_url":user.img_url,
             "name":user.name,
             "weibo":user.weibo,

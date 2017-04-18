@@ -12,7 +12,6 @@ def get_pic(id):
     pic = Picture.query.get_or_404(id)
     pics = [p.img_url for p in pic.img_url]
     introductions = [p.introduction for p in pic.img_url]
-    user_role = -1 if current_user.is_anonymous else 0
     pic.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -27,7 +26,6 @@ def get_pic(id):
         "views":pic.views,
         "commentCount":pic.comments.filter_by(comment_id=-1).count(),
         "editor":pic.editor,
-        "user_role":user_role,
         "author_id":pic.author_id,
     }),mimetype='application/json')
 

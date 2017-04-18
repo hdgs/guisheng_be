@@ -84,7 +84,7 @@ class User(db.Model, UserMixin):
     interactions = db.relationship('Interaction', backref='author', lazy='dynamic')
     collection = db.relationship('Collect', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'),default=3)
     user_role = db.Column(db.Integer,default=0)
 
     @property

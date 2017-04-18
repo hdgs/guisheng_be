@@ -14,7 +14,6 @@ def get_article(id):
     like_degree_one = article.light.filter_by(like_degree=0).count()
     like_degree_two = article.light.filter_by(like_degree=1).count()
     like_degree_three = article.light.filter_by(like_degree=2).count()
-    user_role = -1 if current_user.is_anonymous else 0
     article.views+=1
     db.session.commit()
     return Response(json.dumps({
@@ -34,7 +33,6 @@ def get_article(id):
             "film_url":article.film_url,
             },
         "editor":article.editor,
-        "user_role":user_role,
         "author_id":article.author_id
         }),mimetype='application/json')
 

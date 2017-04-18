@@ -14,7 +14,7 @@ def register():
         name = request.get_json().get("username")
         email = request.get_json().get("email")
         password = request.get_json().get("password")
-        if not User.query.filter_by(username=username):
+        if not User.query.filter_by(name=name).first():
             user = User(name=name,
                     email=email,
                     password=password)
