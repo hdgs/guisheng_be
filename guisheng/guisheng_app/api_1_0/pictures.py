@@ -24,7 +24,7 @@ def get_pic(id):
         "introduction":introductions,
         "likes":pic.like.count(),
         "views":pic.views,
-        "commentCount":pic.comments.filter_by(comment_id=-1).count(),
+        "commentCount":pic.comments.count(),
         "editor":pic.editor,
         "author_id":pic.author_id,
     }),mimetype='application/json')

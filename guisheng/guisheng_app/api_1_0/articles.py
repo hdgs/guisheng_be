@@ -24,7 +24,7 @@ def get_article(id):
         "time":article.time.strftime('%Y-%m-%d'),
         "body":article.body_html,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
-        "commentCount":article.comments.filter_by(comment_id=-1).count(),
+        "commentCount":article.comments.count(),
         "music":{
             "title":article.music_title,
             "music_url":article.music_url,
