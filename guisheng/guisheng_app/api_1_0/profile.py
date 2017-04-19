@@ -53,6 +53,7 @@ def get_works(id):
     articles = [article for article in user.articles.all()]
     articles.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
+            "kind":_article.kind,
             "article_id":_article.id,
             "img_url":_article.img_url,
             "title":_article.title,
