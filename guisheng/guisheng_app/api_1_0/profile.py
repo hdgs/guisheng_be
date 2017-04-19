@@ -70,30 +70,34 @@ def get_collections(id):
     user= User.query.get_or_404(id)
     alist = []
     for _collection in Collect.query.filter_by(author_id=id).all():
-        if News.query.get_or_404(_collection.news_id):
-            news = News.query.get_or_404(_collection.news_id)
-            alist.append(news)
-        elif Article.query.get_or_404(_collection.article_id):
-            article = Article.query.get_or_404(_collection.article_id)
-            alist.append(article)
-        elif Picture.query.get_or_404(_collection.picture_id):
-            picture = Picture.query.get_or_404(_collection.picture_id)
-            alist.append(picture)
-        elif Interaction.query.get_or_404(_collection.interaction_id):
-            interaction = Interaction.query.get_or_404(_collection.interaction_id)
-            alist.append(interaction)
+        if _collection.news_id:
+            if News.query.get_or_404(_collection.news_id):
+                news = News.query.get_or_404(_collection.news_id)
+                alist.append(news)
+        elif _collection.article_id:
+            if Article.query.get_or_404(_collection.article_id):
+                article = Article.query.get_or_404(_collection.article_id)
+                alist.append(article)
+        elif _collection.picture_id:
+            if Picture.query.get_or_404(_collection.picture_id):
+                picture = Picture.query.get_or_404(_collection.picture_id)
+                alist.append(picture)
+        elif _collection.interaction_id:
+            if Interaction.query.get_or_404(_collection.interaction_id):
+                interaction = Interaction.query.get_or_404(_collection.interaction_id)
+                alist.append(interaction)
     alist.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
-            "kind":content.kind,
-            "article_id":content.id,
-            "img_url":content.img_url if content.__class__!=Picture \
-                      else [i for i in content.img_url][0].img_url,
-            "title":content.title,
-            "author":user.name,
-            "views":content.views,
-            "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
-                  if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
-            "description":content.description,
+                        "kind":content.kind,
+                        "article_id":content.id,
+                        "img_url":content.img_url if content.__class__!=Picture \
+                                  else [i for i in content.img_url][0].img_url,
+                        "title":content.title,
+                        "author":user.name,
+                        "views":content.views,
+                        "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
+                              if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
+                        "description":content.description,
         }for content in alist]
     ),mimetype='application/json')
 
