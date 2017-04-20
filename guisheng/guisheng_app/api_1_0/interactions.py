@@ -21,7 +21,7 @@ def get_interaction(id):
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%Y-%m-%d'),
         "body":interaction.body,
-        "like":[like_degree_one,like_degree_two,like_degree_three],
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "editor":interaction.editor,
         "author_id":interaction.author_id,
         "commentCount":interaction.comments.count(),
