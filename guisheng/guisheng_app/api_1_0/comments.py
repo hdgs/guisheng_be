@@ -15,7 +15,7 @@ def get_time(comment_time):
         if comment_date==today:
             time = comment_time.strftime('%H:%M')
         elif comment_date==today+timedelta(days=-1):
-            time = " ".join(u"昨天",comment_time.strftime('%H:%M'))
+            time = " ".join([u"昨天",comment_time.strftime('%H:%M')])
         else:
             time = comment_time.strftime('%m-%d')
     else:
