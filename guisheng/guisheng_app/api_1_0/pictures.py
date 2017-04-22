@@ -19,6 +19,7 @@ def get_pic(id):
         "kind":2,
         "title":pic.title,
         "author":User.query.get_or_404(pic.author_id).name,
+        "img_url":User.query.get_or_404(pic.author_id).img_url,
         "time":pic.time.strftime('%Y-%m-%d'),
         "pics":pics,
         "introduction":introductions,

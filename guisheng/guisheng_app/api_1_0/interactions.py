@@ -17,6 +17,7 @@ def get_interaction(id):
     db.session.commit()
     return Response(json.dumps({
         "kind":4,
+        "img_url":User.query.get_or_404(interaction.author_id).img_url,
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%Y-%m-%d'),

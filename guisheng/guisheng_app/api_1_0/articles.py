@@ -19,7 +19,7 @@ def get_article(id):
     return Response(json.dumps({
         "kind":3,
         "title":article.title,
-        "img_url":article.img_url,
+        "img_url":User.query.get_or_404(article.author_id).img_url,
         "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%Y-%m-%d'),
         "body":article.body_html,
@@ -28,9 +28,13 @@ def get_article(id):
         "music":{
             "title":article.music_title,
             "music_url":article.music_url,
+            "singer":article.singer,
+            "music_img_url":article.music_img_url
             },
         "film":{
             "film_url":article.film_url,
+            "scores":article.scores,
+            "film_img_url":article.film_img_url
             },
         "editor":article.editor,
         "author_id":article.author_id

@@ -11,6 +11,7 @@ from .. import db
 def collect():
     kind = int(request.get_json().get('kind'))
     a_id = int(request.get_json().get('article_id'))
+    my_id = int(request.get_json().get('my_id'))
     collect = Collect()
     if kind == 1:
         collect.news_id = a_id
@@ -20,28 +21,29 @@ def collect():
         collect.article_id = a_id
     if kind == 4:
         collect.interaction_id = a_id
-    collect.author_id = current_user.id
+    collect.author_id = my_id
     db.session.add(collect)
     db.session.commit()
     return jsonify({
-        'status':200
+        'collected':collect.id
     })
 
 @api.route('/collect_delete/', methods=['GET','POST'])
 @login_required
 def collect_delete():
     kind = int(request.get_json().get('kind'))
-    a_id = request.get_json().get('article_id')
+    a_id = int(request.get_json().get('article_id'))
+    my_id = int(request.get_json().get('my_id'))
     if kind == 1:
-        collect = Collect.query.filter_by(news_id=a_id).filter_by(author_id=current_user.id).first()
+        collect = Collect.query.filter_by(news_id=a_id).filter_by(author_id=my_id).first()
     if kind == 2:
-        collect = Collect.query.filter_by(picture_id=a_id).filter_by(author_id=current_user.id).first()
+        collect = Collect.query.filter_by(picture_id=a_id).filter_by(author_id=my_id).first()
     if kind == 3:
-        collect = Collect.query.filter_by(article_id=a_id).filter_by(author_id=current_user.id).first()
+        collect = Collect.query.filter_by(article_id=a_id).filter_by(author_id=my_id).first()
     if kind == 4:
-        collect = Collect.query.filter_by(interaction_id=a_id).filter_by(author_id=current_user.id).first()
+        collect = Collect.query.filter_by(interaction_id=a_id).filter_by(author_id=my_id).first()
     db.session.delete(collect)
     db.session.commit()
     return jsonify({
-        'status':200 
+        'deleted':collect.id
     })

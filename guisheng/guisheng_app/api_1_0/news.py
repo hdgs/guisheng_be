@@ -16,6 +16,7 @@ def get_news(id):
     news.views+=1
     db.session.commit()
     return Response(json.dumps({
+        "img_url":User.query.get_or_404(news.author_id).img_url,
         "kind":1,
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
