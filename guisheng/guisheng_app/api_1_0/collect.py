@@ -4,12 +4,13 @@ from flask_login import current_user,login_required
 import json
 from ..models import Collect
 from . import api
+from .. import db
 
 @api.route('/collect/', methods=['GET','POST'])
 @login_required
 def collect():
     kind = int(request.get_json().get('kind'))
-    a_id = request.get_json().get('article_id')
+    a_id = int(request.get_json().get('article_id'))
     collect = Collect()
     if kind == 1:
         collect.news_id = a_id
