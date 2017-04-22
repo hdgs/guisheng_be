@@ -14,6 +14,7 @@ def get_pic(id):
     introductions = [p.introduction for p in pic.img_url]
     pic.views+=1
     db.session.commit()
+
     return Response(json.dumps({
         "id":pic.id,
         "kind":2,
