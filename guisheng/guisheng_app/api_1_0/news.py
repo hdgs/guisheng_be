@@ -7,6 +7,7 @@ from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
+
 @api.route('/news/<int:id>/', methods=['GET','POST'])
 def get_news(id):
     if request.method == "POST":

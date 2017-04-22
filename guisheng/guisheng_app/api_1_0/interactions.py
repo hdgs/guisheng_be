@@ -2,42 +2,51 @@
 from flask import render_template,jsonify,Response,g,request
 from flask_login import current_user
 import json
-from ..models import Role,User,Interaction,Tag,PostTag
+from ..models import Role,User,Interaction,Tag,PostTag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
-@api.route('/interaction/<int:id>/',methods=['GET'])
+@api.route('/interaction/<int:id>/',methods=['GET','POST'])
 def get_interaction(id):
-    interaction = Interaction.query.get_or_404(id)
-    like_degree_one = interaction.light.filter_by(like_degree=0).count()
-    like_degree_two = interaction.light.filter_by(like_degree=1).count()
-    like_degree_three = interaction.light.filter_by(like_degree=2).count()
-    interaction.views+=1
-    db.session.commit()
-    return Response(json.dumps({
-        "kind":4,
-        "img_url":User.query.get_or_404(interaction.author_id).img_url,
-        "title":interaction.title,
-        "author":User.query.get_or_404(interaction.author_id).name,
-        "time":interaction.time.strftime('%Y-%m-%d'),
-        "body":interaction.body,
-        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
-        "editor":interaction.editor,
-        "author_id":interaction.author_id,
-        "commentCount":interaction.comments.count(),
-        "music":{
-                "title":"",
-                "music_img_url":"",
-                "music_url":"",
-                "singer":""
-        },
-        "film":{
-               "film_url":"",
-               "scores":"",
-               "film_img_url":""
-        }
-        }),mimetype='application/json')
+    if request.method == "POST":
+        my_id = int(request.get_json().get('my_id'))
+        interaction = Interaction.query.get_or_404(id)
+        like_degree_one = interaction.light.filter_by(like_degree=0).count()
+        like_degree_two = interaction.light.filter_by(like_degree=1).count()
+        like_degree_three = interaction.light.filter_by(like_degree=2).count()
+        interaction.views+=1
+        db.session.commit()
+        if my_id == -1:
+            collected=0
+        else:
+            if Collect.query.filter_by(interaction_id=id).filter_by(author_id=my_id).first():
+                collected=1
+            else:
+                collected=0
+        return Response(json.dumps({
+            "kind":4,
+            "img_url":User.query.get_or_404(interaction.author_id).img_url,
+            "title":interaction.title,
+            "author":User.query.get_or_404(interaction.author_id).name,
+            "time":interaction.time.strftime('%Y-%m-%d'),
+            "body":interaction.body,
+            "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+            "editor":interaction.editor,
+            "author_id":interaction.author_id,
+            "commentCount":interaction.comments.count(),
+            "music":{
+                    "title":"",
+                    "music_img_url":"",
+                    "music_url":"",
+                    "singer":""
+            },
+            "film":{
+                   "film_url":"",
+                   "scores":"",
+                   "film_img_url":""
+            }
+            }),mimetype='application/json')
 
 
 @api.route('/interaction/recommend/',methods=['GET','POST'])

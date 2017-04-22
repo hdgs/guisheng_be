@@ -7,7 +7,6 @@ from . import api
 from .. import db
 
 @api.route('/collect/', methods=['GET','POST'])
-@login_required
 def collect():
     kind = int(request.get_json().get('kind'))
     a_id = int(request.get_json().get('article_id'))
@@ -29,7 +28,6 @@ def collect():
     })
 
 @api.route('/collect_delete/', methods=['GET','POST'])
-@login_required
 def collect_delete():
     kind = int(request.get_json().get('kind'))
     a_id = int(request.get_json().get('article_id'))
