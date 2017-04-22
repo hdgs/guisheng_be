@@ -2,7 +2,7 @@
 from flask import render_template,jsonify,Response,g,request
 from flask_login import current_user
 import json
-from ..models import Role,User,News,PostTag,Tag
+from ..models import Role,User,News,PostTag,Tag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
