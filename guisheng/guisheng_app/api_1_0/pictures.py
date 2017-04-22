@@ -7,29 +7,37 @@ from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
-@api.route('/pics/<int:id>/', methods=['GET'])
+@api.route('/pics/<int:id>/', methods=['GET','POST'])
 def get_pic(id):
-    pic = Picture.query.get_or_404(id)
-    pics = [p.img_url for p in pic.img_url]
-    introductions = [p.introduction for p in pic.img_url]
-    pic.views+=1
-    db.session.commit()
-
-    return Response(json.dumps({
-        "id":pic.id,
-        "kind":2,
-        "title":pic.title,
-        "author":User.query.get_or_404(pic.author_id).name,
-        "img_url":User.query.get_or_404(pic.author_id).img_url,
-        "time":pic.time.strftime('%Y-%m-%d'),
-        "pics":pics,
-        "introduction":introductions,
-        "likes":pic.like.count(),
-        "views":pic.views,
-        "commentCount":pic.comments.count(),
-        "editor":pic.editor,
-        "author_id":pic.author_id,
-    }),mimetype='application/json')
+    if request.method == "POST":
+        pic = Picture.query.get_or_404(id)
+        pics = [p.img_url for p in pic.img_url]
+        introductions = [p.introduction for p in pic.img_url]
+        pic.views+=1
+        db.session.commit()
+        if my_id == -1:
+            collected=0
+        else:
+            if Collect.query.filter_by(picture_id=id).filter_by(author_id=my_id).first():
+                collected=1
+            else:
+                collected=0
+        return Response(json.dumps({
+            "id":pic.id,
+            "kind":2,
+            "title":pic.title,
+            "author":User.query.get_or_404(pic.author_id).name,
+            "img_url":User.query.get_or_404(pic.author_id).img_url,
+            "time":pic.time.strftime('%Y-%m-%d'),
+            "pics":pics,
+            "introduction":introductions,
+            "likes":pic.like.count(),
+            "views":pic.views,
+            "commentCount":pic.comments.count(),
+            "editor":pic.editor,
+            "author_id":pic.author_id,
+            "collected":collected
+        }),mimetype='application/json')
 
 @api.route('/pics/recommend/', methods=['GET','POST'])
 def recommend_pics():
