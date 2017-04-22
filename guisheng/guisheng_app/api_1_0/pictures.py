@@ -10,6 +10,7 @@ from guisheng_app.decorators import admin_required
 @api.route('/pics/<int:id>/', methods=['GET','POST'])
 def get_pic(id):
     if request.method == "POST":
+        my_id = int(request.get_json().get('my_id'))
         pic = Picture.query.get_or_404(id)
         pics = [p.img_url for p in pic.img_url]
         introductions = [p.introduction for p in pic.img_url]
