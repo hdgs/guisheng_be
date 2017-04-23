@@ -35,6 +35,7 @@ def get_interaction(id):
             "editor":interaction.editor,
             "author_id":interaction.author_id,
             "commentCount":interaction.comments.count(),
+            "collected":collected,
             "music":{
                     "title":"",
                     "music_img_url":"",

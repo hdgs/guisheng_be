@@ -17,19 +17,22 @@ def collect():
         if not Collect.query.filter_by(news_id=id).filter_by(author_id=my_id).first(): 
             collect.news_id = a_id
             db.session.add(collect)
+            db.session.commit()
     if kind == 2:
         if not Collect.query.filter_by(picture_id=id).filter_by(author_id=my_id).first():
             collect.picture_id = a_id
             db.session.add(collect)
+            db.session.commit()
     if kind == 3:
         if not Collect.query.filter_by(article_id=id).filter_by(author_id=my_id).first():
             collect.article_id = a_id
             db.session.add(collect)
+            db.session.commit()
     if kind == 4:
         if not Collect.query.filter_by(interaction_id=id).filter_by(author_id=my_id).first():
             collect.interaction_id = a_id
             db.session.add(collect)
-    db.session.commit()
+            db.session.commit()
     return jsonify({
         'collected':collect.id
     })
