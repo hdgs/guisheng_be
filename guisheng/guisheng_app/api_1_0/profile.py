@@ -57,7 +57,7 @@ def get_works(id):
             "article_id":_article.id,
             "img_url":_article.img_url,
             "title":_article.title,
-            "author":user.name,
+            "author":User.query.get_or_404(_article.author_id).name,
             "views":_article.views,
             "tag":Tag.query.get_or_404(Article.query.get_or_404(_article.id).tag[0].tag_id).body\
                   if len([i for i in Article.query.get_or_404(_article.id).tag]) else "",
@@ -94,7 +94,7 @@ def get_collections(id):
                         "img_url":content.img_url if content.__class__!=Picture \
                                   else [i for i in content.img_url][0].img_url,
                         "title":content.title,
-                        "author":user.name,
+                        "author":User.query.get_or_404(content.author_id).name,
                         "views":content.views,
                         "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
                               if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",

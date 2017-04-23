@@ -8,62 +8,66 @@ from .. import db
 from guisheng_app.decorators import admin_required
 from datetime import datetime
 
-@api.route('/article/<int:id>/', methods=['GET','POST'])
+@api.route('/article/<int:id>/', methods=['POST'])
 def get_article(id):
     if request.method == 'POST':
         my_id = int(request.get_json().get('my_id'))
         article = Article.query.get_or_404(id)
-        like_degree_one = article.light.filter_by(like_degree=0).count()
-        like_degree_two = article.light.filter_by(like_degree=1).count()
-        like_degree_three = article.light.filter_by(like_degree=2).count()
-        article.views+=1
-        db.session.commit()
-        if my_id == -1:
-            collected=0
-        else:
-            if Collect.query.filter_by(article_id=id).filter_by(author_id=my_id).first():
-                collected=1
-            else:
+        if article.published == 1:
+            like_degree_one = article.light.filter_by(like_degree=0).count()
+            like_degree_two = article.light.filter_by(like_degree=1).count()
+            like_degree_three = article.light.filter_by(like_degree=2).count()
+            article.views+=1
+            db.session.commit()
+            if my_id == -1:
                 collected=0
-        return Response(json.dumps({
-            "kind":3,
-            "title":article.title,
-            "img_url":User.query.get_or_404(article.author_id).img_url,
-            "author":User.query.get_or_404(article.author_id).name,
-            "time":article.time.strftime('%Y-%m-%d'),
-            "body":article.body_html,
-            "like_degree":[like_degree_one,like_degree_two,like_degree_three],
-            "commentCount":article.comments.count(),
-            "music":{
-                "title":article.music_title,
-                "music_url":article.music_url,
-                "singer":article.singer,
-                "music_img_url":article.music_img_url
-                },
-            "film":{
-                "film_url":article.film_url,
-                "scores":article.scores,
-                "film_img_url":article.film_img_url
-                },
-            "editor":article.editor,
-            "author_id":article.author_id,
-            "collected":collected
-            }),mimetype='application/json')
+            else:
+                if Collect.query.filter_by(article_id=id).filter_by(author_id=my_id).first():
+                    collected=1
+                else:
+                    collected=0
+            return Response(json.dumps({
+                "kind":3,
+                "title":article.title,
+                "img_url":User.query.get_or_404(article.author_id).img_url,
+                "author":User.query.get_or_404(article.author_id).name,
+                "time":article.time.strftime('%Y-%m-%d'),
+                "body":article.body_html,
+                "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+                "commentCount":article.comments.count(),
+                "music":{
+                    "title":article.music_title,
+                    "music_url":article.music_url,
+                    "singer":article.singer,
+                    "music_img_url":article.music_img_url
+                    },
+                "film":{
+                    "film_url":article.film_url,
+                    "scores":article.scores,
+                    "film_img_url":article.film_img_url
+                    },
+                "editor":article.editor,
+                "author_id":article.author_id,
+                "collected":collected
+                }),mimetype='application/json')
 
 @api.route('/article/recommend/',methods=['GET','POST'])
 def recommend_articles():
     a_id = int(request.get_json().get('article_id'))
     now_a = Article.query.get_or_404(a_id)
-    try:
+    recommend_articles=[]
+    sortlist = []
+    articles = []
+    if now_a.tag:
         tag_id = now_a.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
-        articles = []
         for _article in tag.articles:
-            articles.append(_article.article_id)
+            if Article.query.filter_by(id=_article.article_id).first():
+                if Article.query.get_or_404(_article.article_id).published == 1 \
+                   and _article.article_id != a_id:
+                    articles.append(_article.article_id)
         sortlist = sorted(articles,key=lambda id: Article.query.get_or_404(id).views,reverse=True)
         recommend_articles = sortlist[:3] if len(sortlist)>=4 else sortlist
-    except:
-        recommend_articles=[]
     return Response(json.dumps([{
             "title":Article.query.get_or_404(article_id).title,
             "description":Article.query.get_or_404(article_id).description,
@@ -76,6 +80,37 @@ def recommend_articles():
     ),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------
+@api.route('/article/<int:id>/', methods=['GET'])
+@admin_required
+def show_article(id):
+    article = Article.query.get_or_404(id)
+    like_degree_one = article.light.filter_by(like_degree=0).count()
+    like_degree_two = article.light.filter_by(like_degree=1).count()
+    like_degree_three = article.light.filter_by(like_degree=2).count()
+    return Response(json.dumps({
+        "kind":3,
+        "title":article.title,
+        "img_url":User.query.get_or_404(article.author_id).img_url,
+        "author":User.query.get_or_404(article.author_id).name,
+        "time":article.time.strftime('%Y-%m-%d'),
+        "body":article.body_html,
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+        "commentCount":article.comments.count(),
+        "music":{
+            "title":article.music_title,
+            "music_url":article.music_url,
+            "singer":article.singer,
+            "music_img_url":article.music_img_url
+            },
+        "film":{
+            "film_url":article.film_url,
+            "scores":article.scores,
+            "film_img_url":article.film_img_url
+            },
+        "editor":article.editor,
+        "author_id":article.author_id,
+        }),mimetype='application/json')
+
 @api.route('/article/',methods=['GET','POST'])
 @admin_required
 def add_article():

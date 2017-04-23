@@ -39,11 +39,11 @@ def main_page():
                        if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
                 "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description
-                } for content in tolist[:count-1]]
+                } for content in tolist[:count]]
         ),mimetype='application/json')
     else:
         post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
-        posts = post_kind.query.filter_by(published=1).order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
+        posts = post_kind.query.filter_by(published=1).order_by(post_kind.time.desc()).limit(count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
@@ -63,7 +63,7 @@ def main_page():
             } for _post in posts],
         ),mimetype='application/json')
 
-@api.route('/feed/', methods=['GET','POST'])
+@api.route('/feed/', methods=['POST'])
 def search():
     if request.method == 'POST':
         content = request.get_json().get("content")
@@ -77,24 +77,36 @@ def search():
         #返回搜索结果
         alist = []
         for n in News.query.whoosh_search(content):
-            alist.append(n)
+            if n.published == 1:
+                alist.append(n)
         for p in Picture.query.whoosh_search(content):
-            alist.append(p)
+            if n.published == 1:
+                alist.append(p)
         for a in Article.query.whoosh_search(content):
-            alist.append(a)
+            if n.published == 1:
+                alist.append(a)
         for i in Interaction.query.whoosh_search(content):
-            alist.append(i)
-        for t in Tag.query.whoosh_search(content):
+            if n.published == 1:
+                alist.append(i)
+        for t in Tag.query.filter_by(body=content).all():
             for _news in t.news:
-                alist.append(News.query.get_or_404(_news.news_id))
+                if News.query.filter_by(id=_news.news_id).first():
+                    if News.query.get_or_404(_news.news_id).published == 1:
+                        alist.append(News.query.get_or_404(_news.news_id))
             for _article in t.articles:
-                alist.append(Article.query.get_or_404(_article.article_id))
+                if Article.query.filter_by(id=_article.article_id).first():
+                    if Article.query.get_or_404(_article.article_id).published == 1:
+                        alist.append(Article.query.get_or_404(_article.article_id))
             for _pic in t.pictures:
-                alist.append(Picture.query.get_or_404(_pic.picture_id))
+                if Picture.query.filter_by(id=_pic.picture_id).first():
+                    if Picture.query.get_or_404(_pic.picture_id).published == 1:
+                        alist.append(Picture.query.get_or_404(_pic.picture_id))
             for _interaction in t.interactions:
-                alist.append(Interaction.query.get_or_404(_article.interaction_id))
+                if Interaction.query.filter_by(id=_interaction.interaction_id).first():
+                    if Interaction.query.get_or_404(_interaction.interaction_id).published == 1:
+                        alist.append(Interaction.query.get_or_404(_interaction.interaction_id))
         return Response(json.dumps([{
-                "kind":content.kind,
+                "kind":post.kind,
                 "article_id":post.id,
                 "img_url":post.img_url if post.__class__!=Picture \
                          else [i for i in post.img_url][0].img_url,
@@ -150,7 +162,7 @@ def list():
                        if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
                 "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description
-                } for content in tolist[:count-1]]
+                } for content in tolist[:count]]
         ),mimetype='application/json')
     else:
         post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
