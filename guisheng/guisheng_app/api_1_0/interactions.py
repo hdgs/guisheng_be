@@ -7,63 +7,67 @@ from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
-@api.route('/interaction/<int:id>/',methods=['GET','POST'])
+@api.route('/interaction/<int:id>/',methods=['POST'])
 def get_interaction(id):
     if request.method == "POST":
         my_id = int(request.get_json().get('my_id'))
         interaction = Interaction.query.get_or_404(id)
-        like_degree_one = interaction.light.filter_by(like_degree=0).count()
-        like_degree_two = interaction.light.filter_by(like_degree=1).count()
-        like_degree_three = interaction.light.filter_by(like_degree=2).count()
-        interaction.views+=1
-        db.session.commit()
-        if my_id == -1:
-            collected=0
-        else:
-            if Collect.query.filter_by(interaction_id=id).filter_by(author_id=my_id).first():
-                collected=1
-            else:
+        if interaction.published == 1:
+            like_degree_one = interaction.light.filter_by(like_degree=0).count()
+            like_degree_two = interaction.light.filter_by(like_degree=1).count()
+            like_degree_three = interaction.light.filter_by(like_degree=2).count()
+            interaction.views+=1
+            db.session.commit()
+            if my_id == -1:
                 collected=0
-        return Response(json.dumps({
-            "kind":4,
-            "img_url":User.query.get_or_404(interaction.author_id).img_url,
-            "title":interaction.title,
-            "author":User.query.get_or_404(interaction.author_id).name,
-            "time":interaction.time.strftime('%Y-%m-%d'),
-            "body":interaction.body,
-            "like_degree":[like_degree_one,like_degree_two,like_degree_three],
-            "editor":interaction.editor,
-            "author_id":interaction.author_id,
-            "commentCount":interaction.comments.count(),
-            "collected":collected,
-            "music":{
-                    "title":"",
-                    "music_img_url":"",
-                    "music_url":"",
-                    "singer":""
-            },
-            "film":{
-                   "film_url":"",
-                   "scores":"",
-                   "film_img_url":""
-            }
-            }),mimetype='application/json')
+            else:
+                if Collect.query.filter_by(interaction_id=id).filter_by(author_id=my_id).first():
+                    collected=1
+                else:
+                    collected=0
+            return Response(json.dumps({
+                "kind":4,
+                "img_url":User.query.get_or_404(interaction.author_id).img_url,
+                "title":interaction.title,
+                "author":User.query.get_or_404(interaction.author_id).name,
+                "time":interaction.time.strftime('%Y-%m-%d'),
+                "body":interaction.body,
+                "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+                "editor":interaction.editor,
+                "author_id":interaction.author_id,
+                "commentCount":interaction.comments.count(),
+                "collected":collected,
+                "music":{
+                        "title":"",
+                        "music_img_url":"",
+                        "music_url":"",
+                        "singer":""
+                },
+                "film":{
+                       "film_url":"",
+                       "scores":"",
+                       "film_img_url":""
+                }
+                }),mimetype='application/json')
 
 
 @api.route('/interaction/recommend/',methods=['GET','POST'])
 def recommend_interactions():
     interact_id = int(request.get_json().get('article_id'))
     now_interact = Interaction.query.get_or_404(interact_id)
-    try:
+    recommend_interactions=[]
+    sortlist = []
+    interactions = []
+    if now_interact.tag:
         tag_id = now_interact.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
-        interactions = []
         for _interaction in tag.interactions:
-            interactions.append(_interaction.interaction_id)
+            if Interaction.query.filter_by(id=_interaction.interaction_id).first():
+                if Interaction.query.get_or_404(_interaction.interaction_id).published == 1 \
+                   and _interaction.interaction_id != interact_id:
+                    interactions.append(_interaction.interaction_id)
         sortlist = sorted(interactions, key=lambda id: Interaction.query.get_or_404(id).views,reverse=True)
         recommend_interactions = sortlist[:3] if len(sortlist)>=4 else sortlist
-    except:
-        recommend_interactions = []
     return Response(json.dumps([{
             "title":Interaction.query.get_or_404(interaction_id).title,
             "description":Interaction.query.get_or_404(interaction_id).description,
@@ -76,6 +80,37 @@ def recommend_interactions():
     ),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------
+@api.route('/interaction/<int:id>/',methods=['GET'])
+@admin_required
+def show_interaction(id):
+    interaction = Interaction.query.get_or_404(id)
+    like_degree_one = interaction.light.filter_by(like_degree=0).count()
+    like_degree_two = interaction.light.filter_by(like_degree=1).count()
+    like_degree_three = interaction.light.filter_by(like_degree=2).count()
+    return Response(json.dumps({
+        "kind":4,
+        "img_url":User.query.get_or_404(interaction.author_id).img_url,
+        "title":interaction.title,
+        "author":User.query.get_or_404(interaction.author_id).name,
+        "time":interaction.time.strftime('%Y-%m-%d'),
+        "body":interaction.body,
+        "like_degree":[like_degree_one,like_degree_two,like_degree_three],
+        "editor":interaction.editor,
+        "author_id":interaction.author_id,
+        "commentCount":interaction.comments.count(),
+        "music":{
+                "title":"",
+                "music_img_url":"",
+                "music_url":"",
+                "singer":""
+        },
+        "film":{
+               "film_url":"",
+               "scores":"",
+               "film_img_url":""
+        }
+        }),mimetype='application/json')
+
 @api.route('/interaction/',methods=['GET','POST'])
 @admin_required
 def add_interaction():

@@ -17,7 +17,10 @@ def get_profile(id):
         my_id = int(request.get_json().get("my_id"))
         user=User.query.get_or_404(id)
         my_user=User.query.get_or_404(my_id)
-        return Response(json.dumps({
+        if user.user_role == 0:
+            if my_id != id:
+                return jsonify({'message': '403 Forbidden'}), 403
+        return jsonify({
             "img_url":user.img_url,
             "name":user.name,
             "weibo":user.weibo,
@@ -25,7 +28,7 @@ def get_profile(id):
             "role":user.user_role,
             "user_role":my_user.user_role,
             "user_id":user.id
-        }),mimetype='application/json')
+        })
 
 @api.route('/profile/<int:id>/edit/',methods=['GET','PUT'])
 def edit_profile(id):
@@ -50,7 +53,10 @@ def edit_profile(id):
 @api.route('/profile/<int:id>/works/',methods=['GET'])
 def get_works(id):
     user= User.query.get_or_404(id)
-    articles = [article for article in user.articles.all()]
+    articles = []
+    for article in user.articles.all():
+        if article.published==1:
+            articles.append(article)
     articles.sort(key=attrgetter('time'),reverse=True)
     return Response(json.dumps([{
             "kind":_article.kind,
@@ -64,7 +70,6 @@ def get_works(id):
             "description":_article.description,
         }for _article in articles]
     ),mimetype='application/json')
-
 
 @api.route('/profile/<int:id>/collections/',methods=['GET'])
 def get_collections(id):

@@ -186,3 +186,47 @@ def list():
             } for _post in posts],
         ),mimetype='application/json')
 
+
+@api.route('/publish/', methods=['POST'])
+@admin_required
+def publish():
+    if request.method == 'POST':
+        kind = int(request.get_json().get("kind"))
+        post_id = int(request.get_json().get("post_id"))
+        if kind == 1:
+            post = News.query.get_or_404(post_id)
+        if kind == 2:
+            post = Picture.query.get_or_404(post_id)
+        if kind == 3:
+            post = Article.query.get_or_404(post_id)
+        if kind == 4:
+            post = Interaction.query.get_or_404(post_id)
+        post.published = 1
+        db.session.add(post)
+        db.session.commit()
+        return jsonify({
+                "published":post.id
+            })
+
+@api.route('/unpublish/', methods=['POST'])
+@admin_required
+def unpublish():
+    if request.method == 'POST':
+        kind = int(request.get_json().get("kind"))
+        post_id = int(request.get_json().get("post_id"))
+        if kind == 1:
+            post = News.query.get_or_404(post_id)
+        if kind == 2:
+            post = Picture.query.get_or_404(post_id)
+        if kind == 3:
+            post = Article.query.get_or_404(post_id)
+        if kind == 4:
+            post = Interaction.query.get_or_404(post_id)
+        post.published = 0
+        db.session.add(post)
+        db.session.commit()
+        return jsonify({
+                "unpublished":post.id
+            })
+
+
