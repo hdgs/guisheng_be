@@ -7,6 +7,7 @@ from . import api
 from .. import db
 from guisheng_app.decorators import admin_required
 
+
 @api.route('/news/<int:id>/', methods=['POST'])
 def get_news(id):
     if request.method == "POST":
@@ -87,6 +88,8 @@ def show_news(id):
     like_degree_one = news.light.filter_by(like_degree=0).count()
     like_degree_two = news.light.filter_by(like_degree=1).count()
     like_degree_three = news.light.filter_by(like_degree=2).count()
+    tagids=[pt.tag_id for pt in PostTag.query.filter_by(news_id=id).all()]
+    tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
         "img_url":User.query.get_or_404(news.author_id).img_url,
         "kind":1,
@@ -98,6 +101,7 @@ def show_news(id):
         "editor":news.editor,
         "author_id":news.author_id,
         "commentCount":news.comments.count(),
+        "tags":tags,
         "music":{
                 "title":"",
                 "music_img_url":"",

@@ -182,7 +182,6 @@ class News(db.Model):
     views = db.Column(db.Integer,default=0)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     img_url = db.Column(db.String(164),default="")
-    # img_url = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
     editor = db.Column(db.String(64),default="")
     kind = 1
@@ -191,11 +190,12 @@ class News(db.Model):
 
     @staticmethod
     def from_json(json_news):
-        u=User.query.filter_by(name=json_news.get('name')).first()
-        title = json_news.get('title')
-        description = json_news.get('description')
-        return News(title=title, author=u,
-                    description=description)
+        if User.query.filter_by(name=json_news.get('name')).first():
+            u=User.query.filter_by(name=json_news.get('name')).first()
+            title = json_news.get('title')
+            description = json_news.get('description')
+            return News(title=title, author=u,
+                        description=description)
     @staticmethod
     def generate_fake(count=100):
         from random import seed,randint
@@ -275,12 +275,10 @@ class Picture(db.Model):
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.relationship('Image', backref='picture', lazy='dynamic')
-    # img_url = db.Column(db.PickleType,default=[""])
     title = db.Column(db.String(64),default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer, default=0)
-    # introduction = db.Column(db.PickleType,default=[""])
     description = db.Column(db.Text,default="")
     like = db.relationship('Like',backref='picture', lazy='dynamic')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic')
@@ -292,11 +290,10 @@ class Picture(db.Model):
 
     @staticmethod
     def from_json(json_pic):
-        u = User.query.filter_by(name=json_pic.get('name')).first()
-        title = json_pic.get('title')
-        # img_url = json_pic.get('img_url')
-        # introduction = json_pic.get('description')
-        return Picture(title=title, author=u)
+        if User.query.filter_by(name=json_pic.get('name')).first():
+            u = User.query.filter_by(name=json_pic.get('name')).first()
+            title = json_pic.get('title')
+            return Picture(title=title, author=u)
 
     @staticmethod
     def generate_fake(count=100):
@@ -327,7 +324,6 @@ class Article(db.Model):
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164),default="")
-    # img_url = db.Column(db.PickleType,default=[""])
     img_url = db.Column(db.String(164),default="")
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body = db.Column(db.Text,default="")
@@ -352,21 +348,22 @@ class Article(db.Model):
 
     @staticmethod
     def from_json(json_article):
-        u = User.query.filter_by(name=json_article.get('name')).first()
-        title = json_article.get('title')
-        img_url = json_article.get('img_url')
-        description = json_article.get('description')
-        music_url = json_article.get('music_url')
-        music_title = json_article.get('music_title')
-        music_img_url = json_article.get('music_img_url')
-        singer = json_article.get('singer')
-        film_url = json_article.get('film_url')
-        film_img_url = json_article.get('film_img_url')
-        return Article(title=title, author=u,
-                    description=description,img_url=img_url,
-                    music_url=music_url,music_title=music_title,
-                    music_img_url=music_img_url, film_url=film_url,
-                    film_img_url=film_img_url)
+        if User.query.filter_by(name=json_article.get('name')).first():
+            u = User.query.filter_by(name=json_article.get('name')).first()
+            title = json_article.get('title')
+            img_url = json_article.get('img_url')
+            description = json_article.get('description')
+            music_url = json_article.get('music_url')
+            music_title = json_article.get('music_title')
+            music_img_url = json_article.get('music_img_url')
+            singer = json_article.get('singer')
+            film_url = json_article.get('film_url')
+            film_img_url = json_article.get('film_img_url')
+            return Article(title=title, author=u,
+                        description=description,img_url=img_url,
+                        music_url=music_url,music_title=music_title,
+                        music_img_url=music_img_url, film_url=film_url,
+                        film_img_url=film_img_url)
 
     @staticmethod
     def generate_fake(count=100):
@@ -378,7 +375,6 @@ class Article(db.Model):
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             a = Article(title=forgery_py.lorem_ipsum.title(randint(1,4)),
-                        # img_url=[forgery_py.internet.email_address()],
                         img_url=forgery_py.internet.email_address(),
                         author=u,
                         body=forgery_py.lorem_ipsum.paragraphs(randint(1,4)),
@@ -425,7 +421,6 @@ class Interaction(db.Model):
     description = db.Column(db.Text,default="")
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
-    # img_url = db.Column(db.PickleType,default=[""])
     img_url = db.Column(db.String(164),default="")
     editor = db.Column(db.String(64),default="")
     kind = 4
@@ -433,11 +428,12 @@ class Interaction(db.Model):
 
     @staticmethod
     def from_json(json_interaction):
-        u = User.query.filter_by(name=json_interaction.get('name')).first()
-        title = json_interaction.get('title')
-        description = json_interaction.get('description')
-        return Interaction(title=title, author=u,
-                           description=description)
+        if User.query.filter_by(name=json_interaction.get('name')).first():
+            u = User.query.filter_by(name=json_interaction.get('name')).first()
+            title = json_interaction.get('title')
+            description = json_interaction.get('description')
+            return Interaction(title=title, author=u,
+                               description=description)
 
     @staticmethod
     def generate_fake(count=100):

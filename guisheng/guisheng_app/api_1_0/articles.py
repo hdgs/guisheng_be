@@ -87,6 +87,8 @@ def show_article(id):
     like_degree_one = article.light.filter_by(like_degree=0).count()
     like_degree_two = article.light.filter_by(like_degree=1).count()
     like_degree_three = article.light.filter_by(like_degree=2).count()
+    tagids=[pt.tag_id for pt in PostTag.query.filter_by(article_id=id).all()]
+    tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
         "kind":3,
         "title":article.title,
@@ -96,6 +98,7 @@ def show_article(id):
         "body":article.body_html,
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "commentCount":article.comments.count(),
+        "tags":tags,
         "music":{
             "title":article.music_title,
             "music_url":article.music_url,

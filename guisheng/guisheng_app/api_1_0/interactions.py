@@ -87,6 +87,8 @@ def show_interaction(id):
     like_degree_one = interaction.light.filter_by(like_degree=0).count()
     like_degree_two = interaction.light.filter_by(like_degree=1).count()
     like_degree_three = interaction.light.filter_by(like_degree=2).count()
+    tagids=[pt.tag_id for pt in PostTag.query.filter_by(interaction_id=id).all()]
+    tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
         "kind":4,
         "img_url":User.query.get_or_404(interaction.author_id).img_url,
@@ -98,6 +100,7 @@ def show_interaction(id):
         "editor":interaction.editor,
         "author_id":interaction.author_id,
         "commentCount":interaction.comments.count(),
+        "tags":tags,
         "music":{
                 "title":"",
                 "music_img_url":"",

@@ -76,6 +76,8 @@ def show_pic(id):
     pic = Picture.query.get_or_404(id)
     pics = [p.img_url for p in pic.img_url]
     introductions = [p.introduction for p in pic.img_url]
+    tagids=[pt.tag_id for pt in PostTag.query.filter_by(picture_id=id).all()]
+    tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
         "id":pic.id,
         "kind":2,
@@ -90,6 +92,7 @@ def show_pic(id):
         "commentCount":pic.comments.count(),
         "editor":pic.editor,
         "author_id":pic.author_id,
+        "tags":tags
     }),mimetype='application/json')
 
 @api.route('/pics/',methods=['POST'])
