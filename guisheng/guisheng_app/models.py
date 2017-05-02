@@ -190,8 +190,8 @@ class News(db.Model):
 
     @staticmethod
     def from_json(json_news):
-        if User.query.filter_by(name=json_news.get('name')).first():
-            u=User.query.filter_by(name=json_news.get('name')).first()
+        if User.query.filter_by(name=json_news.get('author')).first():
+            u=User.query.filter_by(name=json_news.get('author')).first()
             title = json_news.get('title')
             description = json_news.get('description')
             return News(title=title, author=u,
@@ -290,8 +290,8 @@ class Picture(db.Model):
 
     @staticmethod
     def from_json(json_pic):
-        if User.query.filter_by(name=json_pic.get('name')).first():
-            u = User.query.filter_by(name=json_pic.get('name')).first()
+        if User.query.filter_by(name=json_pic.get('author')).first():
+            u = User.query.filter_by(name=json_pic.get('author')).first()
             title = json_pic.get('title')
             return Picture(title=title, author=u)
 
@@ -348,8 +348,8 @@ class Article(db.Model):
 
     @staticmethod
     def from_json(json_article):
-        if User.query.filter_by(name=json_article.get('name')).first():
-            u = User.query.filter_by(name=json_article.get('name')).first()
+        if User.query.filter_by(name=json_article.get('author')).first():
+            u = User.query.filter_by(name=json_article.get('author')).first()
             title = json_article.get('title')
             img_url = json_article.get('img_url')
             description = json_article.get('description')
@@ -428,8 +428,8 @@ class Interaction(db.Model):
 
     @staticmethod
     def from_json(json_interaction):
-        if User.query.filter_by(name=json_interaction.get('name')).first():
-            u = User.query.filter_by(name=json_interaction.get('name')).first()
+        if User.query.filter_by(name=json_interaction.get('author')).first():
+            u = User.query.filter_by(name=json_interaction.get('author')).first()
             title = json_interaction.get('title')
             description = json_interaction.get('description')
             return Interaction(title=title, author=u,
