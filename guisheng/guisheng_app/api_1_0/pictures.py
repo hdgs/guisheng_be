@@ -100,7 +100,7 @@ def show_pic(id):
 def add_pics():
     if request.method == 'POST':
         title = request.get_json().get('title')
-        author = request.get_json().get('name')
+        author = request.get_json().get('author')
         if User.query.filter_by(name=author).first():
             if Picture.query.filter_by(title=title).first():
                 pics = Picture.query.filter_by(title=title).first()
