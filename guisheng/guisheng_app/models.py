@@ -193,9 +193,9 @@ class News(db.Model):
         if User.query.filter_by(name=json_news.get('author')).first():
             u=User.query.filter_by(name=json_news.get('author')).first()
             title = json_news.get('title')
-            description = json_news.get('description')
+            img_url = json_news.get('img_url')
             return News(title=title, author=u,
-                        description=description)
+                        img_url=img_url)
     @staticmethod
     def generate_fake(count=100):
         from random import seed,randint

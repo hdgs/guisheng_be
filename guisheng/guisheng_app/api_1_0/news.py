@@ -71,7 +71,7 @@ def recommend_news():
         recommend_news = sortlist[:3] if len(sortlist)>=4 else sortlist
     return Response(json.dumps([{
             "title":News.query.get_or_404(news_id).title,
-            "description":News.query.get_or_404(news_id).description,
+            "img_url":News.query.get_or_404(news_id).img_url,
             "author":User.query.get_or_404(News.query.get_or_404(news_id).author_id).name,
             "tag":tag.body,
             "views":News.query.get_or_404(news_id).views,
@@ -138,13 +138,12 @@ def add_news():
             'id': news.id
         }), 201
 
-@api.route('/news/<int:id>/', methods=["GET", "PUT"])
+@api.route('/news/<int:id>/', methods=["PUT"])
 @admin_required
 def update_news(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.title = request.get_json().get('title')
-        news.description = request.get_json().get('description')
         news.author = User.query.filter_by(name=request.get_json().get('name')).first()
         db.session.add(news)
         db.session.commit()
@@ -175,7 +174,16 @@ def update_news(id):
             'update': news.id
         }), 200
 
-@api.route('/news/<int:id>/body/', methods=["GET", "PUT"])
+@api.route('/news/<int:id>/body/', methods=["GET"])
+@admin_required
+def get_news_body(id):
+    news = News.query.get_or_404(id)
+    return jsonify({
+        'body':news.body
+    }), 200
+
+
+@api.route('/news/<int:id>/body/', methods=["PUT"])
 @admin_required
 def update_news_body(id):
     news = News.query.get_or_404(id)

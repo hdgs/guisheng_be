@@ -134,11 +134,10 @@ def add_pics():
 def update_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == 'PUT':
-        pics.title = request.get_json().get('title')
-        #pics.img_url = request.get_json().get('img_url')
-        #pics.introduction = request.get_json().get('description')
-        pics.author = User.query.filter_by(name=request.get_json().get('name')).first()
-        #pics.author =  User.query.get_or_404(request.get_json().get('author_id'))
+        if request.get_json().get('title'):
+            pics.title = request.get_json().get('title')
+        if request.get_json().get('name'):
+            pics.author = User.query.filter_by(name=request.get_json().get('name')).first()
         db.session.add(pics)
         db.session.commit()
 
