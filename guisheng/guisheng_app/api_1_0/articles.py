@@ -144,7 +144,7 @@ def update_article(id):
     if request.method == 'PUT':
         article.title = request.get_json().get('title')
         article.img_url = request.get_json().get('img_url')
-        article.author = User.query.filter_by(name=request.get_json().get('name')).first()
+        article.author = User.query.filter_by(name=request.get_json().get('author')).first()
         article.description = request.get_json().get('description')
         article.music_url = request.get_json().get('music_url')
         article.music_title = request.get_json().get('music_title')
@@ -181,7 +181,15 @@ def update_article(id):
             'update': article.id
         }),200
 
-@api.route('/article/<int:id>/body/', methods=["GET", "PUT"])
+@api.route('/article/<int:id>/body/', methods=["GET"])
+@admin_required
+def get_article_body(id):
+    article = Article.query.get_or_404(id)
+    return jsonify({
+        "body":article.body
+    })
+
+@api.route('/article/<int:id>/body/', methods=["PUT"])
 @admin_required
 def update_article_body(id):
     article = Article.query.get_or_404(id)

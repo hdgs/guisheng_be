@@ -100,18 +100,7 @@ def show_interaction(id):
         "editor":interaction.editor,
         "author_id":interaction.author_id,
         "commentCount":interaction.comments.count(),
-        "tags":tags,
-        "music":{
-                "title":"",
-                "music_img_url":"",
-                "music_url":"",
-                "singer":""
-        },
-        "film":{
-               "film_url":"",
-               "scores":"",
-               "film_img_url":""
-        }
+        "tags":tags
         }),mimetype='application/json')
 
 @api.route('/interaction/',methods=['GET','POST'])
@@ -144,7 +133,7 @@ def update_interaction(id):
     if request.method == 'PUT':
         interaction.title = request.get_json().get('title')
         interaction.img_url = request.get_json().get('img_url')
-        interaction.author = User.query.filter_by(name=request.get_json().get('name')).first()
+        interaction.author = User.query.filter_by(name=request.get_json().get('author')).first()
         interaction.description = request.get_json().get('description')
         db.session.add(interaction)
         db.session.commit()
@@ -174,7 +163,15 @@ def update_interaction(id):
             'update': interaction.id
         }),200
 
-@api.route('/interaction/<int:id>/body/', methods=["GET", "PUT"])
+@api.route('/interaction/<int:id>/body/', methods=["GET"])
+@admin_required
+def get_interaction_body(id):
+    interaction = Interaction.query.get_or_404(id)
+    return jsonify({
+        "body": interaction.body
+    }),200
+
+@api.route('/interaction/<int:id>/body/', methods=["PUT"])
 @admin_required
 def update_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
