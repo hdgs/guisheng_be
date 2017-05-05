@@ -144,7 +144,7 @@ def update_news(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.title = request.get_json().get('title')
-        news.author = User.query.filter_by(name=request.get_json().get('name')).first()
+        news.author = User.query.filter_by(name=request.get_json().get('author')).first()
         db.session.add(news)
         db.session.commit()
 
