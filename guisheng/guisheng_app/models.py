@@ -78,12 +78,12 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(64),default="",unique=True,index=True)
     weibo = db.Column(db.String(164),default="")
     introduction = db.Column(db.Text,default="")
-    news = db.relationship('News', backref='author', lazy='dynamic')
-    pictures = db.relationship('Picture', backref='author', lazy='dynamic')
-    articles = db.relationship('Article', backref='author', lazy='dynamic')
-    interactions = db.relationship('Interaction', backref='author', lazy='dynamic')
-    collection = db.relationship('Collect', backref='author', lazy='dynamic')
-    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    news = db.relationship('News', backref='author', lazy='dynamic',cascade='all')
+    pictures = db.relationship('Picture', backref='author', lazy='dynamic',cascade='all')
+    articles = db.relationship('Article', backref='author', lazy='dynamic',cascade='all')
+    interactions = db.relationship('Interaction', backref='author', lazy='dynamic',cascade='all')
+    collection = db.relationship('Collect', backref='author', lazy='dynamic',cascade='all')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic',cascade='all')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'),default=3)
     user_role = db.Column(db.Integer,default=0)
 
@@ -172,12 +172,12 @@ class News(db.Model):
     __tablename__ = 'news'
     __searchable__ = ['title']
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64),default="")
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    title = db.Column(db.String(64),default="",unique=True, index=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
     body = db.Column(db.Text,default="")
-    comments = db.relationship('Comment', backref='news', lazy='dynamic')
-    light = db.relationship('Light', backref='news', lazy='dynamic')
-    collect = db.relationship('Collect', backref='news', lazy='dynamic')
+    comments = db.relationship('Comment', backref='news', lazy='dynamic',cascade='all')
+    light = db.relationship('Light', backref='news', lazy='dynamic',cascade='all')
+    collect = db.relationship('Collect', backref='news', lazy='dynamic',cascade='all')
     tag = db.relationship("PostTag", backref="news",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer,default=0)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
@@ -187,6 +187,7 @@ class News(db.Model):
     kind = 1
     published = db.Column(db.Integer,default=0)
     body_html = db.Column(db.Text,default="")
+    tea = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_news):
@@ -194,8 +195,9 @@ class News(db.Model):
             u=User.query.filter_by(name=json_news.get('author')).first()
             title = json_news.get('title')
             img_url = json_news.get('img_url')
+            editor = json_news.get('editor')
             return News(title=title, author=u,
-                        img_url=img_url)
+                        img_url=img_url,editor=editor)
     @staticmethod
     def generate_fake(count=100):
         from random import seed,randint
@@ -274,26 +276,28 @@ class Picture(db.Model):
     __tablename__ = 'pictures'
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
-    img_url = db.relationship('Image', backref='picture', lazy='dynamic')
+    img_url = db.relationship('Image', backref='picture', lazy='dynamic',cascade='all')
     title = db.Column(db.String(64),default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tag = db.relationship("PostTag", backref="pictures",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer, default=0)
     description = db.Column(db.Text,default="")
-    like = db.relationship('Like',backref='picture', lazy='dynamic')
-    comments = db.relationship('Comment',backref='picture', lazy='dynamic')
-    collect = db.relationship('Collect',backref='picture', lazy='dynamic')
+    like = db.relationship('Like',backref='picture', lazy='dynamic',cascade='all')
+    comments = db.relationship('Comment',backref='picture', lazy='dynamic',cascade='all')
+    collect = db.relationship('Collect',backref='picture', lazy='dynamic',cascade='all')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     editor = db.Column(db.String(64),default="")
     kind = 2
     published = db.Column(db.Integer,default=0)
+    tea = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_pic):
         if User.query.filter_by(name=json_pic.get('author')).first():
             u = User.query.filter_by(name=json_pic.get('author')).first()
             title = json_pic.get('title')
-            return Picture(title=title, author=u)
+            editor = json_pic.get('editor')
+            return Picture(title=title, author=u, editor=editor)
 
     @staticmethod
     def generate_fake(count=100):
@@ -305,10 +309,8 @@ class Picture(db.Model):
         for i in range(count):
             u = User.query.offset(randint(0,user_count-1)).first()
             p = Picture(title=forgery_py.lorem_ipsum.title(randint(1,4)),
-                        # img_url=[forgery_py.internet.email_address()],
                         author=u,
                         views=randint(0,100),
-                        # introduction=forgery_py.lorem_ipsum.paragraph(),
                         description="",
                         time=forgery_py.date.date(True),
                         published=randint(0,1))
@@ -323,13 +325,13 @@ class Article(db.Model):
     __tablename__ = 'articles'
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(164),default="")
+    title = db.Column(db.String(164),default="",unique=True, index=True)
     img_url = db.Column(db.String(164),default="")
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
     body = db.Column(db.Text,default="")
-    comments = db.relationship('Comment',backref='article', lazy='dynamic')
-    light = db.relationship('Light',backref='article', lazy='dynamic')
-    collect = db.relationship('Collect',backref='article', lazy='dynamic')
+    comments = db.relationship('Comment',backref='article', lazy='dynamic',cascade='all')
+    light = db.relationship('Light',backref='article', lazy='dynamic',cascade='all')
+    collect = db.relationship('Collect',backref='article', lazy='dynamic',cascade='all')
     views = db.Column(db.Integer, default=0)
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     description = db.Column(db.Text,default="")
@@ -345,6 +347,7 @@ class Article(db.Model):
     kind = 3
     published = db.Column(db.Integer,default=0)
     body_html = db.Column(db.Text,default="")
+    tea = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_article):
@@ -359,11 +362,12 @@ class Article(db.Model):
             singer = json_article.get('singer')
             film_url = json_article.get('film_url')
             film_img_url = json_article.get('film_img_url')
+            editor = json_article.get('editor')
             return Article(title=title, author=u,
                         description=description,img_url=img_url,
                         music_url=music_url,music_title=music_title,
                         music_img_url=music_img_url, film_url=film_url,
-                        film_img_url=film_img_url)
+                        film_img_url=film_img_url, editor=editor)
 
     @staticmethod
     def generate_fake(count=100):
@@ -411,12 +415,12 @@ class Interaction(db.Model):
     __tablename__ = 'interactions'
     __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(164), default="")
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    title = db.Column(db.String(164), default="",unique=True, index=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
     views = db.Column(db.Integer,default=0)
-    comments = db.relationship('Comment',backref='interaction', lazy='dynamic')
-    light = db.relationship('Light',backref='interaction', lazy='dynamic')
-    collect = db.relationship('Collect',backref='interaction', lazy='dynamic')
+    comments = db.relationship('Comment',backref='interaction', lazy='dynamic',cascade='all')
+    light = db.relationship('Light',backref='interaction', lazy='dynamic',cascade='all')
+    collect = db.relationship('Collect',backref='interaction', lazy='dynamic',cascade='all')
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     description = db.Column(db.Text,default="")
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
@@ -425,6 +429,7 @@ class Interaction(db.Model):
     editor = db.Column(db.String(64),default="")
     kind = 4
     published = db.Column(db.Integer,default=0)
+    tea = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_interaction):
@@ -432,8 +437,10 @@ class Interaction(db.Model):
             u = User.query.filter_by(name=json_interaction.get('author')).first()
             title = json_interaction.get('title')
             description = json_interaction.get('description')
-            return Interaction(title=title, author=u,
-                               description=description)
+            editor = json_interaction.get('editor')
+            img_url = json_interaction.get('img_url')
+            return Interaction(title=title, author=u,img_url=img_url,
+                               description=description, editor=editor)
 
     @staticmethod
     def generate_fake(count=100):
@@ -464,8 +471,6 @@ class Interaction(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
-
-
 
     def __repr__(self):
         return "<Interaction %r>" % self.id
@@ -502,13 +507,13 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text,default="")
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
     comment_id = db.Column(db.Integer,default=-1)
-    news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
-    article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id')) 
-    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
-    like = db.relationship('Like',backref='comment', lazy='dynamic')
+    news_id = db.Column(db.Integer, db.ForeignKey('news.id',ondelete="CASCADE"))
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"))
+    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id',ondelete="CASCADE"))
+    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id',ondelete="CASCADE"))
+    like = db.relationship('Like',backref='comment', lazy='dynamic',cascade='all')
 
     @staticmethod
     def generate_fake(count=100):
@@ -544,11 +549,11 @@ class Comment(db.Model):
 class Collect(db.Model):
     __tablename__ = 'collects'
     id = db.Column(db.Integer,primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
-    article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
-    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
+    news_id = db.Column(db.Integer, db.ForeignKey('news.id',ondelete="CASCADE"))
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"))
+    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id',ondelete="CASCADE"))
+    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id',ondelete="CASCADE"))
 
     @staticmethod
     def generate_fake(count=100):
@@ -582,9 +587,9 @@ class Collect(db.Model):
 class Light(db.Model):
     __tablename__ = 'lights'
     id = db.Column(db.Integer, primary_key=True)
-    news_id = db.Column(db.Integer, db.ForeignKey('news.id'))
-    article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
-    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id'))
+    news_id = db.Column(db.Integer, db.ForeignKey('news.id',ondelete="CASCADE"))
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id',ondelete="CASCADE"))
+    interaction_id = db.Column(db.Integer, db.ForeignKey('interactions.id',ondelete="CASCADE"))
     like_degree = db.Column(db.Integer)
 
     @staticmethod
@@ -614,8 +619,8 @@ class Light(db.Model):
 class Like(db.Model):
     __tablename__ = 'likes'
     id = db.Column(db.Integer, primary_key=True)
-    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id'))
-    comment_id = db.Column(db.Integer,db.ForeignKey('comments.id'))
+    picture_id = db.Column(db.Integer, db.ForeignKey('pictures.id',ondelete="CASCADE"))
+    comment_id = db.Column(db.Integer,db.ForeignKey('comments.id',ondelete="CASCADE"))
 
     @staticmethod
     def generate_fake(count=100):

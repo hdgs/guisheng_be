@@ -79,6 +79,20 @@ def recommend_interactions():
         }for interaction_id in recommend_interactions]
     ),mimetype='application/json')
 
+@api.route('/tea/',methods=['GET'])
+def get_tea():
+    tea = Interaction.query.filter_by(tea=1).first()
+    return jsonify({
+        "kind":4,
+        "article_id":tea.id,
+        "img_url":tea.img_url,
+        "title":tea.title,
+        "author":User.query.filter_by(id=tea.author_id).first().name,
+        "views":tea.views,
+        "tag":Tag.query.get_or_404(tea.tag[0].tag_id).body if len([i for i in tea.tag]) else "",
+        "description":tea.description
+    })
+
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/interaction/<int:id>/',methods=['GET'])
 @admin_required
@@ -135,6 +149,7 @@ def update_interaction(id):
         interaction.img_url = request.get_json().get('img_url')
         interaction.author = User.query.filter_by(name=request.get_json().get('author')).first()
         interaction.description = request.get_json().get('description')
+        interaction.editor = request.get_json().get('editor')
         db.session.add(interaction)
         db.session.commit()
 
@@ -161,7 +176,7 @@ def update_interaction(id):
                 db.session.commit()
         return jsonify({
             'update': interaction.id
-        }),200
+        }), 200
 
 @api.route('/interaction/<int:id>/body/', methods=["GET"])
 @admin_required
@@ -169,7 +184,7 @@ def get_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     return jsonify({
         "body": interaction.body
-    }),200
+    }), 200
 
 @api.route('/interaction/<int:id>/body/', methods=["PUT"])
 @admin_required
@@ -193,3 +208,23 @@ def delete_interaction(id):
         return jsonify({
             'deleted': interaction.id
         }), 200
+
+@api.route('/tea/', methods=["POST"])
+@admin_required
+def set_tea():
+    if request.method == "POST":
+        article_id = int(request.get_json().get('article_id'))
+        if Interaction.query.filter_by(tea=1).first():
+            old_tea = Interaction.query.filter_by(tea=1).first()
+            old_tea.tea=0
+            db.session.add(old_tea)
+            db.session.commit()
+        new_tea = Interaction.query.filter_by(id=article_id).first()
+        new_tea.tea=1
+        db.session.add(new_tea)
+        db.session.commit()
+        return jsonify({
+            'seted': new_tea.id
+        }), 200
+
+
