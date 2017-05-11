@@ -153,6 +153,7 @@ def update_article(id):
         article.film_url = request.get_json().get('film_url')
         article.film_img_url = request.get_json().get('film_img_url')
         article.editor = request.get_json().get('editor')
+        article.flag = request.get_json().get('flag')
         db.session.add(article)
         db.session.commit()
 

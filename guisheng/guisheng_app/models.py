@@ -348,6 +348,7 @@ class Article(db.Model):
     published = db.Column(db.Integer,default=0)
     body_html = db.Column(db.Text,default="")
     tea = db.Column(db.Integer,default=0)
+    flag = db.Column(db.Integer,default=1)
 
     @staticmethod
     def from_json(json_article):
@@ -363,11 +364,12 @@ class Article(db.Model):
             film_url = json_article.get('film_url')
             film_img_url = json_article.get('film_img_url')
             editor = json_article.get('editor')
+            flag = json_article.get('flag')
             return Article(title=title, author=u,
                         description=description,img_url=img_url,
                         music_url=music_url,music_title=music_title,
                         music_img_url=music_img_url, film_url=film_url,
-                        film_img_url=film_img_url, editor=editor)
+                        film_img_url=film_img_url, editor=editor, flag=flag)
 
     @staticmethod
     def generate_fake(count=100):
@@ -430,6 +432,7 @@ class Interaction(db.Model):
     kind = 4
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
+    flag = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_interaction):
@@ -439,8 +442,9 @@ class Interaction(db.Model):
             description = json_interaction.get('description')
             editor = json_interaction.get('editor')
             img_url = json_interaction.get('img_url')
+            flag = json_interaction.get('flag')
             return Interaction(title=title, author=u,img_url=img_url,
-                               description=description, editor=editor)
+                               description=description, editor=editor,flag=flag)
 
     @staticmethod
     def generate_fake(count=100):

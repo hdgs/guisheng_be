@@ -150,6 +150,7 @@ def update_interaction(id):
         interaction.author = User.query.filter_by(name=request.get_json().get('author')).first()
         interaction.description = request.get_json().get('description')
         interaction.editor = request.get_json().get('editor')
+        interaction.flag = request.get_json().get('flag')
         db.session.add(interaction)
         db.session.commit()
 

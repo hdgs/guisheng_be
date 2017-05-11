@@ -137,55 +137,32 @@ def list():
     kind = int(request.args.get('kind'))
     page = int(request.args.get('page'))
     count = int(request.args.get('count'))
-    if kind == 0:
-        tolist = []
-        for n in News.query.order_by(News.time.desc()).limit(count):
-            tolist.append(n)
-        for p in Picture.query.order_by(Picture.time.desc()).limit(count):
-            tolist.append(p)
-        for a in Article.query.order_by(Article.time.desc()).limit(count):
-            tolist.append(a)
-        for i in Interaction.query.order_by(Interaction.time.desc()).limit(count):
-            tolist.append(i)
-        tolist.sort(key=attrgetter('time'),reverse=True)
-        return Response(json.dumps([{
-                "kind":content.kind,
-                "article_id":content.id,
-                "img_url":content.img_url if content.__class__!=Picture \
-                          else [i for i in content.img_url][0].img_url,
-                "title":content.title,
-                "author":User.query.get_or_404(content.author_id).name if content.author_id else None,
-                "views":content.views,
-                "tag":Tag.query.get_or_404(content.__class__.query.get_or_404(content.id).tag[0].tag_id).body\
-                      if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else "",
-                "tags":[Tag.query.get_or_404(t.tag_id).body for t in content.__class__.query.get_or_404(content.id).tag]\
-                       if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
-                "time":content.time.strftime('%Y-%m-%d'),
-                "description":content.description
-                } for content in tolist[:count]]
-        ),mimetype='application/json')
+    post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
+    posts=[]
+    if kind==4 or kind==3:
+        flag = int(request.args.get('flag'))
+        posts = post_kind.query.filter_by(flag=flag).order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
     else:
-        post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
         posts = post_kind.query.order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
-        return Response(json.dumps([{
-                "kind":kind,
-                "article_id":_post.id,
-                "img_url":_post.img_url if _post.__class__!=Picture \
-                          else [i for i in _post.img_url][0].img_url,
-                "title":_post.title,
-                "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
-                "views":_post.views,
-                "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
-                      if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
-                "tags":[Tag.query.get_or_404(t.tag_id).body for t in post_kind.query.get_or_404(_post.id).tag]\
-                       if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else [""],
-                "time":_post.time.strftime('%Y-%m-%d'),
-                "description":_post.description,
-                "published":_post.published,
-                "count":post_kind.query.count()
-            } for _post in posts],
-        ),mimetype='application/json')
-
+    return Response(json.dumps([{
+            "kind":kind,
+            "article_id":_post.id,
+            "img_url":_post.img_url if _post.__class__!=Picture \
+                      else [i for i in _post.img_url][0].img_url,
+            "title":_post.title,
+            "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
+            "views":_post.views,
+            "tag":Tag.query.get_or_404(post_kind.query.get_or_404(_post.id).tag[0].tag_id).body\
+                  if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else "",
+            "tags":[Tag.query.get_or_404(t.tag_id).body for t in post_kind.query.get_or_404(_post.id).tag]\
+                   if len([i for i in post_kind.query.get_or_404(_post.id).tag]) else [""],
+            "time":_post.time.strftime('%Y-%m-%d'),
+            "description":_post.description,
+            "published":_post.published,
+            "count":post_kind.query.count(),
+            "tea":_post.tea
+        } for _post in posts],
+    ),mimetype='application/json')
 
 @api.route('/publish/', methods=['POST'])
 @admin_required
