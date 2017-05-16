@@ -239,18 +239,16 @@ class Everydaypic(db.Model):
     __tablename__ = 'everydaypics'
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.Column(db.String(164),default="")
-    climate = db.Column(db.String(164))
-    climate_url = db.Column(db.String(64))
+    climate = db.Column(db.Integer,default=1)
     date = db.Column(db.String(164),default="")
     time = db.Column(db.DateTime, index=True, default=datetime.utcnow())
 
     @staticmethod
     def from_json(json_everydaypic):
         img_url = json_everydaypic.get('img_url')
-        climate_url = json_everydaypic.get('climate_url')
         climate = json_everydaypic.get('climate')
         date = json_everydaypic.get('date')
-        return Everydaypic(img_url=img_url,climate_url=climate_url,
+        return Everydaypic(img_url=img_url,
                            climate=climate,date=date)
 
     @staticmethod
@@ -261,8 +259,7 @@ class Everydaypic(db.Model):
         seed()
         for i in range(count):
             e = Everydaypic(img_url=forgery_py.internet.email_address(),
-                            climate = "sunny",
-                            climate_url = forgery_py.internet.email_address(),
+                            climate = 1,
                             date = forgery_py.date.date(True),
                             time=forgery_py.date.date(True))
             db.session.add(e)
