@@ -148,7 +148,8 @@ def list():
             "kind":kind,
             "article_id":_post.id,
             "img_url":_post.img_url if _post.__class__!=Picture \
-                      else [i for i in _post.img_url][0].img_url,
+                      else [i for i in _post.img_url][0].img_url if [i for i in _post.img_url]\
+                      else "",
             "title":_post.title,
             "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
             "views":_post.views,
