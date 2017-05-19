@@ -29,7 +29,8 @@ def main_page():
                 "kind":content.kind,
                 "article_id":content.id,
                 "img_url":content.img_url if content.__class__!=Picture \
-                          else [i for i in content.img_url][0].img_url,
+                          else [i for i in content.img_url][0].img_url if [i for i in content.img_url]\
+                          else "",
                 "title":content.title,
                 "author":User.query.get_or_404(content.author_id).name if content.author_id else None,
                 "views":content.views,
@@ -48,7 +49,8 @@ def main_page():
                 "kind":kind,
                 "article_id":_post.id,
                 "img_url":_post.img_url if _post.__class__!=Picture \
-                          else [i for i in _post.img_url][0].img_url,
+                          else [i for i in _post.img_url][0].img_url if [i for i in _post.img_url]\
+                          else "",
                 "title":_post.title,
                 "author":User.query.get_or_404(_post.author_id).name if _post.author_id else None,
                 "views":_post.views,
