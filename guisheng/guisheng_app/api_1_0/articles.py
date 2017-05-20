@@ -112,6 +112,7 @@ def show_article(id):
             },
         "editor":article.editor,
         "author_id":article.author_id,
+        "description":article.description
         }),mimetype='application/json')
 
 @api.route('/article/',methods=['GET','POST'])
