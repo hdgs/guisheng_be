@@ -366,7 +366,7 @@ class Article(db.Model):
             return Article(title=title, author=u,
                         description=description,img_url=img_url,
                         music_url=music_url,music_title=music_title,
-                        music_img_url=music_img_url, film_url=film_url,
+                        music_img_url=music_img_url, film_url=film_url,singer=singer
                         film_img_url=film_img_url, editor=editor, flag=flag,scores=scores)
 
     @staticmethod
