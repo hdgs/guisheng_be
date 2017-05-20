@@ -141,7 +141,7 @@ def list():
     count = int(request.args.get('count'))
     post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
     posts=[]
-    if kind==4 or kind==3:
+    if kind in [3,4]:
         flag = int(request.args.get('flag'))
         posts = post_kind.query.filter_by(flag=flag).order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
     else:
@@ -162,7 +162,7 @@ def list():
             "time":_post.time.strftime('%Y-%m-%d'),
             "description":_post.description,
             "published":_post.published,
-            "count":post_kind.query.count(),
+            "count":post_kind.query.filter_by(flag=flag).count() if kind in [3,4] else post_kind.query.count(),
             "tea":_post.tea
         } for _post in posts],
     ),mimetype='application/json')
