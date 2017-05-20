@@ -339,7 +339,7 @@ class Article(db.Model):
     singer = db.Column(db.String(64),default="")
     film_url = db.Column(db.String(164),default="")
     film_img_url = db.Column(db.String(164),default="")
-    scores = db.Column(db.Integer)
+    scores = db.Column(db.Float,default=0.0)
     editor = db.Column(db.String(64),default="")
     kind = 3
     published = db.Column(db.Integer,default=0)
@@ -362,11 +362,12 @@ class Article(db.Model):
             film_img_url = json_article.get('film_img_url')
             editor = json_article.get('editor')
             flag = json_article.get('flag')
+            scores = json_article.get('scores')
             return Article(title=title, author=u,
                         description=description,img_url=img_url,
                         music_url=music_url,music_title=music_title,
                         music_img_url=music_img_url, film_url=film_url,
-                        film_img_url=film_img_url, editor=editor, flag=flag)
+                        film_img_url=film_img_url, editor=editor, flag=flag,scores=scores)
 
     @staticmethod
     def generate_fake(count=100):
@@ -389,7 +390,6 @@ class Article(db.Model):
                         singer = forgery_py.lorem_ipsum.title(randint(1,4)),
                         film_url=forgery_py.internet.email_address(),
                         film_img_url=forgery_py.internet.email_address(),
-                        scores = randint(0,10),
                         views = randint(0,100),
                         published=randint(0,1))
             db.session.add(a)

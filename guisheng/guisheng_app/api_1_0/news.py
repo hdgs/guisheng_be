@@ -102,17 +102,6 @@ def show_news(id):
         "author_id":news.author_id,
         "commentCount":news.comments.count(),
         "tags":tags,
-        "music":{
-                "title":"",
-                "music_img_url":"",
-                "music_url":"",
-                "singer":""
-        },
-        "film":{
-               "film_url":"",
-               "scores":"",
-               "film_img_url":""
-        }
         }),mimetype='application/json')
 
 @api.route('/news/', methods=["GET", "POST"])

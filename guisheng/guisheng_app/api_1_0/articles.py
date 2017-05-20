@@ -99,23 +99,19 @@ def show_article(id):
         "like_degree":[like_degree_one,like_degree_two,like_degree_three],
         "commentCount":article.comments.count(),
         "tags":tags,
-        "music":{
-            "title":article.music_title,
-            "music_url":article.music_url,
-            "singer":article.singer,
-            "music_img_url":article.music_img_url
-            },
-        "film":{
-            "film_url":article.film_url,
-            "scores":article.scores,
-            "film_img_url":article.film_img_url
-            },
+        "music_title":article.music_title,
+        "music_url":article.music_url,
+        "singer":article.singer,
+        "music_img_url":article.music_img_url,
+        "film_url":article.film_url,
+        "scores":article.scores,
+        "film_img_url":article.film_img_url,
         "editor":article.editor,
         "author_id":article.author_id,
         "description":article.description
         }),mimetype='application/json')
 
-@api.route('/article/',methods=['GET','POST'])
+@api.route('/article/',methods=['POST'])
 @admin_required
 def add_article():
     if request.method == 'POST':
@@ -138,7 +134,7 @@ def add_article():
             'id':article.id
         }), 201
 
-@api.route('/article/<int:id>/',methods=['GET','PUT'])
+@api.route('/article/<int:id>/',methods=['PUT'])
 @admin_required
 def update_article(id):
     article = Article.query.get_or_404(id)
@@ -154,6 +150,7 @@ def update_article(id):
         article.film_url = request.get_json().get('film_url')
         article.film_img_url = request.get_json().get('film_img_url')
         article.editor = request.get_json().get('editor')
+        article.scores = request.get_json().get('scores')
         db.session.add(article)
         db.session.commit()
 
