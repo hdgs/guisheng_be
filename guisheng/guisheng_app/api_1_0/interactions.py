@@ -114,7 +114,8 @@ def show_interaction(id):
         "editor":interaction.editor,
         "author_id":interaction.author_id,
         "commentCount":interaction.comments.count(),
-        "tags":tags
+        "tags":tags,
+        "description":interaction.decription
         }),mimetype='application/json')
 
 @api.route('/interaction/',methods=['GET','POST'])
