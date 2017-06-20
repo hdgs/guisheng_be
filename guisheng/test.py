@@ -32,5 +32,5 @@ class BasicTestCase(unittest.TestCase):
                     "email":str(number),
                     "password":str(number)}),
                     content_type = 'application/json')
-        print reponse.status_code
-        #self.assertTrue(reponse.status_code == None)
+#        print reponse.status_code
+        self.assertTrue(reponse.status_code == 200)
