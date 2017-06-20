@@ -23,7 +23,7 @@ def register():
             user_id=User.query.filter_by(email=email).first().id
             return jsonify({
                 "created":user_id,
-            }),200
+            })
 
 @api.route('/login/', methods=['GET', 'POST'])
 def login():
