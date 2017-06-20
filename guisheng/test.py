@@ -5,9 +5,9 @@ from guisheng_app import create_app
 from flask_sqlalchemy import SQLAlchemy
 import random
 import json
-from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+number = random.randint(501,900)
 
 class BasicTestCase(unittest.TestCase):
     def setUp(self):
@@ -20,9 +20,17 @@ class BasicTestCase(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
+    
     def test_app_exist(self):
         self.assertFalse(current_app is None)
+    
     def test_register(self):
         reponse = self.client.post(
-                url_for('api_1_0')
-
+                url_for('api.register',_external=True),
+                data = json.dumps({
+                    "username":str(number),
+                    "email":str(number),
+                    "password":str(number)}),
+                    content_type = 'application/json')
+        print reponse.status_code
+        #self.assertTrue(reponse.status_code == None)
