@@ -90,7 +90,10 @@ def get_tea():
         "author":User.query.filter_by(id=tea.author_id).first().name,
         "views":tea.views,
         "tag":Tag.query.get_or_404(tea.tag[0].tag_id).body if len([i for i in tea.tag]) else "",
-        "description":tea.description
+        "description":tea.description,
+        "tags":[Tag.query.get_or_404(t.tag_id).body for t in tea.tag] if len([i for i in tea.tag]) else [""],
+        "time":tea.time.strftime('%Y-%m-%d'),
+        "tea":tea.tea
     })
 
 #-----------------------------------后台管理API---------------------------------------
@@ -227,5 +230,4 @@ def set_tea():
         return jsonify({
             'seted': new_tea.id
         }), 200
-
 
