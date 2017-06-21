@@ -8,6 +8,7 @@ from guisheng_app.models import User
 from guisheng_app.decorators import admin_required
 
 @api.route('/register/',methods=['GET','POST'])
+@admin_required
 def register():
     if request.method == 'POST':
         name = request.get_json().get("username")
