@@ -45,8 +45,8 @@ class BasicTestCase(unittest.TestCase):
         reponse = self.client.post(
                 url_for('api.login',_external=True),
                 data = json.dumps({
-                    "password":str(ADMIN_PSWORD),
-                    "email":str(ADMIN_PSWORD)
+                    "password":str(number),
+                    "email":str(number)
                     }),
                 content_type = 'application/json')
         s = json.loads(reponse.data)['token']
@@ -124,6 +124,11 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         #No Pictures so it's 404
         self.assertTrue(response.status_code == 404)
+    
+    #News
+    def test_d_get_news(self):
+        response = self.client.post(
+            url_for('api.get_news',)
 
     #Feed 
     def test_z_feed_get(self):
