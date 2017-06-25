@@ -14,12 +14,14 @@ db = SQLAlchemy()
 number = random.randint(10000,99999)
 
 class BasicTestCase(unittest.TestCase):
+    
     def setUp(self):
         self.app = create_app()
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client = self.app.test_client()
         db.create_all()
+    
     def tearDown(self):
         db.session.remove()
         db.drop_all()
@@ -97,6 +99,77 @@ class BasicTestCase(unittest.TestCase):
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
+    
+    #News Method
+    def test_c_get_news(self):
+        response = self.client.post(
+            url_for('api.get_news',id=ID,_external=True),
+            data=json.dumps({
+                "my_id":str(number) }),
+            content_type = 'application/json')
+        self.assertTrue(response.status_code==200)
+    
+    
+    
+    ''' 
+    def test_c_recommend_news(self):
+        response = self.client.post(
+                url_for('api.recommend_news',_external=True),
+                data=json.dumps({
+                        "article_id":1
+                    }),
+                content_type = 'application/json')
+        self.assertTrue(response.status_code==200)
+    '''
+
+    #Like
+
+    def test_c_like_picture(self):
+        response = self.client.post(
+                url_for('api.like_picture',_external=True),
+                data=json.dumps({
+                        "picture_id":1 
+                                }),
+                content_type = 'application/json')
+        self.assertTrue(response.status_code==200)
+    
+    def test_c_like_comment(self):
+        response = self.client.post(
+                url_for('api.like_comment',_external=True),
+                data=json.dumps({
+                        "comment_id":1 
+                                }),
+                content_type = 'application/json')
+        self.assertTrue(response.status_code==200)
+
+
+    #Light
+
+    def test_d_light(self):
+        response = self.client.post(
+                url_for('api.light',_external=True),
+                data=json.dumps({
+                        "article_id":1,
+                        "kind":1,
+                        "like_degree":1
+                        }),
+                content_type = 'application/json')
+        self.assertTrue(response.status_code==200)
+    '''    
+    def test_c_add_news(self):
+        response = self.client.post(
+            url_for('api.add_news',_external=True),
+            data=json.dumps({
+                    "title":str(number),
+                    "tags":["test"],
+                    "name":str(number),
+                    "img_url":"test",
+                    "editor":"test"
+                }),
+            content_type = 'application/json')
+        print response.status_code
+    '''          
+    
     #Pictures Methods
     
     
@@ -120,16 +193,18 @@ class BasicTestCase(unittest.TestCase):
     def test_c_post_pic(self):
         response = self.client.post(
             url_for('api.get_pic',id=ID,_external=True),
-                data = json.dumps({"my_id":ID}),
+            data = json.dumps({"my_id":ID}),
             content_type = 'application/json')
         #No Pictures so it's 404
         self.assertTrue(response.status_code == 404)
     
+    
     #News
-    def test_d_get_news(self):
-        response = self.client.post(
-            url_for('api.get_news',)
-
+    #def test_d_get_news(self):
+    #    response = self.client.post(
+    #        url_for('api.get_news',)
+     
+    
     #Feed 
     def test_z_feed_get(self):
         reponse = self.client.get(
@@ -137,6 +212,22 @@ class BasicTestCase(unittest.TestCase):
                 content_type = 'application/json')
         self.assertTrue(reponse.status_code == 200)
     
+    #Interactions
+    def test_d_get_interaction(self):
+        
+        response = self.client.post(
+                url_for('api.get_interaction',id=1,_external=True),
+                data=({
+                        "my_id":1,
+                        }),
+                content_type = 'application/json')
+        print response.status_code
+        #self.assertTrue(response.status_code == 200)
+    
+    
+                    
+
+
 
     '''    
     def test_z_everydaypic(self):
