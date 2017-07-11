@@ -97,7 +97,7 @@ def get_comment_likes(id):
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/comments/list/',methods=['GET'])
 @admin_required
-def get_comments():
+def list_comments():
     kind = int(request.args.get("kind"))
     a_id = int(request.args.get("id"))
     count = int(request.args.get('count'))
