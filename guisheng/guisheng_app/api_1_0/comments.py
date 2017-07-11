@@ -98,7 +98,7 @@ def get_comment_likes(id):
 def get_comments():
     kind = int(request.args.get("kind"))
     a_id = int(request.args.get("id"))
-    count = int(request.args.get('count')
+    count = int(request.args.get('count'))
     page = int(request.args.get('page'))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).filter_by(comment_id==-1).order_by(Comment.time.asc()).all().limit(count).offset((page-1)*count)
