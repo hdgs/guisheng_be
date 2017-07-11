@@ -104,16 +104,16 @@ def list_comments():
     page = int(request.args.get('page'))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(news_id=a_id).filter(comment_id!=-1).order_by(Comment.time.asc())
+        responses = Comment.query.filter_by(news_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
     elif kind == 2:
         comments = Comment.query.filter_by(picture_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(picture_id=a_id).filter(comment_id!=-1).order_by(Comment.time.asc())
+        responses = Comment.query.filter_by(picture_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
     elif kind == 3:
         comments = Comment.query.filter_by(article_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(article_id=a_id).filter(comment_id!=-1).order_by(Comment.time.asc())
+        responses = Comment.query.filter_by(article_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
     else:
         comments = Comment.query.filter_by(interaction_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(interaction_id=a_id).filter(comment_id!=-1).order_by(Comment.time.asc())
+        responses = Comment.query.filter_by(interaction_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
     return Response(json.dumps([{
             "name":(User.query.get_or_404(comment.author_id)).name,
             "article_id":a_id,
