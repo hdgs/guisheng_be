@@ -55,33 +55,36 @@ class BasicTestCase(unittest.TestCase):
         s = json.loads(response.data)['token']
         global TOKEN
         TOKEN = s
-        #global b64token
-        #b64token = base64.b64encode(TOKEN)
+        global b64token
+        b64token = str(base64.b64encode(TOKEN))
         self.assertTrue(response.status_code == 200)
     
     #Test get_news
-    def test_c_get_news(self):
+    def test_d_get_news(self):
         response = self.client.post(
-            url_for('api.get_news',id=ID,_external=True),
+            url_for('api.get_news',id=news_id,_external=True),
             data=json.dumps({
                 "my_id":int(number) 
                 }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test recommend_news
-    def test_c_recommend_news(self):
+    def test_d_recommend_news(self):
         response = self.client.post(
             url_for('api.recommend_news',_external=True),
             data = json.dumps({ 
-                "article_id":int(1),
+                "article_id":int(news_id),
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
 
     #Test show_news
-    def test_c_show_news(self):
+    def test_d_show_news(self):
         response = self.client.get(
-            url_for('api.show_news',_external=True),
+            url_for('api.show_news',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test add_news
@@ -89,42 +92,61 @@ class BasicTestCase(unittest.TestCase):
         response = self.client.post(
             url_for('api.add_news',_external=True),
             headers = {
-                "Authorization":"Basic base64("+TOKEN+":)",
-                "Accept" : "application/json" ,
-                "Content_Type" :"application/json"
+                "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
-                "title":"test",
+                "author":str(535),
+                "title":str(number),
                 "tags":["test"],
-                "name":"test",
                 "img_url":"test",
                 "editor":"test"
             }),
             content_type = 'application/json')
-        print response.status_code
-        #self.assertTrue(response.status_code == 200)
+        global news_id
+        news_id = json.loads(response.data)['id']
+        self.assertTrue(response.status_code == 201)
     #Test update_news
-    def test_c_update_news(self):
-        response = self.client.XXXX(
-            url_for('api.update_news',_external=True),
+    def test_d_update_news(self):
+        response = self.client.put(
+            url_for('api.update_news',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({
+                    "title":"test2",
+                    "author":"test2",
+                    "editor":"test2",
+                    }),
             content_type = 'application/json')
 
     #Test get_news_body
-    def test_c_get_news_body(self):
+    def test_d_get_news_body(self):
         response = self.client.get(
-            url_for('api.get_news_body',_external=True),
+            url_for('api.get_news_body',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test update_news_body
-    def test_c_update_news_body(self):
-        response = self.client.XXXX(
-            url_for('api.update_news_body',_external=True),
+    def test_d_update_news_body(self):
+        response = self.client.put(
+            url_for('api.update_news_body',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data=json.dumps({
+                "body":"testbody"
+                }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_news
-    def test_c_delete_news(self):
-        response = self.client.XXXX(
-            url_for('api.delete_news',_external=True),
+    def test_e_delete_news(self):
+        response = self.client.delete(
+            url_for('api.delete_news',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_pic
