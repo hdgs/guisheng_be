@@ -6,6 +6,7 @@ from ..models import Role,User,News,Picture,Article,Interaction,Everydaypic,\
 from . import api
 from datetime import datetime,timedelta
 from guisheng_app import db
+from guisheng_app.decorators import admin_required
 
 def get_time(comment_time):
     now_time = datetime.utcnow()
@@ -95,6 +96,7 @@ def get_comment_likes(id):
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/comments/list/',methods=['GET'])
+@admin_required
 def get_comments():
     kind = int(request.args.get("kind"))
     a_id = int(request.args.get("id"))
