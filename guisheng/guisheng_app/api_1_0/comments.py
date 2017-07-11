@@ -25,7 +25,7 @@ def get_time(comment_time):
 @api.route('/comments/',methods=['GET'])
 def get_comments():
     kind = int(request.args.get("kind"))
-    a_id = int(request.args.get("article_id"))
+    a_id = int(request.args.get("id"))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
