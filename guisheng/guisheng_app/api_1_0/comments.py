@@ -25,7 +25,7 @@ def get_time(comment_time):
 @api.route('/comments/',methods=['GET'])
 def get_comments():
     kind = int(request.args.get("kind"))
-    a_id = int(request.args.get("id"))
+    a_id = int(request.args.get("article_id"))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
         responses = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).all()
@@ -61,7 +61,7 @@ def get_comments():
     ),mimetype='application/json')
 
 
-@api.route('/comments/',methods=['GET','POST'])
+@api.route('/comments/',methods=['POST'])
 def create_comments():
     if request.method == 'POST':
         comment = Comment()
@@ -94,8 +94,50 @@ def get_comment_likes(id):
         }),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------
-@api.route('/comments/<int:id>/', methods=["GET","DELETE"])
-#@admin_required
+@api.route('/comments/list/',methods=['GET'])
+def get_comments():
+    kind = int(request.args.get("kind"))
+    a_id = int(request.args.get("id"))
+    count = int(request.args.get('count')
+    page = int(request.args.get('page'))
+    if kind == 1:
+        comments = Comment.query.filter_by(news_id=a_id).filter_by(comment_id==-1).order_by(Comment.time.asc()).all().limit(count).offset((page-1)*count)
+        responses = Comment.query.filter_by(news_id=a_id).filter_by(comment_id!=-1).order_by(Comment.time.asc()).all()
+    elif kind == 2:
+        comments = Comment.query.filter_by(picture_id=a_id).filter_by(comment_id==-1).order_by(Comment.time.asc()).all().limit(count).offset((page-1)*count)
+        responses = Comment.query.filter_by(picture_id=a_id).filter_by(comment_id!=-1).order_by(Comment.time.asc()).all()
+    elif kind == 3:
+        comments = Comment.query.filter_by(article_id=a_id).filter_by(comment_id==-1).order_by(Comment.time.asc()).all().limit(count).offset((page-1)*count)
+        responses = Comment.query.filter_by(article_id=a_id).filter_by(comment_id!=-1).order_by(Comment.time.asc()).all()
+    else:
+        comments = Comment.query.filter_by(interaction_id=a_id).filter_by(comment_id==-1).order_by(Comment.time.asc()).all().limit(count).offset((page-1)*count)
+        responses = Comment.query.filter_by(interaction_id=a_id).filter_by(comment_id!=-1).order_by(Comment.time.asc()).all()
+    return Response(json.dumps([{
+            "name":(User.query.get_or_404(comment.author_id)).name,
+            "article_id":a_id,
+            "comment_id":comment.id,
+            "img_url":(User.query.get_or_404(comment.author_id)).img_url,
+            "message":comment.body,
+            "user_role":(User.query.get_or_404(comment.author_id)).user_role,
+            "comments":[{
+                "name":(User.query.get_or_404(comment.author_id)).name,
+                "article_id":a_id,
+                "comment_id":response.id,
+                "img_url":(User.query.get_or_404(response.author_id)).img_url,
+                "message":response.body,
+                "user_role":(User.query.get_or_404(comment.author_id)).user_role,
+                "likes":response.like.count(),
+                }for response in responses],
+            "likes":comment.like.count(),
+            "time":get_time(comment.time),
+            "user_id":comment.author_id
+        } for comment in comments]
+    ),mimetype='application/json')
+
+
+
+@api.route('/comments/<int:id>/', methods=["DELETE"])
+@admin_required
 def delete_comment(id):
     comment = Comment.query.get_or_404(id)
     if request.method == "DELETE":
