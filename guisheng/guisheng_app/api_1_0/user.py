@@ -49,12 +49,16 @@ def login():
 @admin_required
 def user_list():
     user_list = User.query.filter_by(role_id=3).all()
-    return Response(json.dumps([{
-        "id":user.id,
-        "name":user.name,
-        "user_role":user.user_role
-    } for user in user_list]
-    ),mimetype='application/json')
+    users = [{
+                "id":user.id,
+                "name":user.name,
+                "user_role":user.user_role
+            } for user in user_list]
+    num = User.query.filter_by(role_id=3).count()
+    return jsonify({
+        "users":users,
+        "num":num
+        })
 
 @api.route('/role/author/', methods=['POST'])
 @admin_required
