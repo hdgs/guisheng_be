@@ -233,71 +233,117 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_interaction
-    def test_c_get_interaction(self):
+    def test_d_get_interaction(self):
         response = self.client.post(
-            url_for('api.get_interaction',id=1,_external=True),
-            data=({
-                    "my_id":1,
+            url_for('api.get_interaction',id=inte_id,_external=True),
+            data=json.dumps({
+                    "my_id":-1,
                  }),
             content_type = 'application/json')
-        print response.status_code
-        #self.assertTrue(response.status_code == 200)
+        self.assertTrue(response.status_code == 200)
 
     #Test recommend_interactions
-    def test_c_recommend_interactions(self):
+    def test_d_recommend_interactions(self):
         response = self.client.post(
             url_for('api.recommend_interactions',_external=True),
-            data = json.dump({ }),
+            data = json.dumps({
+                "article_id":inte_id,
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_tea
-    def test_c_get_tea(self):
+    def test_d_get_tea(self):
         response = self.client.get(
             url_for('api.get_tea',_external=True),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test show_interaction
-    def test_c_show_interaction(self):
+    def test_d_show_interaction(self):
         response = self.client.get(
-            url_for('api.show_interaction',_external=True),
+            url_for('api.show_interaction',id=inte_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test add_interaction
     def test_c_add_interaction(self):
         response = self.client.post(
             url_for('api.add_interaction',_external=True),
-            data = json.dump({ }),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({
+                "title":str(number),
+                "tags":["test"],
+                "author":"test",
+                "description":"test",
+                "editor":"test",
+                "img_url":"test",
+                "flag":1
+            }),
             content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
+        global inte_id
+        inte_id = json.loads(response.data)['id']
+        self.assertTrue(response.status_code == 201)
     #Test update_interaction
-    def test_c_update_interaction(self):
-        response = self.client.get(
-            url_for('api.update_interaction',_external=True),
+    def test_d_update_interaction(self):
+        response = self.client.put(
+            url_for('api.update_interaction',id=inte_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({
+                "title":str(number),
+                "author":"test",
+                "tags":["test"],
+                "description":"test",
+                "img_url":"test",
+                "editor":"Humbert",
+                "flag":0
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_interaction_body
-    def test_c_get_interaction_body(self):
+    def test_d_get_interaction_body(self):
         response = self.client.get(
-            url_for('api.get_interaction_body',_external=True),
+            url_for('api.get_interaction_body',id=inte_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test update_interaction_body
-    def test_c_update_interaction_body(self):
-        response = self.client.XXXX(
-            url_for('api.update_interaction_body',_external=True),
+    def test_d_update_interaction_body(self):
+        response = self.client.put(
+            url_for('api.update_interaction_body',id=inte_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({
+                "body":"test"
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_interaction
-    def test_c_delete_interaction(self):
-        response = self.client.get(
-            url_for('api.delete_interaction',_external=True),
+    def test_g_delete_interaction(self):
+        response = self.client.delete(
+            url_for('api.delete_interaction',id=inte_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test set_tea
     def test_c_set_tea(self):
         response = self.client.post(
             url_for('api.set_tea',_external=True),
-            data = json.dump({ }),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({
+                "article_id":inte_id
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_token
