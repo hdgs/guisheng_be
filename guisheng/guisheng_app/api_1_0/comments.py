@@ -104,17 +104,13 @@ def list_comments():
     count = int(request.args.get('count'))
     page = int(request.args.get('page'))
     if kind == 1:
-        comments = Comment.query.filter_by(news_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(news_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
+        comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
     elif kind == 2:
-        comments = Comment.query.filter_by(picture_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(picture_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
+        comments = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
     elif kind == 3:
-        comments = Comment.query.filter_by(article_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(article_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
+        comments = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
     else:
-        comments = Comment.query.filter_by(interaction_id=a_id).filter_by(comment_id=-1).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-        responses = Comment.query.filter_by(interaction_id=a_id).filter(Comment.comment_id!=-1).order_by(Comment.time.asc())
+        comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
     return Response(json.dumps([{
             "name":(User.query.get_or_404(comment.author_id)).name,
             "article_id":a_id,
@@ -122,15 +118,6 @@ def list_comments():
             "img_url":(User.query.get_or_404(comment.author_id)).img_url,
             "message":comment.body,
             "user_role":(User.query.get_or_404(comment.author_id)).user_role,
-            "comments":[{
-                "name":(User.query.get_or_404(comment.author_id)).name,
-                "article_id":a_id,
-                "comment_id":response.id,
-                "img_url":(User.query.get_or_404(response.author_id)).img_url,
-                "message":response.body,
-                "user_role":(User.query.get_or_404(comment.author_id)).user_role,
-                "likes":response.like.count(),
-                }for response in responses],
             "likes":comment.like.count(),
             "time":get_time(comment.time),
             "user_id":comment.author_id
