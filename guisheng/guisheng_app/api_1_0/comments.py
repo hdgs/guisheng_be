@@ -21,6 +21,7 @@ def get_time(comment_time):
             time = comment_time.strftime('%m-%d')
     else:
         time = comment_time.strftime('%Y-%m-%d')
+    return time
 
 
 @api.route('/comments/',methods=['GET'])

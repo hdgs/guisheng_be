@@ -93,7 +93,8 @@ def get_tea():
         "description":tea.description,
         "tags":[Tag.query.get_or_404(t.tag_id).body for t in tea.tag] if len([i for i in tea.tag]) else [""],
         "time":tea.time.strftime('%Y-%m-%d'),
-        "tea":tea.tea
+        "tea":tea.tea,
+        "published":tea.published
     })
 
 #-----------------------------------后台管理API---------------------------------------
