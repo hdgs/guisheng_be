@@ -105,13 +105,17 @@ def list_comments():
     page = int(request.args.get('page'))
     if kind == 1:
         comments = Comment.query.filter_by(news_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
+        num = Comment.query.filter_by(news_id=a_id).count()
     elif kind == 2:
         comments = Comment.query.filter_by(picture_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
+        num = Comment.query.filter_by(picture_id=a_id).count()
     elif kind == 3:
         comments = Comment.query.filter_by(article_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
+        num = Comment.query.filter_by(article_id=a_id).count()
     else:
         comments = Comment.query.filter_by(interaction_id=a_id).order_by(Comment.time.asc()).limit(count).offset((page-1)*count)
-    return Response(json.dumps([{
+        num = Comment.query.filter_by(interaction_id=a_id).count()
+    comment_list = [{
             "name":(User.query.get_or_404(comment.author_id)).name,
             "article_id":a_id,
             "comment_id":comment.id,
@@ -121,10 +125,11 @@ def list_comments():
             "likes":comment.like.count(),
             "time":get_time(comment.time),
             "user_id":comment.author_id
-        } for comment in comments]
-    ),mimetype='application/json')
-
-
+        }  for comment in comments]
+    return jsonify({
+        "comments":comment_list,
+        "num":num
+        })
 
 @api.route('/comments/<int:id>/', methods=["DELETE"])
 @admin_required
