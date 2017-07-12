@@ -6,6 +6,7 @@ from flask import request,jsonify,Response
 from flask_login import login_user, logout_user, current_user, login_required
 from guisheng_app.models import User
 from guisheng_app.decorators import admin_required
+import json
 
 @api.route('/register/',methods=['GET','POST'])
 @admin_required
