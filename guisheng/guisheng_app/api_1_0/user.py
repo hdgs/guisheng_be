@@ -48,7 +48,9 @@ def login():
 @api.route('/user/list/', methods=['GET'])
 @admin_required
 def user_list():
-    user_list = User.query.filter_by(role_id=3).all()
+    count = int(request.args.get('count'))
+    page = int(request.args.get('page'))
+    user_list = User.query.filter_by(role_id=3).limit(count).offset((page-1)*count)
     users = [{
                 "id":user.id,
                 "name":user.name,
