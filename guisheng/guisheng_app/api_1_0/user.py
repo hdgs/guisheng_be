@@ -44,9 +44,21 @@ def login():
         })
 
 #-----------------------------------后台管理API---------------------------------------
-@api.route('/role/author/<int:id>/', methods=['GET'])
+@api.route('/user/list/', methods=['GET'])
 @admin_required
-def change_to_author(id):
+def user_list():
+    user_list = User.query.filter_by(role_id=3).all()
+    return Response(json.dumps([{
+        "id":user.id,
+        "name":user.name,
+        "user_role":user.user_role
+    } for user in user_list]
+    ),mimetype='application/json')
+
+@api.route('/role/author/', methods=['POST'])
+@admin_required
+def change_to_author():
+    id = int(request.get_json().get("id"))
     user = User.query.get_or_404(id)
     user.user_role = 1
     db.session.add(user)
@@ -55,9 +67,10 @@ def change_to_author(id):
         "update":user.id,
         }),200
 
-@api.route('/role/user/<int:id>/', methods=['GET'])
+@api.route('/role/user/', methods=['POST'])
 @admin_required
-def change_to_common_user(id):
+def change_to_common_user():
+    id = int(request.get_json().get("id"))
     user = User.query.get_or_404(id)
     user.user_role = 0
     db.session.add(user)
