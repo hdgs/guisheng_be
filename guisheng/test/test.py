@@ -63,8 +63,11 @@ class BasicTestCase(unittest.TestCase):
     def test_d_get_news(self):
         response = self.client.post(
             url_for('api.get_news',id=news_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             data=json.dumps({
-                "my_id":int(number) 
+                "my_id":int(ADMIN_ID) 
                 }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
@@ -116,6 +119,7 @@ class BasicTestCase(unittest.TestCase):
                     "title":"test2",
                     "author":"test2",
                     "editor":"test2",
+                    "tags":["test"]
                     }),
             content_type = 'application/json')
 
@@ -150,55 +154,82 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_pic
-    def test_c_get_pic(self):
+    def test_d_get_pic(self):
         response = self.client.post(
-            url_for('api.get_pic',id=ID,_external=True),
-            data = json.dumps({"my_id":ID}),
+            url_for('api.get_pic',id=pics_id,_external=True),
+            data = json.dumps({
+                "my_id":int(ADMIN_ID)
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test recommend_pics
-    def test_c_recommend_pics(self):
+    def test_d_recommend_pics(self):
         response = self.client.post(
             url_for('api.recommend_pics',_external=True),
-            data = json.dump({ }),
+            data = json.dumps({
+                "article_id":int(pics_id)
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test show_pic
-    def test_c_show_pic(self):
+    def test_d_show_pic(self):
         response = self.client.get(
-            url_for('api.show_pic',_external=True),
+            url_for('api.show_pic',id=pics_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test add_pics
     def test_c_add_pics(self):
         response = self.client.post(
             url_for('api.add_pics',_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             data=json.dumps({
                 "title":str(number),
                 "tags":["test"],
-                "authors":"test",
+                "author":"test",
                 "img_url":str(number),
                 "description":"test",
                 "editor":"test"
                 }),
             content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
+        global pics_id
+        pics_id = json.loads(response.data)['id']
+        self.assertTrue(response.status_code == 201)
     #Test update_pics
-    def test_c_update_pics(self):
-        response = self.client.XXXX(
-            url_for('api.update_pics',_external=True),
+    def test_d_update_pics(self):
+        response = self.client.put(
+            url_for('api.update_pics',id=pics_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data=json.dumps({
+                "title":str(number),
+                "tags":["test"],
+                "author":"test",
+                "editor":"test"
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_pics
-    def test_c_delete_pics(self):
-        response = self.client.XXXX(
-            url_for('api.delete_pics',_external=True),
+    def test_f_delete_pics(self):
+        response = self.client.delete(
+            url_for('api.delete_pics',id=pics_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_one_pic
-    def test_c_delete_one_pic(self):
-        response = self.client.XXXX(
-            url_for('api.delete_one_pic',_external=True),
+    def test_e_delete_one_pic(self):
+        response = self.client.delete(
+            url_for('api.delete_one_pic',id=pics_id,index=0,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_interaction
