@@ -1,5 +1,5 @@
 import unittest
-from guisheng_app import create_app
+from guisheng_app import create_app,rds
 from flask import current_app, url_for,jsonify
 from flask_sqlalchemy import SQLAlchemy
 import random
@@ -12,6 +12,7 @@ ADMIN_ID = str(1)
 ADMIN_PSWORD = str(535)
 db = SQLAlchemy()
 number = random.randint(10000,99999)
+
 class BasicTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -145,7 +146,7 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_news
-    def test_e_delete_news(self):
+    def test_k_delete_news(self):
         response = self.client.delete(
             url_for('api.delete_news',id=news_id,_external=True),
             headers = {
@@ -354,7 +355,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
+        self.assertTrue(response.status_code == 401)
     #Test get_profile
     def test_c_get_profile(self):
         response = self.client.post(
@@ -421,25 +422,25 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_comments
-    def test_f_get_comments(self):
+    def test_e_get_comments(self):
         response = self.client.get(
-            url_for('api.get_comments',kind=1,a_id=1,_external=True),
+            url_for('api.get_comments',kind=1,article_id=news_id,_external=True),
             content_type = 'application/json')
+        global comment_id
+        comment_id = json.loads(response.data)[0]["comment_id"]
         self.assertTrue(response.status_code == 200)
     #Test create_comments
-    def test_c_create_comments(self):
+    def test_d_create_comments(self):
         response = self.client.post(
             url_for('api.create_comments',_external=True),
             data = json.dumps({
                 "kind":1,
-                "article_id":1,
+                "article_id":news_id,
                 "comment_id":int(number),
                 "message":"test",
-                "user_id":int(number)
+                "user_id":int(ID)
             }),
             content_type = 'application/json')
-        global comment_id 
-        comment_id = int(number)
         self.assertTrue(response.status_code == 200)
     #Test get_comment_likes
     def test_f_get_comment_likes(self):
@@ -451,6 +452,9 @@ class BasicTestCase(unittest.TestCase):
     def test_h_delete_comment(self):
         response = self.client.delete(
             url_for('api.delete_comment',id=comment_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test main_page
@@ -460,6 +464,7 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test search
+    '''
     def test_c_search(self):
         response = self.client.post(
             url_for('api.search',_external=True),
@@ -468,12 +473,14 @@ class BasicTestCase(unittest.TestCase):
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
+    
     #Test get_hottag
     def test_c_get_hottag(self):
         response = self.client.get(
             url_for('api.get_hottag',_external=True),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
+    '''
     #Test list
     def test_c_list(self):
         response = self.client.get(
@@ -530,12 +537,13 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
-                
+               "kind":3,
+               "post_id":art_id
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test unpublish
-    def test_d_a_unpublish(self):
+    def test_d_z_unpublish(self):
         response = self.client.post(
             url_for('api.unpublish',_external=True),
             headers = {
@@ -574,54 +582,115 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_article
-    def test_c_get_article(self):
+    def test_f_get_article(self):
         response = self.client.post(
-            url_for('api.get_article',_external=True),
-            data = json.dumps({ }),
+            url_for('api.get_article',id=art_id,_external=True),
+            data = json.dumps({ 
+                "my_id":-1
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test recommend_articles
-    def test_c_recommend_articles(self):
+    def test_f_recommend_articles(self):
         response = self.client.post(
             url_for('api.recommend_articles',_external=True),
-            data = json.dumps({ }),
+            data = json.dumps({ 
+                "article_id":art_id
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test show_article
-    def test_c_show_article(self):
+    def test_f_show_article(self):
         response = self.client.get(
-            url_for('api.show_article',_external=True),
+            url_for('api.show_article',id=art_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test add_article
     def test_c_add_article(self):
         response = self.client.post(
             url_for('api.add_article',_external=True),
-            data = json.dumps({ }),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({ 
+                "title":str(number),
+                "author":str(535),
+                "author_id":int(ID),
+                "tags":["test"],
+                "img_url":"test",
+                "description":"test",
+                "music_url":"test",
+                "music_title":"test",
+                "music_img_url":"test",
+                "singer":"Queen",
+                "film_url":"Leon The Professor",
+                "film_img_url":"test",
+                "editor":"test",
+                "scores":float(1),
+                "flag":int(1)
+            }),
             content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
+        global art_id
+        art_id = json.loads(response.data)['id']
+        self.assertTrue(response.status_code == 201)
+
     #Test update_article
-    def test_c_update_article(self):
-        response = self.client.XXXX(
-            url_for('api.update_article',_external=True),
+    def test_f_update_article(self):
+        response = self.client.put(
+            url_for('api.update_article',id=art_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({ 
+                "title":str(number),
+                "author":str(535),
+                "author_id":int(ID),
+                "tags":["test"],
+                "img_url":"test",
+                "description":"test",
+                "music_url":"test",
+                "music_title":"test",
+                "music_img_url":"test",
+                "singer":"Queen",
+                "film_url":"Leon The Professor",
+                "film_img_url":"test",
+                "editor":"test",
+                "scores":float(2),
+                "flag":int(1)
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_article_body
-    def test_c_get_article_body(self):
+    def test_f_get_article_body(self):
         response = self.client.get(
-            url_for('api.get_article_body',_external=True),
+            url_for('api.get_article_body',id=art_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test update_article_body
-    def test_c_update_article_body(self):
-        response = self.client.XXXX(
-            url_for('api.update_article_body',_external=True),
+    def test_f_update_article_body(self):
+        response = self.client.put(
+            url_for('api.update_article_body',id=art_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data=json.dumps({
+                "body":"test"
+            }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test delete_article
-    def test_c_delete_article(self):
-        response = self.client.get(
-            url_for('api.delete_article',_external=True),
+    def test_k_delete_article(self):
+        response = self.client.delete(
+            url_for('api.delete_article',id=art_id,_external=True),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test light
@@ -629,7 +698,7 @@ class BasicTestCase(unittest.TestCase):
         response = self.client.post(
             url_for('api.light',_external=True),
             data=json.dumps({
-                        "article_id":1,
+                        "article_id":news_id,
                         "kind":1,
                         "like_degree":1
                         }),
@@ -645,16 +714,16 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test like_comment
-    def test_c_like_comment(self):
+    def test_f_like_comment(self):
         response = self.client.post(
             url_for('api.like_comment',_external=True),
             data=json.dumps({
-                        "comment_id":1 
+                        "comment_id":comment_id 
                                 }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_everydaypic
-    def test_c_get_everydaypic(self):
+    def test_d_get_everydaypic(self):
         response = self.client.get(
             url_for('api.get_everydaypic',_external=True),
             content_type = 'application/json')
@@ -663,6 +732,13 @@ class BasicTestCase(unittest.TestCase):
     def test_c_add_everydaypic(self):
         response = self.client.post(
             url_for('api.add_everydaypic',_external=True),
-            data = json.dumps({ }),
+            headers = {
+                "Authorization":"Basic "+b64token,
+            },
+            data = json.dumps({ 
+                "img_url":"test"+str(number),
+                "climate":1,
+                "data":str(number)
+            }),
             content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
+        self.assertTrue(response.status_code == 201)
