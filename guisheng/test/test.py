@@ -463,24 +463,6 @@ class BasicTestCase(unittest.TestCase):
             url_for('api.main_page',_external=True,kind=0,page=0,count=0),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
-    #Test search
-    '''
-    def test_c_search(self):
-        response = self.client.post(
-            url_for('api.search',_external=True),
-            data = json.dumps({ 
-                "content":"test"
-            }),
-            content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
-    
-    #Test get_hottag
-    def test_c_get_hottag(self):
-        response = self.client.get(
-            url_for('api.get_hottag',_external=True),
-            content_type = 'application/json')
-        self.assertTrue(response.status_code == 200)
-    '''
     #Test list
     def test_c_list(self):
         response = self.client.get(
