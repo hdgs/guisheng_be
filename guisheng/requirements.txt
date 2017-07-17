@@ -4,6 +4,7 @@ anyjson==0.3.3
 billiard==3.5.0.2
 bleach==2.0.0
 blinker==1.4
+uwsgi==2.0.15
 celery==4.0.2
 celery-with-redis==3.0
 click==6.6
