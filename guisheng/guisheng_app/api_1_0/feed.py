@@ -16,15 +16,16 @@ def main_page():
     count = int(request.args.get('count'))
     if kind == 0:
         tolist = []
-        for n in News.query.filter_by(published=1).filter_by(tea=0).order_by(News.time.desc()).limit(count):
+        for n in News.query.filter_by(published=1).filter_by(tea=0).order_by(News.time.desc()).limit(count+page*count):
             tolist.append(n)
-        for p in Picture.query.filter_by(published=1).filter_by(tea=0).order_by(Picture.time.desc()).limit(count):
+        for p in Picture.query.filter_by(published=1).filter_by(tea=0).order_by(Picture.time.desc()).limit(count+page*count):
             tolist.append(p)
-        for a in Article.query.filter_by(published=1).filter_by(tea=0).order_by(Article.time.desc()).limit(count):
+        for a in Article.query.filter_by(published=1).filter_by(tea=0).order_by(Article.time.desc()).limit(count+page*count):
             tolist.append(a)
-        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).order_by(Interaction.time.desc()).limit(count):
+        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).order_by(Interaction.time.desc()).limit(count+page*count):
             tolist.append(i)
         tolist.sort(key=attrgetter('time'),reverse=True)
+        alist = tolist[page*count:(page+1)*count]
         return Response(json.dumps([{
                 "kind":content.kind,
                 "article_id":content.id,
@@ -40,11 +41,11 @@ def main_page():
                        if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
                 "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description
-                } for content in tolist[:count]]
+                } for content in alist]
         ),mimetype='application/json')
     else:
         post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
-        posts = post_kind.query.filter_by(published=1).filter_by(tea=0).order_by(post_kind.time.desc()).limit(count)
+        posts = post_kind.query.filter_by(published=1).filter_by(tea=0).order_by(post_kind.time.desc()).limit(count).offset((page)*count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
