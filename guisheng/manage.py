@@ -38,7 +38,7 @@ from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from guisheng_app import db, app
 from guisheng_app.models import User, Role, News, Everydaypic, Article,Image,\
-        Picture, Interaction, Comment, Like, Light, Collect,PostTag,Tag,Suggestion
+        Picture, Interaction, Comment, Like, Light, Collect,PostTag,Tag,Suggestion,Permission
 
 # 编码设置
 reload(sys)
@@ -120,6 +120,33 @@ def adduser():
     db.session.add(u)
     db.session.commit()
     print "<user %s add in database>" % name
+
+@manager.command
+def insert_roles():
+    """
+    insert all Roles in command line
+    -------------------------------
+    User: write & comment
+    Moderator: write & comment & moderate_comments
+    Administrator: full permissions
+    """
+    roles = {
+        'User': (Permission.COMMENT,True),
+        'Moderator': (Permission.COMMENT |
+                      Permission.MODERATE_COMMENTS, False),
+        'Administrator': (Permission.COMMENT | 
+                          Permission.MODERATE_COMMENTS |
+                          Permission.ADMINISTER, False)
+    }
+    for r in roles:
+        role = Role.query.filter_by(name=r).first()
+        if role is None:
+            role = Role(name=r)
+        role.permissions = roles[r][0]
+        role.default = roles[r][1]
+        db.session.add(role)
+    db.session.commit()
+    return 'roles has been inserted!'
 
 
 if __name__ == '__main__':

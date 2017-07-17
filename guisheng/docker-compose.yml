@@ -3,12 +3,14 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: uwsgi --http 0.0.0.0:5432 --wsgi-file wsgi.py --callable app --processes 2 --threads 2
+    command: gunicorn --name guisheng -b 0.0.0.0:5432 -w 2 wsgi:app
     ports:
         - "5432:5432"
     links:
         - redis1
         - redis2
+    external_links: 
+        - 5eb0074c1d4e:mysql 
 
 #------------------- celery ---------------------------
 celery:
