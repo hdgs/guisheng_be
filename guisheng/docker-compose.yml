@@ -3,9 +3,9 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: uwsgi --http 0.0.0.0:5432 --wsgi-file wsgi.py --callable app --processes 2 --threads 2
+    command: uwsgi --http 0.0.0.0:8888 --wsgi-file wsgi.py --callable app --processes 2 --threads 2
     ports:
-        - "5432:5432"
+        - "8888:8888"
     links:
         - redis1
         - redis2
