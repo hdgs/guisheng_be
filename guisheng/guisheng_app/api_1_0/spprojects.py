@@ -12,7 +12,13 @@ from guisheng_app.models import SpProject,ChildTopic,Role,User,News,Picture,Tag,
 
 
 #-----------------------------------后台管理API---------------------------------------
- 
+#ToDo
+#1,Modify special project
+#2,Add a ChildTopic to a SpProject
+#3,Create an Article(News) OR Under that project one of project's ChildTopic
+#4,Create a Pictures Under that project one of project's ChildTopic
+#5,Give the list of Projects and its childTopic and childTopic's articles and pics;
+
 @api.route('/spproj/',methods = ['POST'])
 @admin_required
 def add_special_proj():
@@ -27,3 +33,6 @@ def add_special_proj():
 		return jsonify({
 			'id':proj_id
 		}),201
+
+
+@api.route()
