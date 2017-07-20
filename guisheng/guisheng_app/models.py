@@ -15,6 +15,7 @@ from datetime import datetime
 from markdown import markdown
 import bleach
 
+
 # permissions
 class Permission:
     """
@@ -189,6 +190,10 @@ class News(db.Model):
     body_html = db.Column(db.Text,default="")
     tea = db.Column(db.Integer,default=0)
 
+    #Sp Project And its ChildTopic
+    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'),default=0)
+    child_topic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=0)
+
     @staticmethod
     def from_json(json_news):
         if User.query.filter_by(name=json_news.get('author')).first():
@@ -288,6 +293,10 @@ class Picture(db.Model):
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
 
+    #Sp Project And its ChildTopic
+    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'),default=0)
+    child_topic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=0)
+    
     @staticmethod
     def from_json(json_pic):
         if User.query.filter_by(name=json_pic.get('author')).first():
@@ -477,6 +486,25 @@ class Interaction(db.Model):
         return "<Interaction %r>" % self.id
 
 db.event.listen(Interaction.body, 'set', Interaction.on_changed_body)
+
+class SpProject(db.Model):
+    __tablename__ = 'sp_projects'
+    id=db.Column(db.Integer,primary_key=True)
+    project_name=db.Column(db.String(164),nullable=False,unique=True)
+    childtopics = db.relationship('ChildTopic',backref='sp_projects',lazy='dynamic',cascade='all')
+    articles = db.relationship('News',backref='sp_projects',lazy='dynamic',cascade='all')
+    pictures = db.relationship('Picture',backref='sp_projects',lazy='dynamic',cascade='all')
+
+class ChildTopic(db.Model):
+    __tablename__ = 'childtopics'
+    id = db.Column(db.Integer,primary_key=True)
+    child_topic_name = db.Column(db.String(164),nullable=False,unique=True)
+    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'))
+    articles = db.relationship('News',backref='childtopics',lazy='dynamic',cascade='all')
+    pictures = db.relationship('Picture',backref='childtopics',lazy='dynamic',cascade='all')
+
+
+
 
 #图片
 class Image(db.Model):
