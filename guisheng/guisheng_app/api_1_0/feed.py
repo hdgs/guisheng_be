@@ -16,13 +16,13 @@ def main_page():
     count = int(request.args.get('count'))
     if kind == 0:
         tolist = []
-        for n in News.query.filter_by(published=1).filter_by(tea=0).order_by(News.time.desc()).limit(count+page*count):
+        for n in News.query.filter_by(published=1).filter_by(tea=0).filter_by(special_id=-1).order_by(News.time.desc()).limit(count+page*count):
             tolist.append(n)
-        for p in Picture.query.filter_by(published=1).filter_by(tea=0).order_by(Picture.time.desc()).limit(count+page*count):
+        for p in Picture.query.filter_by(published=1).filter_by(tea=0).filter_by(special_id=-1).order_by(Picture.time.desc()).limit(count+page*count):
             tolist.append(p)
-        for a in Article.query.filter_by(published=1).filter_by(tea=0).order_by(Article.time.desc()).limit(count+page*count):
+        for a in Article.query.filter_by(published=1).filter_by(tea=0).filter_by(special_id=-1).order_by(Article.time.desc()).limit(count+page*count):
             tolist.append(a)
-        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).order_by(Interaction.time.desc()).limit(count+page*count):
+        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).filter_by(special_id=-1).order_by(Interaction.time.desc()).limit(count+page*count):
             tolist.append(i)
         tolist.sort(key=attrgetter('time'),reverse=True)
         alist = tolist[page*count:(page+1)*count]
@@ -45,7 +45,7 @@ def main_page():
         ),mimetype='application/json')
     else:
         post_kind = {1: News, 2: Picture, 3: Article, 4: Interaction}.get(kind)
-        posts = post_kind.query.filter_by(published=1).filter_by(tea=0).order_by(post_kind.time.desc()).limit(count).offset((page)*count)
+        posts = post_kind.query.filter_by(published=1).filter_by(tea=0).filter_by(special_id=-1).order_by(post_kind.time.desc()).limit(count).offset((page)*count)
         return Response(json.dumps([{
                 "kind":kind,
                 "article_id":_post.id,
@@ -146,7 +146,7 @@ def list():
         flag = int(request.args.get('flag'))
         posts = post_kind.query.filter_by(flag=flag).order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
     else:
-        posts = post_kind.query.order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
+        posts = post_kind.query.filter_by(special_id=-1).order_by(post_kind.time.desc()).limit(count).offset((page-1)*count)
     return Response(json.dumps([{
             "kind":kind,
             "article_id":_post.id,
