@@ -190,9 +190,9 @@ class News(db.Model):
     body_html = db.Column(db.Text,default="")
     tea = db.Column(db.Integer,default=0)
 
-    #Sp Project And its ChildTopic
-    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'),default=0)
-    child_topic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=0)
+    #Special And its ChildTopic
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'),default=-1)
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=-1)
 
     @staticmethod
     def from_json(json_news):
@@ -293,9 +293,9 @@ class Picture(db.Model):
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
 
-    #Sp Project And its ChildTopic
-    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'),default=0)
-    child_topic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=0)
+    #Special And its ChildTopic
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'),default=-1)
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=-1)
     
     @staticmethod
     def from_json(json_pic):
@@ -487,19 +487,22 @@ class Interaction(db.Model):
 
 db.event.listen(Interaction.body, 'set', Interaction.on_changed_body)
 
-class SpProject(db.Model):
-    __tablename__ = 'sp_projects'
+
+class Special(db.Model):
+    __tablename__ = 'specials'
     id=db.Column(db.Integer,primary_key=True)
-    project_name=db.Column(db.String(164),nullable=False,unique=True)
-    childtopics = db.relationship('ChildTopic',backref='sp_projects',lazy='dynamic',cascade='all')
-    articles = db.relationship('News',backref='sp_projects',lazy='dynamic',cascade='all')
-    pictures = db.relationship('Picture',backref='sp_projects',lazy='dynamic',cascade='all')
+    special_name=db.Column(db.String(164),nullable=False,unique=True)
+    description = db.Column(db.String,default="",index=True)
+    childtopics = db.relationship('ChildTopic',backref='specials',lazy='dynamic',cascade='all')
+    articles = db.relationship('News',backref='specials',lazy='dynamic',cascade='all')
+    pictures = db.relationship('Picture',backref='specials',lazy='dynamic',cascade='all')
+
 
 class ChildTopic(db.Model):
     __tablename__ = 'childtopics'
     id = db.Column(db.Integer,primary_key=True)
-    child_topic_name = db.Column(db.String(164),nullable=False,unique=True)
-    sp_project_id = db.Column(db.Integer,db.ForeignKey('sp_projects.id'))
+    childtopic_name = db.Column(db.String(164),nullable=False,unique=True)
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
     articles = db.relationship('News',backref='childtopics',lazy='dynamic',cascade='all')
     pictures = db.relationship('Picture',backref='childtopics',lazy='dynamic',cascade='all')
 

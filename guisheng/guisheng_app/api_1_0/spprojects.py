@@ -8,21 +8,21 @@ from flask_login import login_user, logout_user, current_user, login_required
 from . import api
 from guisheng_app import db
 from guisheng_app.decorators import admin_required
-from guisheng_app.models import SpProject,ChildTopic,Role,User,News,Picture,Tag,PostTag,Image,Collect
+from guisheng_app.models import Special,ChildTopic,Role,User,News,Picture,Tag,PostTag,Image,Collect
 
 COUNT = 10
 
 @api.route('/special/feed/',methods=['POST'])
-def main_page():
-	if request.method == 'POST':
-		special_id = request.get_json().get('id')
-		page = int(request.args.get('page'))
-    	count = int(request.args.get('count'))
-    	tolist = []
-    	
-    	for n in News.query.filter_by(special_id=special_id).order_by(News.time.desc()).limit(count+page*count):
+def special_main_page():
+    if request.method == 'POST':
+        special_id = request.get_json().get('id')
+        page = int(request.args.get('page'))
+        count = int(request.args.get('count'))
+        tolist = []
+        
+        for n in News.query.filter_by(special_id=special_id).order_by(News.time.desc()).limit(count+page*count):
             tolist.append(n) 
-    	for p in Picture.query.filter_by(special_id=special_id).order_by(Picture.time.desc()).limit(count+page*count):
+        for p in Picture.query.filter_by(special_id=special_id).order_by(Picture.time.desc()).limit(count+page*count):
             tolist.append(p)
         tolist.sort(key=attrgetter('time'),reverse=True)
         alist = tolist[page*count:(page+1)*count]
@@ -52,50 +52,50 @@ def main_page():
 @api.route('/special/',methods = ['POST'])
 @admin_required
 def add_special():
-	if request.method == 'POST':
-		
-		name = request.get_json().get('special_name')
-		description = request.get_json().get('description')
-		special = Special()
-		special.special_name = name
-		special.description = description
+    if request.method == 'POST':
+        
+        name = request.get_json().get('special_name')
+        description = request.get_json().get('description')
+        special = Special()
+        special.special_name = name
+        special.description = description
 
-		db.session.add(special)
-		db.session.commit()
-		
-		return jsonify({
-			'id':special.id
-		}),201
+        db.session.add(special)
+        db.session.commit()
+        
+        return jsonify({
+            'id':special.id
+        }),201
 
 @api.route('/special/<int:id>/',methods = ['POST'])
 @admin_required
 def add_childtopic(id):
-	if request.method == 'POST':
-		name = request.get_json().get('childtopic_name')
-		
-		childtopic = ChildTopic()
-		childtopic.childtopic_name = name
-		childtopic.special_id = id
+    if request.method == 'POST':
+        name = request.get_json().get('childtopic_name')
+        
+        childtopic = ChildTopic()
+        childtopic.childtopic_name = name
+        childtopic.special_id = id
 
-		db.session.add(childtopic)
-		db.session.commit()
+        db.session.add(childtopic)
+        db.session.commit()
 
-		return jsonify({
-			'id':childtopic.id
-		}),201
+        return jsonify({
+            'id':childtopic.id
+        }),201
 
 @api.route('/special/<int:special_id>/<int:childtopic_id>/article/',methods=['POST'])
 @admin_required
-def add_article(special_id,childtopic_id):
-	if request.method =='POST':
-		 
-		 article = News.from_json(request.get_json())
-		 article.special_id = special_id
-		 article.childtopic_id = childtopic_id
-		 
-		 db.session.add(article)
-         db.session.commit()
+def add_special_article(special_id,childtopic_id):
+    if request.method =='POST':
          
+         article = News.from_json(request.get_json())
+         article.special_id = special_id
+         article.childtopic_id = childtopic_id
+
+         db.session.add(article)
+         db.session.commit()
+
          tags = request.get_json().get('tags')
          for tag in tags:
              if not Tag.query.filter_by(body=tag).first():
@@ -115,9 +115,9 @@ def add_article(special_id,childtopic_id):
 
 @api.route('/special/<int:special_id>/<int:childtopic_id>/picture/',methods=['POST'])
 @admin_required
-def add_picture(special_id,childtopic_id):
-	if request.method == 'POST':
-	    title = request.get_json().get('title')
+def add_special_picture(special_id,childtopic_id):
+    if request.method == 'POST':
+        title = request.get_json().get('title')
         author = request.get_json().get('author')
         if User.query.filter_by(name=author).first():
             if Picture.query.filter_by(title=title).first():
@@ -155,47 +155,47 @@ def add_picture(special_id,childtopic_id):
 @api.route('/special/list/',methods = ['GET'])
 @admin_required
 def special_list():
-	page = int(request.args.get('page'))
-	specials = Special().query.filter_by(id!=None).order_by(id).limit(COUNT).offset((page-1)*COUNT)
-	
-	return Response(
-			json.dumps
-			(
-				[
-					{
-						"id":special.id
-					}
-					for special in specials
-				],
-			),
-		mimetype ='application/json')
+    page = int(request.args.get('page'))
+    specials = Special().query.filter_by(id!=None).order_by(id).limit(COUNT).offset((page-1)*COUNT)
+    
+    return Response(
+            json.dumps
+            (
+                [
+                    {
+                        "id":special.id
+                    }
+                    for special in specials
+                ],
+            ),
+        mimetype ='application/json')
 
 
 @api.route('/special/list/<int:special_id>/',methods=['GET'])
 @admin_required
 def childtopic_list(special_id):
-	page = int(request.args.get('page'))
-	childtopics = ChildTopic().query.filter_by(special_id = special_id).order_by(id).limit(COUNT).offset((page-1)*COUNT)
-	return Response(
-			json.dumps
-			(
-				[
-					{
-						"id":childtopic.id 
-					}
-					for childtopic in childtopics
-				],
-			),
-		mimetype ='application/json')
+    page = int(request.args.get('page'))
+    childtopics = ChildTopic().query.filter_by(special_id = special_id).order_by(id).limit(COUNT).offset((page-1)*COUNT)
+    return Response(
+            json.dumps
+            (
+                [
+                    {
+                        "id":childtopic.id 
+                    }
+                    for childtopic in childtopics
+                ],
+            ),
+        mimetype ='application/json')
 
 
 @api.route('/special/list/<int:special_id>/<int:childtopic_id>/',methods=['GET'])
 @admin_required
 def all_posts(special_id,childtopic_id):
-	page = int(request.args.get('page'))
-	tolist = []
+    page = int(request.args.get('page'))
+    tolist = []
 
-	for n in News.query.filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).order_by(News.time.desc()).limit(COUNT+page*COUNT):
+    for n in News.query.filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).order_by(News.time.desc()).limit(COUNT+page*COUNT):
             tolist.append(n) 
     for p in Picture.query.filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).order_by(Picture.time.desc()).limit(COUNT+page*COUNT):
             tolist.append(p) 
