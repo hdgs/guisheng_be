@@ -9,6 +9,7 @@ from . import api
 from guisheng_app import db
 from guisheng_app.decorators import admin_required
 from guisheng_app.models import Special,ChildTopic,Role,User,News,Picture,Tag,PostTag,Image,Collect
+from operator import attrgetter
 
 COUNT = 10
 
@@ -16,7 +17,7 @@ COUNT = 10
 def special_main_page():
     if request.method == 'POST':
         special_id = request.get_json().get('id')
-        page = int(request.args.get('page'))
+        page = int(request.args.get('page'))-1
         count = int(request.args.get('count'))
         tolist = []
         
@@ -103,7 +104,7 @@ def add_special_article(special_id,childtopic_id):
                  db.session.add(t)
                  db.session.commit()
              get_tag = Tag.query.filter_by(body=tag).first()
-             news_tags = [t.tag_id for t in news.tag.all()]
+             news_tags = [t.tag_id for t in article.tag.all()]
              if get_tag.id not in news_tags:
                  post_tag = PostTag(news_tags=get_tag,news=article)
                  db.session.add(post_tag)
@@ -156,7 +157,9 @@ def add_special_picture(special_id,childtopic_id):
 @admin_required
 def special_list():
     page = int(request.args.get('page'))
-    specials = Special().query.filter_by(id!=None).order_by(id).limit(COUNT).offset((page-1)*COUNT)
+    print page
+    specials = []
+    specials = Special.query.order_by(Special.id).limit(COUNT).offset((page-1)*COUNT)
     
     return Response(
             json.dumps
@@ -175,7 +178,7 @@ def special_list():
 @admin_required
 def childtopic_list(special_id):
     page = int(request.args.get('page'))
-    childtopics = ChildTopic().query.filter_by(special_id = special_id).order_by(id).limit(COUNT).offset((page-1)*COUNT)
+    childtopics = ChildTopic.query.filter_by(special_id = special_id).order_by(ChildTopic.id).limit(COUNT).offset((page-1)*COUNT)
     return Response(
             json.dumps
             (
@@ -192,7 +195,7 @@ def childtopic_list(special_id):
 @api.route('/special/list/<int:special_id>/<int:childtopic_id>/',methods=['GET'])
 @admin_required
 def all_posts(special_id,childtopic_id):
-    page = int(request.args.get('page'))
+    page = int(request.args.get('page'))-1
     tolist = []
 
     for n in News.query.filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).order_by(News.time.desc()).limit(COUNT+page*COUNT):
