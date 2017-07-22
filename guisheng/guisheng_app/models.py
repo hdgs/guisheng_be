@@ -191,8 +191,9 @@ class News(db.Model):
     tea = db.Column(db.Integer,default=0)
 
     #Special And its ChildTopic
-    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'),default=-1)
-    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=-1)
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'))
+    freshmen = db.Column(db.Integer,default=0)
 
     @staticmethod
     def from_json(json_news):
@@ -294,9 +295,10 @@ class Picture(db.Model):
     tea = db.Column(db.Integer,default=0)
 
     #Special And its ChildTopic
-    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'),default=-1)
-    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'),default=-1)
-    
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'))
+    freshmen = db.Column(db.Integer,default=0)
+
     @staticmethod
     def from_json(json_pic):
         if User.query.filter_by(name=json_pic.get('author')).first():
@@ -492,7 +494,7 @@ class Special(db.Model):
     __tablename__ = 'specials'
     id=db.Column(db.Integer,primary_key=True)
     special_name=db.Column(db.String(164),nullable=False,unique=True)
-    description = db.Column(db.String,default="",index=True)
+    description = db.Column(db.String(1000),default="",index=True)
     childtopics = db.relationship('ChildTopic',backref='specials',lazy='dynamic',cascade='all')
     articles = db.relationship('News',backref='specials',lazy='dynamic',cascade='all')
     pictures = db.relationship('Picture',backref='specials',lazy='dynamic',cascade='all')

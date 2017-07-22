@@ -93,6 +93,7 @@ def add_special_article(special_id,childtopic_id):
          article = News.from_json(request.get_json())
          article.special_id = special_id
          article.childtopic_id = childtopic_id
+         article.freshmen=1
 
          db.session.add(article)
          db.session.commit()
@@ -128,6 +129,7 @@ def add_special_picture(special_id,childtopic_id):
                 pics = Picture.from_json(request.get_json())
                 pics.special_id = special_id
                 pics.childtopic_id = childtopic_id
+                pics.freshmen=1
                 db.session.add(pics)
                 db.session.commit()
 
@@ -157,7 +159,6 @@ def add_special_picture(special_id,childtopic_id):
 @admin_required
 def special_list():
     page = int(request.args.get('page'))
-    print page
     specials = []
     specials = Special.query.order_by(Special.id).limit(COUNT).offset((page-1)*COUNT)
     
