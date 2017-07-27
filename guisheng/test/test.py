@@ -8,8 +8,8 @@ import base64
 
 TOKEN = str(0)
 ID = int(0)
-ADMIN_ID = str(1)
-ADMIN_PSWORD = str(535)
+ADMIN_NAME = str('test1')
+ADMIN_PSWORD = str('test1')
 db = SQLAlchemy()
 number = random.randint(10000,99999)
 
@@ -54,6 +54,8 @@ class BasicTestCase(unittest.TestCase):
                     }),
             content_type = 'application/json')
         s = json.loads(response.data)['token']
+        global ID
+        ID = json.loads(response.data)['uid']
         global TOKEN
         TOKEN = s
         global b64token
@@ -68,7 +70,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data=json.dumps({
-                "my_id":int(ADMIN_ID) 
+                "my_id":int(ID) 
                 }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
@@ -99,7 +101,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
-                "author":str(535),
+                "author":str(ADMIN_NAME),
                 "title":str(number),
                 "tags":["test"],
                 "img_url":"test",
@@ -118,7 +120,7 @@ class BasicTestCase(unittest.TestCase):
             },
             data = json.dumps({
                     "title":"test2",
-                    "author":"test2",
+                    "author":ADMIN_NAME,
                     "editor":"test2",
                     "tags":["test"]
                     }),
@@ -159,7 +161,7 @@ class BasicTestCase(unittest.TestCase):
         response = self.client.post(
             url_for('api.get_pic',id=pics_id,_external=True),
             data = json.dumps({
-                "my_id":int(ADMIN_ID)
+                "my_id":int(ID)
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
@@ -191,7 +193,7 @@ class BasicTestCase(unittest.TestCase):
             data=json.dumps({
                 "title":str(number),
                 "tags":["test"],
-                "author":"test",
+                "author":ADMIN_NAME,
                 "img_url":str(number),
                 "description":"test",
                 "editor":"test"
@@ -210,7 +212,7 @@ class BasicTestCase(unittest.TestCase):
             data=json.dumps({
                 "title":str(number),
                 "tags":["test"],
-                "author":"test",
+                "author":ADMIN_NAME,
                 "editor":"test"
             }),
             content_type = 'application/json')
@@ -277,7 +279,7 @@ class BasicTestCase(unittest.TestCase):
             data = json.dumps({
                 "title":str(number),
                 "tags":["test"],
-                "author":"test",
+                "author":ADMIN_NAME,
                 "description":"test",
                 "editor":"test",
                 "img_url":"test",
@@ -296,7 +298,7 @@ class BasicTestCase(unittest.TestCase):
             },
             data = json.dumps({
                 "title":str(number),
-                "author":"test",
+                "author":ADMIN_NAME,
                 "tags":["test"],
                 "description":"test",
                 "img_url":"test",
@@ -347,15 +349,6 @@ class BasicTestCase(unittest.TestCase):
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
-    #Test get_token
-    def test_c_get_token(self):
-        response = self.client.get(
-            url_for('api.get_token',_external=True),
-            headers = {
-                "Authorization":"Basic "+b64token,
-            },
-            content_type = 'application/json')
-        self.assertTrue(response.status_code == 401)
     #Test get_profile
     def test_c_get_profile(self):
         response = self.client.post(
@@ -371,7 +364,7 @@ class BasicTestCase(unittest.TestCase):
             url_for('api.edit_profile',id=int(ID),_external=True),
             data=json.dumps({
                 "img_url":"test",
-                "name":str(number),
+                "name":ADMIN_NAME,
                 "weibo":"test",
                 "introduction":"test"
                 }),
@@ -384,7 +377,7 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test get_collections
-    def test_c_get_collections(self):
+    def test_d_get_collections(self):
         response = self.client.get(
             url_for('api.get_collections',id=ID,_external=True),
             content_type = 'application/json')
@@ -400,24 +393,24 @@ class BasicTestCase(unittest.TestCase):
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test collect
-    def test_c_collect(self):
+    def test_d_collect(self):
         response = self.client.post(
             url_for('api.collect',_external=True),
             data = json.dumps({ 
                 "my_id":ID,
                 "kind":1,
-                "article_id":1
+                "article_id":news_id
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
     #Test collect_delete
-    def test_c_collect_delete(self):
+    def test_e_collect_delete(self):
         response = self.client.post(
             url_for('api.collect_delete',_external=True),
             data = json.dumps({ 
                 "my_id":ID,
                 "kind":1,
-                "article_id":1
+                "article_id":news_id
             }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)
@@ -599,7 +592,7 @@ class BasicTestCase(unittest.TestCase):
             },
             data = json.dumps({ 
                 "title":str(number),
-                "author":str(535),
+                "author":ADMIN_NAME,
                 "author_id":int(ID),
                 "tags":["test"],
                 "img_url":"test",
@@ -628,7 +621,7 @@ class BasicTestCase(unittest.TestCase):
             },
             data = json.dumps({ 
                 "title":str(number),
-                "author":str(535),
+                "author":ADMIN_NAME,
                 "author_id":int(ID),
                 "tags":["test"],
                 "img_url":"test",
@@ -691,7 +684,7 @@ class BasicTestCase(unittest.TestCase):
         response = self.client.post(
             url_for('api.like_picture',_external=True),
             data=json.dumps({
-                        "picture_id":1 
+                        "picture_id":pics_id
                         }),
             content_type = 'application/json')
         self.assertTrue(response.status_code == 200)

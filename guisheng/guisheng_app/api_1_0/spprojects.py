@@ -17,16 +17,13 @@ COUNT = 10
 def special_main_page():
     if request.method == 'POST':
         special_id = request.get_json().get('id')
-        page = int(request.args.get('page'))-1
-        count = int(request.args.get('count'))
         tolist = []
         
-        for n in News.query.filter_by(special_id=special_id).order_by(News.time.desc()).limit(count+page*count):
+        for n in News.query.filter_by(special_id=special_id).order_by(News.time.desc()):
             tolist.append(n) 
-        for p in Picture.query.filter_by(special_id=special_id).order_by(Picture.time.desc()).limit(count+page*count):
+        for p in Picture.query.filter_by(special_id=special_id).order_by(Picture.time.desc()):
             tolist.append(p)
         tolist.sort(key=attrgetter('time'),reverse=True)
-        alist = tolist[page*count:(page+1)*count]
         return Response(json.dumps([{
                 "kind":content.kind,
                 "article_id":content.id,
@@ -43,7 +40,7 @@ def special_main_page():
                 "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description,
                 "child_topic_id":content.childtopic_id
-                } for content in alist]
+                } for content in tolist]
         ),mimetype='application/json')
 
 #-----------------------------------后台管理API---------------------------------------

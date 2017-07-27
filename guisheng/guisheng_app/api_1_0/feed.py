@@ -20,9 +20,9 @@ def main_page():
             tolist.append(n)
         for p in Picture.query.filter_by(published=1).filter_by(tea=0).filter_by(freshmen=0).order_by(Picture.time.desc()).limit(count+page*count):
             tolist.append(p)
-        for a in Article.query.filter_by(published=1).filter_by(tea=0).filter_by(freshmen=0).order_by(Article.time.desc()).limit(count+page*count):
+        for a in Article.query.filter_by(published=1).filter_by(tea=0).order_by(Article.time.desc()).limit(count+page*count):
             tolist.append(a)
-        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).filter_by(freshmen=0).order_by(Interaction.time.desc()).limit(count+page*count):
+        for i in Interaction.query.filter_by(published=1).filter_by(tea=0).order_by(Interaction.time.desc()).limit(count+page*count):
             tolist.append(i)
         tolist.sort(key=attrgetter('time'),reverse=True)
         alist = tolist[page*count:(page+1)*count]
