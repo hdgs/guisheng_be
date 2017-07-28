@@ -102,6 +102,22 @@ def admin():
     db.session.commit()
     print "<admin user %s add in database>" % username
 
+@manager.command
+def add_test_admin():
+    """add test administrator"""
+    from getpass import getpass
+    username = "test1"
+    email = "test1"
+    password = "test1"
+    u = User(
+        email = email,
+        name = username,
+        password = password,
+        role_id = 2
+    )
+    db.session.add(u)
+    db.session.commit()
+    print "<test admin user %s add in database>" % username
 
 @manager.command
 def adduser():
