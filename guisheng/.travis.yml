@@ -27,3 +27,4 @@ script:
 - docker exec guisheng python manage.py insert_roles
 - docker exec guisheng python manage.py add_test_admin
 - docker exec guisheng python manage.py test
+
