@@ -45,7 +45,6 @@ def special_main_page():
 
 #-----------------------------------后台管理API---------------------------------------
 #ToDo
-#Test And Debug
 
 @api.route('/special/',methods = ['POST'])
 @admin_required
@@ -62,7 +61,7 @@ def add_special():
         db.session.commit()
         
         return jsonify({
-            'id':special.id
+            "id":special.id,
         }),201
 
 @api.route('/special/<int:id>/',methods = ['POST'])
@@ -164,7 +163,10 @@ def special_list():
             (
                 [
                     {
-                        "id":special.id
+                        "id":special.id,
+                        "special_name":special.special_name,
+                        "description":special.description,
+                        "count":Special.query.count()
                     }
                     for special in specials
                 ],
@@ -182,7 +184,9 @@ def childtopic_list(special_id):
             (
                 [
                     {
-                        "id":childtopic.id 
+                        "id":childtopic.id,
+                        "childtopic_name":childtopic.childtopic_name,
+                        "count":ChildTopic.query.count()
                     }
                     for childtopic in childtopics
                 ],
@@ -203,7 +207,9 @@ def all_posts(special_id,childtopic_id):
     
     tolist.sort(key=attrgetter('time'),reverse=True)
     alist = tolist[page*COUNT:(page+1)*COUNT]
-
+    spnews_count = News.query.filter_by(freshmen=1).count()
+    sppics_count = Picture.query.filter_by(freshmen=1).count()
+    allposts_count = spnews_count + sppics_count
     return Response(json.dumps([{
                 "kind":content.kind,
                 "article_id":content.id,
@@ -219,6 +225,7 @@ def all_posts(special_id,childtopic_id):
                        if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
                 "time":content.time.strftime('%Y-%m-%d'),
                 "description":content.description,
-                "published":content.published
+                "published":content.published,
+                "count":allposts_count
                 } for content in alist]
     ),mimetype='application/json')

@@ -6,7 +6,7 @@ guisheng:
         - guisheng.env
     command: gunicorn --name guisheng -b 0.0.0.0:5432 -w 2 wsgi:app
     ports:
-        - "8888:8888"
+        - "5432:5432"
     links:
         - redis1
         - redis2
