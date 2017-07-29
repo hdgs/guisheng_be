@@ -52,10 +52,8 @@ def add_special():
     if request.method == 'POST':
         
         name = request.get_json().get('special_name')
-        description = request.get_json().get('description')
         special = Special()
         special.special_name = name
-        special.description = description
 
         db.session.add(special)
         db.session.commit()
@@ -165,7 +163,6 @@ def special_list():
                     {
                         "id":special.id,
                         "special_name":special.special_name,
-                        "description":special.description,
                         "count":Special.query.count()
                     }
                     for special in specials

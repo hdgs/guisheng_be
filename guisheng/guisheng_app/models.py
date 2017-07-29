@@ -494,7 +494,6 @@ class Special(db.Model):
     __tablename__ = 'specials'
     id=db.Column(db.Integer,primary_key=True)
     special_name=db.Column(db.String(164),nullable=False,unique=True)
-    description = db.Column(db.String(1000),default="",index=True)
     childtopics = db.relationship('ChildTopic',backref='specials',lazy='dynamic',cascade='all')
     articles = db.relationship('News',backref='specials',lazy='dynamic',cascade='all')
     pictures = db.relationship('Picture',backref='specials',lazy='dynamic',cascade='all')
