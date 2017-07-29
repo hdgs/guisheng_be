@@ -1,4 +1,5 @@
 *.pyc
+guisheng.env
 venv
 data-dev.sqlite
 migrations

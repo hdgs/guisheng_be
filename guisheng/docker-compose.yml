@@ -1,6 +1,7 @@
 #-------------------- guisheng ------------------------
 guisheng:
     build: .
+    container_name: guisheng
     env_file:
         - guisheng.env
     command: gunicorn --name guisheng -b 0.0.0.0:8888 -w 2 wsgi:app
