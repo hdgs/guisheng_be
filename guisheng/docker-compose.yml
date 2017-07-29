@@ -3,7 +3,7 @@ guisheng:
     build: .
     env_file:
         - guisheng.env
-    command: uwsgi --http 0.0.0.0:8888 --wsgi-file wsgi.py --callable app
+    command: gunicorn --name guisheng -b 0.0.0.0:8888 -w 2 wsgi:app
     ports:
         - "8888:8888"
     links:
