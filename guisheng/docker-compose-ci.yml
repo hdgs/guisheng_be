@@ -3,6 +3,7 @@
 guisheng:
     build: .
     container_name: guisheng
+    net: "host"
     env_file:
         - guisheng.env
     command: gunicorn --name guisheng -b 0.0.0.0:5432 -w 2 wsgi:app
@@ -11,6 +12,8 @@ guisheng:
     links:
         - redis1
         - redis2
+    volumes:
+        - .:/guisheng
 
 #------------------- celery ---------------------------
 celery:
