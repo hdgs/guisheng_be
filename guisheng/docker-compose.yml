@@ -4,14 +4,12 @@ guisheng:
     container_name: guisheng
     env_file:
         - guisheng.env
-    command: gunicorn --name guisheng -b 0.0.0.0:5432 -w 2 wsgi:app
+    command: gunicorn --name guisheng -b 0.0.0.0:8888 -w 2 wsgi:app
     ports:
         - "8888:8888"
     links:
         - redis1
         - redis2
-    external_links: 
-        - 5eb0074c1d4e:mysql 
 
 #------------------- celery ---------------------------
 celery:
