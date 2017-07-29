@@ -358,6 +358,12 @@ class Article(db.Model):
     tea = db.Column(db.Integer,default=0)
     flag = db.Column(db.Integer,default=1)
 
+    #Special And its ChildTopic
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'))
+    freshmen = db.Column(db.Integer,default=0)
+
+
     @staticmethod
     def from_json(json_article):
         if User.query.filter_by(name=json_article.get('author')).first():
@@ -441,6 +447,13 @@ class Interaction(db.Model):
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
     flag = db.Column(db.Integer,default=0)
+
+    #Special And its ChildTopic
+    special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
+    childtopic_id = db.Column(db.Integer,db.ForeignKey('childtopics.id'))
+    freshmen = db.Column(db.Integer,default=0)
+
+
 
     @staticmethod
     def from_json(json_interaction):

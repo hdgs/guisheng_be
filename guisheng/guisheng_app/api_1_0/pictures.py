@@ -57,9 +57,10 @@ def recommend_pics():
                    and _pic.picture_id != pic_id:
                     pics.append(_pic.picture_id)
         sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True) 
+	recommend_pics = sortlist
         recommend_pics = sortlist[:3] if len(sortlist)>=4 else sortlist
     return Response(json.dumps([{
-            "img_url":[p.img_url for p in Picture.query.get_or_404(pic_id).img_url][0],
+#            "img_url":[p.img_url for p in Picture.query.get_or_404(pic_id).img_url][0],
             "title":Picture.query.get_or_404(pic_id).title,
             "author":User.query.get_or_404(Picture.query.get_or_404(pic_id).author_id).name,
             "views":Picture.query.get_or_404(pic_id).views,
