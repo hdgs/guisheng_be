@@ -35,7 +35,6 @@ def login():
         user = None
         uid = None
     if user is not None and user.verify_password(password):
-        login_user(user)
         uid = user.id
         token = user.generate_auth_token()
         return jsonify({
@@ -84,3 +83,23 @@ def change_to_common_user():
     return jsonify({
         "update":user.id,
         }),200
+
+
+@api.route('/admin/login/', methods=['GET', 'POST'])
+def admin_login():
+    username = request.get_json().get("username")
+    password = request.get_json().get("password")
+    try:
+        user = User.query.filter_by(name=username).first()
+    except:
+        user = None
+        uid = None
+    if user is not None and user.verify_password(password) and user.role_id==2:
+        uid = user.id
+        token = user.generate_auth_token()
+        return jsonify({
+            "uid":user.id,
+            "token":token,
+        })
+
+
