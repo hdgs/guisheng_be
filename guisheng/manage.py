@@ -162,7 +162,8 @@ def insert_roles():
         role.default = roles[r][1]
         db.session.add(role)
     db.session.commit()
-    return 'roles has been inserted!'
+    print 'roles has been inserted!'
+    #return 'roles has been inserted!'
 
 
 if __name__ == '__main__':
