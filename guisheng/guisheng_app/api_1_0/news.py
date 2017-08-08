@@ -109,7 +109,8 @@ def show_news(id):
 def add_news():
     if request.method == "POST":
         news = News.from_json(request.get_json())
-        news.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        news.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(news)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -136,7 +137,8 @@ def update_news(id):
         news.title = request.get_json().get('title')
         news.author = User.query.filter_by(name=request.get_json().get('author')).first()
         news.editor = request.get_json().get('editor')
-        news.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        news.saver = User.query.filter_by(id=saver_id).first().name
         news.time = datetime.utcnow()
         db.session.add(news)
         db.session.commit()
@@ -183,6 +185,8 @@ def update_news_body(id):
     if request.method == "PUT":
         news.body = request.get_json().get('body')
         news.time = datetime.utcnow()
+        saver_id = request.get_json().get('saver')
+        news.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(news)
         db.session.commit()
         return jsonify({

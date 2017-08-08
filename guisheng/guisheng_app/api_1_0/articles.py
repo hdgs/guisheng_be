@@ -116,7 +116,8 @@ def show_article(id):
 def add_article():
     if request.method == 'POST':
         article = Article.from_json(request.get_json())
-        article.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        article.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(article)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -152,7 +153,8 @@ def update_article(id):
         article.film_img_url = request.get_json().get('film_img_url')
         article.editor = request.get_json().get('editor')
         article.scores = request.get_json().get('scores')
-        article.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        article.saver = User.query.filter_by(id=saver_id).first().name
         article.time = datetime.utcnow()
         db.session.add(article)
         db.session.commit()
@@ -198,6 +200,8 @@ def update_article_body(id):
     if request.method == "PUT":
         article.body = request.get_json().get('body')
         article.time = datetime.utcnow()
+        saver_id = request.get_json().get('saver')
+        article.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(article)
         db.session.commit()
         return jsonify({

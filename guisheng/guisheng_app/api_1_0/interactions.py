@@ -127,7 +127,8 @@ def show_interaction(id):
 def add_interaction():
     if request.method == 'POST':
         interaction = Interaction.from_json(request.get_json())
-        interaction.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        interaction.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(interaction)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -156,7 +157,8 @@ def update_interaction(id):
         interaction.author = User.query.filter_by(name=request.get_json().get('author')).first()
         interaction.description = request.get_json().get('description')
         interaction.editor = request.get_json().get('editor')
-        interaction.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        interaction.saver = User.query.filter_by(id=saver_id).first().name
         interaction.time = datetime.utcnow()
         db.session.add(interaction)
         db.session.commit()
@@ -201,6 +203,8 @@ def update_interaction_body(id):
     if request.method == "PUT":
         interaction.body = request.get_json().get('body')
         interaction.time = datetime.utcnow()
+        saver_id = request.get_json().get('saver')
+        interaction.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(interaction)
         db.session.commit()
         return jsonify({

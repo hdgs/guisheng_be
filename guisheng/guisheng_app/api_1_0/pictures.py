@@ -101,7 +101,7 @@ def add_pics():
     if request.method == 'POST':
         title = request.get_json().get('title')
         author = request.get_json().get('author')
-        saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
         if User.query.filter_by(name=author).first():
             if Picture.query.filter_by(title=title).first():
                 pics = Picture.query.filter_by(title=title).first()
@@ -109,7 +109,7 @@ def add_pics():
                 pics = Picture.from_json(request.get_json())
                 db.session.add(pics)
                 db.session.commit()
-            pics.saver = saver
+            pics.saver = User.query.filter_by(id=saver_id).first().name
             pics.time = datetime.utcnow()
             db.session.add(pics)
             db.session.commit()
@@ -142,7 +142,8 @@ def update_pics(id):
     if request.method == 'PUT':
         pics.title = request.get_json().get('title')
         pics.author = User.query.filter_by(name=request.get_json().get('author')).first()
-        pics.saver = request.get_json().get('saver')
+        saver_id = request.get_json().get('saver')
+        pics.saver = User.query.filter_by(id=saver_id).first().name
         pics.time = datetime.utcnow()
         db.session.add(pics)
         db.session.commit()

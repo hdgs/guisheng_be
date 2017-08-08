@@ -8,6 +8,7 @@ from operator import attrgetter
 from guisheng_app import rds
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
+from datetime import datetime
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
@@ -191,7 +192,7 @@ def publish():
     if request.method == 'POST':
         kind = int(request.get_json().get("kind"))
         post_id = int(request.get_json().get("post_id"))
-        publisher = request.get_json().get('publisher')
+        publisher_id = request.get_json().get('publisher')
         if kind == 1:
             post = News.query.get_or_404(post_id)
         if kind == 2:
@@ -201,7 +202,8 @@ def publish():
         if kind == 4:
             post = Interaction.query.get_or_404(post_id)
         post.published = 1
-        post.publisher = publisher
+        post.publisher = User.query.filter_by(id=publisher_id).first().name
+        post.time = datetime.utcnow()
         db.session.add(post)
         db.session.commit()
         return jsonify({
