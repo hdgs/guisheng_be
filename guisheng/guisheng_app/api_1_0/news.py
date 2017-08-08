@@ -5,7 +5,7 @@ import json
 from ..models import Role,User,News,PostTag,Tag,Collect
 from . import api
 from .. import db
-from guisheng_app.decorators import admin_required
+from guisheng_app.decorators import admin_required,edit_required
 
 
 @api.route('/news/<int:id>/', methods=['POST'])
@@ -82,7 +82,7 @@ def recommend_news():
 
 #----------------------------后台管理API---------------------------------
 @api.route('/news/<int:id>/', methods=['GET'])
-@admin_required
+@edit_required
 def show_news(id):
     news = News.query.get_or_404(id)
     like_degree_one = news.light.filter_by(like_degree=0).count()
@@ -105,10 +105,11 @@ def show_news(id):
         }),mimetype='application/json')
 
 @api.route('/news/', methods=["GET", "POST"])
-@admin_required
+@edit_required
 def add_news():
     if request.method == "POST":
         news = News.from_json(request.get_json())
+        news.saver = request.get_json().get('saver')
         db.session.add(news)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -128,13 +129,15 @@ def add_news():
         }), 201
 
 @api.route('/news/<int:id>/', methods=["PUT"])
-@admin_required
+@edit_required
 def update_news(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.title = request.get_json().get('title')
         news.author = User.query.filter_by(name=request.get_json().get('author')).first()
         news.editor = request.get_json().get('editor')
+        news.saver = request.get_json().get('saver')
+        news.time = datetime.utcnow()
         db.session.add(news)
         db.session.commit()
 
@@ -165,7 +168,7 @@ def update_news(id):
         }), 200
 
 @api.route('/news/<int:id>/body/', methods=["GET"])
-@admin_required
+@edit_required
 def get_news_body(id):
     news = News.query.get_or_404(id)
     return jsonify({
@@ -174,11 +177,12 @@ def get_news_body(id):
 
 
 @api.route('/news/<int:id>/body/', methods=["PUT"])
-@admin_required
+@edit_required
 def update_news_body(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.body = request.get_json().get('body')
+        news.time = datetime.utcnow()
         db.session.add(news)
         db.session.commit()
         return jsonify({

@@ -5,7 +5,7 @@ import json
 from ..models import Role,User,Interaction,Tag,PostTag,Collect
 from . import api
 from .. import db
-from guisheng_app.decorators import admin_required
+from guisheng_app.decorators import admin_required,edit_required
 
 @api.route('/interaction/<int:id>/',methods=['POST'])
 def get_interaction(id):
@@ -99,7 +99,7 @@ def get_tea():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/interaction/<int:id>/',methods=['GET'])
-@admin_required
+@edit_required
 def show_interaction(id):
     interaction = Interaction.query.get_or_404(id)
     like_degree_one = interaction.light.filter_by(like_degree=0).count()
@@ -123,10 +123,11 @@ def show_interaction(id):
         }),mimetype='application/json')
 
 @api.route('/interaction/',methods=['GET','POST'])
-@admin_required
+@edit_required
 def add_interaction():
     if request.method == 'POST':
         interaction = Interaction.from_json(request.get_json())
+        interaction.saver = request.get_json().get('saver')
         db.session.add(interaction)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -146,7 +147,7 @@ def add_interaction():
         }), 201
 
 @api.route('/interaction/<int:id>/',methods=['GET','PUT'])
-@admin_required
+@edit_required
 def update_interaction(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == 'PUT':
@@ -155,6 +156,8 @@ def update_interaction(id):
         interaction.author = User.query.filter_by(name=request.get_json().get('author')).first()
         interaction.description = request.get_json().get('description')
         interaction.editor = request.get_json().get('editor')
+        interaction.saver = request.get_json().get('saver')
+        interaction.time = datetime.utcnow()
         db.session.add(interaction)
         db.session.commit()
 
@@ -184,7 +187,7 @@ def update_interaction(id):
         }), 200
 
 @api.route('/interaction/<int:id>/body/', methods=["GET"])
-@admin_required
+@edit_required
 def get_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     return jsonify({
@@ -192,11 +195,12 @@ def get_interaction_body(id):
     }), 200
 
 @api.route('/interaction/<int:id>/body/', methods=["PUT"])
-@admin_required
+@edit_required
 def update_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == "PUT":
         interaction.body = request.get_json().get('body')
+        interaction.time = datetime.utcnow()
         db.session.add(interaction)
         db.session.commit()
         return jsonify({
@@ -215,7 +219,7 @@ def delete_interaction(id):
         }), 200
 
 @api.route('/tea/', methods=["POST"])
-@admin_required
+@edit_required
 def set_tea():
     if request.method == "POST":
         article_id = int(request.get_json().get('article_id'))

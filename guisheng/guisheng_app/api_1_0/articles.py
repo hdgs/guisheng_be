@@ -5,7 +5,7 @@ import json
 from ..models import Role,User,Article,Tag,PostTag,Collect
 from . import api
 from .. import db
-from guisheng_app.decorators import admin_required
+from guisheng_app.decorators import admin_required,edit_required
 from datetime import datetime
 
 @api.route('/article/<int:id>/', methods=['POST'])
@@ -81,7 +81,7 @@ def recommend_articles():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/article/<int:id>/', methods=['GET'])
-@admin_required
+@edit_required
 def show_article(id):
     article = Article.query.get_or_404(id)
     like_degree_one = article.light.filter_by(like_degree=0).count()
@@ -112,10 +112,11 @@ def show_article(id):
         }),mimetype='application/json')
 
 @api.route('/article/',methods=['POST'])
-@admin_required
+@edit_required
 def add_article():
     if request.method == 'POST':
         article = Article.from_json(request.get_json())
+        article.saver = request.get_json().get('saver')
         db.session.add(article)
         db.session.commit()
         tags = request.get_json().get('tags')
@@ -135,7 +136,7 @@ def add_article():
         }), 201
 
 @api.route('/article/<int:id>/',methods=['PUT'])
-@admin_required
+@edit_required
 def update_article(id):
     article = Article.query.get_or_404(id)
     if request.method == 'PUT':
@@ -151,6 +152,8 @@ def update_article(id):
         article.film_img_url = request.get_json().get('film_img_url')
         article.editor = request.get_json().get('editor')
         article.scores = request.get_json().get('scores')
+        article.saver = request.get_json().get('saver')
+        article.time = datetime.utcnow()
         db.session.add(article)
         db.session.commit()
 
@@ -181,7 +184,7 @@ def update_article(id):
         }),200
 
 @api.route('/article/<int:id>/body/', methods=["GET"])
-@admin_required
+@edit_required
 def get_article_body(id):
     article = Article.query.get_or_404(id)
     return jsonify({
@@ -189,18 +192,19 @@ def get_article_body(id):
     })
 
 @api.route('/article/<int:id>/body/', methods=["PUT"])
-@admin_required
+@edit_required
 def update_article_body(id):
     article = Article.query.get_or_404(id)
     if request.method == "PUT":
         article.body = request.get_json().get('body')
+        article.time = datetime.utcnow()
         db.session.add(article)
         db.session.commit()
         return jsonify({
             'update':article.id
         }), 200
 
-@api.route('/article/<int:id>/', methods=["GET", "DELETE"])
+@api.route('/article/<int:id>/', methods=["DELETE"])
 @admin_required
 def delete_article(id):
     article = Article.query.get_or_404(id)

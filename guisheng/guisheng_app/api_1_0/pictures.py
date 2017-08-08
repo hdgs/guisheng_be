@@ -58,7 +58,6 @@ def recommend_pics():
                     pics.append(_pic.picture_id)
         sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True) 
         recommend_pics = sortlist[:3] if sortlist and len(sortlist)>=4 else sortlist
-#	recommend_pics = sortlist
     return Response(json.dumps([{
             "img_url":[p.img_url for p in Picture.query.get_or_404(pic_id).img_url][0],
             "title":Picture.query.get_or_404(pic_id).title,
@@ -72,7 +71,7 @@ def recommend_pics():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/pics/<int:id>/', methods=['GET'])
-@admin_required
+@edit_required
 def show_pic(id):
     pic = Picture.query.get_or_404(id)
     pics = [p.img_url for p in pic.img_url]
@@ -97,11 +96,12 @@ def show_pic(id):
     }),mimetype='application/json')
 
 @api.route('/pics/',methods=['POST'])
-@admin_required
+@edit_required
 def add_pics():
     if request.method == 'POST':
         title = request.get_json().get('title')
         author = request.get_json().get('author')
+        saver = request.get_json().get('saver')
         if User.query.filter_by(name=author).first():
             if Picture.query.filter_by(title=title).first():
                 pics = Picture.query.filter_by(title=title).first()
@@ -109,6 +109,11 @@ def add_pics():
                 pics = Picture.from_json(request.get_json())
                 db.session.add(pics)
                 db.session.commit()
+            pics.saver = saver
+            pics.time = datetime.utcnow()
+            db.session.add(pics)
+            db.session.commit()
+
             img_url = request.get_json().get('img_url')
             introduction = request.get_json().get('description')
             image = Image(img_url=img_url,introduction=introduction,picture=pics)
@@ -131,12 +136,14 @@ def add_pics():
             }), 201
 
 @api.route('/pics/<int:id>/',methods=['PUT'])
-@admin_required
+@edit_required
 def update_pics(id):
     pics = Picture.query.get_or_404(id)
     if request.method == 'PUT':
         pics.title = request.get_json().get('title')
         pics.author = User.query.filter_by(name=request.get_json().get('author')).first()
+        pics.saver = request.get_json().get('saver')
+        pics.time = datetime.utcnow()
         db.session.add(pics)
         db.session.commit()
 

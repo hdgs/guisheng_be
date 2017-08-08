@@ -4,7 +4,7 @@ import json
 from ..models import Everydaypic
 from . import api
 from .. import db
-from ..decorators import admin_required
+from ..decorators import admin_required,edit_required
 
 @api.route('/everydaypic/', methods=['GET'])
 def get_everydaypic():
@@ -17,7 +17,7 @@ def get_everydaypic():
 
 #-----------------------------------后台管理API---------------------------------------
 @api.route('/everydaypic/', methods=['POST'])
-@admin_required
+@edit_required
 def add_everydaypic():
     everydaypic = Everydaypic.from_json(request.get_json())
     db.session.add(everydaypic)

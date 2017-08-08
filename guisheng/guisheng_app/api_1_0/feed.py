@@ -7,7 +7,7 @@ from . import api
 from operator import attrgetter
 from guisheng_app import rds
 from .. import db
-from guisheng_app.decorators import admin_required
+from guisheng_app.decorators import admin_required,edit_required
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
@@ -134,8 +134,22 @@ def get_hottag():
     }),mimetype='application/json')
 
 #----------------------------后台管理API---------------------------------
+def count_likes(kind,_post_id):
+    if kind == 2:
+        likes = Like.query.filter_by(picture_id=_post_id).count()
+    elif kind == 1:
+        likes = (Light.query.filter_by(news_id=_post_id).filter_by(like_degree=0).count())*2 + \
+                (Light.query.filter_by(news_id=_post_id).filter_by(like_degree=1).count())*1
+    elif kind == 3:
+        likes = (Light.query.filter_by(article_id=_post_id).filter_by(like_degree=0).count())*2 + \
+                (Light.query.filter_by(article_id=_post_id).filter_by(like_degree=1).count())*1
+    elif kind == 4:
+        likes = (Light.query.filter_by(interaction_id=_post_id).filter_by(like_degree=0).count())*2 + \
+                (Light.query.filter_by(interaction_id=_post_id).filter_by(like_degree=1).count())*1
+    return likes
+
 @api.route('/list/', methods=['GET'])
-@admin_required
+@edit_required
 def list():
     kind = int(request.args.get('kind'))
     page = int(request.args.get('page'))
@@ -164,16 +178,20 @@ def list():
             "description":_post.description,
             "published":_post.published,
             "count":post_kind.query.filter_by(flag=flag).count() if kind in [3,4] else post_kind.query.count(),
-            "tea":_post.tea
-        } for _post in posts],
+            "tea":_post.tea,
+            "saver":_post.saver,
+            "publisher":_post.publisher,
+            "likes":count_likes(kind,_post.id)
+        } for _post in posts]
     ),mimetype='application/json')
 
 @api.route('/publish/', methods=['POST'])
-@admin_required
+@edit_required
 def publish():
     if request.method == 'POST':
         kind = int(request.get_json().get("kind"))
         post_id = int(request.get_json().get("post_id"))
+        publisher = request.get_json().get('publisher')
         if kind == 1:
             post = News.query.get_or_404(post_id)
         if kind == 2:
@@ -183,6 +201,7 @@ def publish():
         if kind == 4:
             post = Interaction.query.get_or_404(post_id)
         post.published = 1
+        post.publisher = publisher
         db.session.add(post)
         db.session.commit()
         return jsonify({
@@ -190,7 +209,7 @@ def publish():
             })
 
 @api.route('/unpublish/', methods=['POST'])
-@admin_required
+@edit_required
 def unpublish():
     if request.method == 'POST':
         kind = int(request.get_json().get("kind"))

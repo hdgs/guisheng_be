@@ -34,6 +34,7 @@ class Role(db.Model):
     User: id=3
     Moderator: id=1
     Administrator: id=2
+    Editor: id=4
     """
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,6 +50,12 @@ class Role(db.Model):
             'Moderator': (Permission.COMMENT |
                           Permission.MODERATE_COMMENTS, False),
             'Administrator': (
+                Permission.COMMENT |
+                Permission.MODERATE_COMMENTS |
+                Permission.ADMINISTER,
+                False
+            ),
+            'Editor': (
                 Permission.COMMENT |
                 Permission.MODERATE_COMMENTS |
                 Permission.ADMINISTER,
@@ -189,6 +196,8 @@ class News(db.Model):
     published = db.Column(db.Integer,default=0)
     body_html = db.Column(db.Text,default="")
     tea = db.Column(db.Integer,default=0)
+    saver = db.Column(db.String(64),default="")
+    publisher = db.Column(db.String(64),default="")
 
     #Special And its ChildTopic
     special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
@@ -293,6 +302,9 @@ class Picture(db.Model):
     kind = 2
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
+    saver = db.Column(db.String(64),default="")
+    publisher = db.Column(db.String(64),default="")
+
 
     #Special And its ChildTopic
     special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
@@ -357,6 +369,10 @@ class Article(db.Model):
     body_html = db.Column(db.Text,default="")
     tea = db.Column(db.Integer,default=0)
     flag = db.Column(db.Integer,default=1)
+    saver = db.Column(db.String(64),default="")
+    publisher = db.Column(db.String(64),default="")
+
+
 
     #Special And its ChildTopic
     special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
@@ -447,6 +463,9 @@ class Interaction(db.Model):
     published = db.Column(db.Integer,default=0)
     tea = db.Column(db.Integer,default=0)
     flag = db.Column(db.Integer,default=0)
+    saver = db.Column(db.String(64),default="")
+    publisher = db.Column(db.String(64),default="")
+
 
     #Special And its ChildTopic
     special_id = db.Column(db.Integer,db.ForeignKey('specials.id'))
