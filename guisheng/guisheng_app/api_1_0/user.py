@@ -4,6 +4,7 @@ from . import api
 from guisheng_app import db
 from flask import request,jsonify,Response
 from flask_login import login_user, logout_user, current_user, login_required
+from sqlalchemy import or_
 from guisheng_app.models import User
 from guisheng_app.decorators import admin_required,edit_required
 import json
@@ -121,4 +122,46 @@ def admin_login():
             "uid":user.id,
             "token":basic_token,
         })
+
+@api.route('/admin/list/', methods=['GET'])
+@admin_required
+def admin_list():
+    count = int(request.args.get('count'))
+    page = int(request.args.get('page'))
+    user_list = User.query.filter(or_(User.role_id==2,User.role_id==4)).limit(count).offset((page-1)*count)
+    users = [{
+                "id":user.id,
+                "name":user.name,
+                "user_role":1 if user.role_id==2 else 0
+            } for user in user_list]
+    num = User.query.filter(or_(User.role_id==2,User.role_id==4)).count()
+    return jsonify({
+        "users":users,
+        "num":num
+        })
+
+@api.route('/admin/upgrade/', methods=['POST'])
+@admin_required
+def admin_upgrade():
+    admin_id = request.get_json().get("id")
+    admin = User.query.filter_by(id=admin_id).first()
+    admin.role_id = 2
+    db.session.add(admin)
+    db.session.commit()
+    return jsonify({
+        "upgraded":admin.id
+        })
+
+@api.route('/admin/downgrade/', methods=['POST'])
+@admin_required
+def admin_downgrade():
+    admin_id = request.get_json().get("id")
+    admin = User.query.filter_by(id=admin_id).first()
+    admin.role_id = 4
+    db.session.add(admin)
+    db.session.commit()
+    return jsonify({
+        "downgraded":admin.id
+        })
+
 
