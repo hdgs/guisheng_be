@@ -6,6 +6,7 @@ from ..models import Role,User,Picture,Tag,PostTag,Image,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
+from datetime import datetime
 
 @api.route('/pics/<int:id>/', methods=['POST'])
 def get_pic(id):

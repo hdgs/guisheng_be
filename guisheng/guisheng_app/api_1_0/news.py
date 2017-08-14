@@ -6,6 +6,7 @@ from ..models import Role,User,News,PostTag,Tag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
+from datetime import datetime
 
 
 @api.route('/news/<int:id>/', methods=['POST'])

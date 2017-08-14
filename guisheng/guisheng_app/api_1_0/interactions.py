@@ -6,6 +6,7 @@ from ..models import Role,User,Interaction,Tag,PostTag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
+from datetime import datetime
 
 @api.route('/interaction/<int:id>/',methods=['POST'])
 def get_interaction(id):
