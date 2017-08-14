@@ -159,7 +159,7 @@ def update_interaction(id):
         interaction.editor = request.get_json().get('editor')
         saver_id = request.get_json().get('saver')
         interaction.saver = User.query.filter_by(id=saver_id).first().name
-        interaction.time = datetime.utcnow()
+        interaction.time = datetime.now()
         db.session.add(interaction)
         db.session.commit()
 
@@ -202,7 +202,7 @@ def update_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == "PUT":
         interaction.body = request.get_json().get('body')
-        interaction.time = datetime.utcnow()
+        interaction.time = datetime.now()
         saver_id = request.get_json().get('saver')
         interaction.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(interaction)

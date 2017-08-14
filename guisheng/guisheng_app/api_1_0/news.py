@@ -139,7 +139,7 @@ def update_news(id):
         news.editor = request.get_json().get('editor')
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name
-        news.time = datetime.utcnow()
+        news.time = datetime.now()
         db.session.add(news)
         db.session.commit()
 
@@ -184,7 +184,7 @@ def update_news_body(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.body = request.get_json().get('body')
-        news.time = datetime.utcnow()
+        news.time = datetime.now()
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(news)

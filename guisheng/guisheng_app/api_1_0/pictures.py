@@ -144,7 +144,7 @@ def update_pics(id):
         pics.author = User.query.filter_by(name=request.get_json().get('author')).first()
         saver_id = request.get_json().get('saver')
         pics.saver = User.query.filter_by(id=saver_id).first().name
-        pics.time = datetime.utcnow()
+        pics.time = datetime.now()
         db.session.add(pics)
         db.session.commit()
 

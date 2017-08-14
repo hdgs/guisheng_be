@@ -155,7 +155,7 @@ def update_article(id):
         article.scores = request.get_json().get('scores')
         saver_id = request.get_json().get('saver')
         article.saver = User.query.filter_by(id=saver_id).first().name
-        article.time = datetime.utcnow()
+        article.time = datetime.now()
         db.session.add(article)
         db.session.commit()
 
@@ -199,7 +199,7 @@ def update_article_body(id):
     article = Article.query.get_or_404(id)
     if request.method == "PUT":
         article.body = request.get_json().get('body')
-        article.time = datetime.utcnow()
+        article.time = datetime.now()
         saver_id = request.get_json().get('saver')
         article.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(article)

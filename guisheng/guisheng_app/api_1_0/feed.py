@@ -203,7 +203,7 @@ def publish():
             post = Interaction.query.get_or_404(post_id)
         post.published = 1
         post.publisher = User.query.filter_by(id=publisher_id).first().name
-        post.time = datetime.utcnow()
+        post.time = datetime.now()
         db.session.add(post)
         db.session.commit()
         return jsonify({
