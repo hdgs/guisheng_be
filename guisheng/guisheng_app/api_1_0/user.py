@@ -9,7 +9,6 @@ from guisheng_app.models import User
 from guisheng_app.decorators import admin_required,edit_required
 import json
 import base64
-from werkzeug.security import generate_password_hash,check_password_hash
 
 @api.route('/register/',methods=['GET','POST'])
 def register():
@@ -30,7 +29,6 @@ def register():
 
 @api.route('/login/', methods=['GET', 'POST'])
 def login():
-    print "hi"
     email = request.get_json().get("email")
     password = request.get_json().get("password")
     try:
