@@ -49,7 +49,8 @@ def recommend_pics():
     recommend_pics = []
     sortlist = []
     pics = []
-    if now_pic.tag:
+    pic_tag = [_tag for _tag in now_pic.tag]
+    if len(pic_tag)>0:
         tag_id = now_pic.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
         for _pic in tag.pictures:
@@ -57,7 +58,7 @@ def recommend_pics():
                 if Picture.query.get_or_404(_pic.picture_id).published == 1 \
                    and _pic.picture_id != pic_id:
                     pics.append(_pic.picture_id)
-        sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True) 
+        sortlist = sorted(pics,key=lambda id: Picture.query.get_or_404(id).views,reverse=True)
         recommend_pics = sortlist[:3] if sortlist and len(sortlist)>=4 else sortlist
     return Response(json.dumps([{
             "img_url":[p.img_url for p in Picture.query.get_or_404(pic_id).img_url][0],

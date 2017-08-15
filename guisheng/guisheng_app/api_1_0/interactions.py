@@ -59,7 +59,8 @@ def recommend_interactions():
     recommend_interactions=[]
     sortlist = []
     interactions = []
-    if now_interact.tag:
+    i_tag = [_tag for _tag in now_interact.tag]
+    if len(i_tag)>0:
         tag_id = now_interact.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
         for _interaction in tag.interactions:

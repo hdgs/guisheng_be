@@ -58,7 +58,8 @@ def recommend_articles():
     recommend_articles=[]
     sortlist = []
     articles = []
-    if now_a.tag:
+    a_tag = [_tag for _tag in now_a.tag]
+    if len(a_tag)>0:
         tag_id = now_a.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
         for _article in tag.articles:

@@ -60,7 +60,8 @@ def recommend_news():
     recommend_news=[]
     sortlist = []
     news = []
-    if now_news.tag:
+    n_tag = [_tag for _tag in now_news.tag]
+    if len(n_tag)>0:
         tag_id = now_news.tag[0].tag_id
         tag = Tag.query.get_or_404(tag_id)
         for _news in tag.news:
