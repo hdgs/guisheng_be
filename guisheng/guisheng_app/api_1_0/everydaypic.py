@@ -20,6 +20,7 @@ def get_everydaypic():
 @edit_required
 def add_everydaypic():
     everydaypic = Everydaypic.from_json(request.get_json())
+    everydaypic.time = datetime.utcnow()+timedelta(hours=8)
     db.session.add(everydaypic)
     db.session.commit()
     return jsonify({

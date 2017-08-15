@@ -81,6 +81,7 @@ def create_comments():
         comment.comment_id = request.get_json().get("comment_id")
         comment.body = request.get_json().get("message")
         comment.author_id = request.get_json().get("user_id")
+        comment.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(comment)
         db.session.commit()
         return Response(json.dumps({

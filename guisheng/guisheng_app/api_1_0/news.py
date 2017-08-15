@@ -112,6 +112,7 @@ def add_news():
         news = News.from_json(request.get_json())
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name
+        news.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(news)
         db.session.commit()
         tags = request.get_json().get('tags')

@@ -118,6 +118,7 @@ def add_article():
         article = Article.from_json(request.get_json())
         saver_id = request.get_json().get('saver')
         article.saver = User.query.filter_by(id=saver_id).first().name
+        article.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(article)
         db.session.commit()
         tags = request.get_json().get('tags')

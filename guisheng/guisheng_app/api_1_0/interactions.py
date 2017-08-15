@@ -130,6 +130,7 @@ def add_interaction():
         interaction = Interaction.from_json(request.get_json())
         saver_id = request.get_json().get('saver')
         interaction.saver = User.query.filter_by(id=saver_id).first().name
+        interaction.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(interaction)
         db.session.commit()
         tags = request.get_json().get('tags')

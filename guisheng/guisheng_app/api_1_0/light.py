@@ -12,7 +12,7 @@ def light():
         light.like_degree = int(request.get_json().get("like_degree"))
         kind = int(request.get_json().get("kind"))
         if kind == 1:
-            light.news_id = request.get_json().get("article_id") 
+            light.news_id = request.get_json().get("article_id")
         if kind == 2:
             light.picture_id = request.get_json().get("article_id")
         if kind == 3:
