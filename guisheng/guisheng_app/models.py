@@ -188,7 +188,7 @@ class News(db.Model):
     collect = db.relationship('Collect', backref='news', lazy='dynamic',cascade='all')
     tag = db.relationship("PostTag", backref="news",lazy="dynamic", cascade='all')
     views = db.Column(db.Integer,default=0)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
     img_url = db.Column(db.String(164),default="")
     description = db.Column(db.Text,default="")
     editor = db.Column(db.String(64),default="")
@@ -256,7 +256,7 @@ class Everydaypic(db.Model):
     img_url = db.Column(db.String(164),default="")
     climate = db.Column(db.Integer,default=1)
     date = db.Column(db.String(164),default="")
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
 
     @staticmethod
     def from_json(json_everydaypic):
@@ -297,7 +297,7 @@ class Picture(db.Model):
     like = db.relationship('Like',backref='picture', lazy='dynamic',cascade='all')
     comments = db.relationship('Comment',backref='picture', lazy='dynamic',cascade='all')
     collect = db.relationship('Collect',backref='picture', lazy='dynamic',cascade='all')
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
     editor = db.Column(db.String(64),default="")
     kind = 2
     published = db.Column(db.Integer,default=0)
@@ -353,7 +353,7 @@ class Article(db.Model):
     light = db.relationship('Light',backref='article', lazy='dynamic',cascade='all')
     collect = db.relationship('Collect',backref='article', lazy='dynamic',cascade='all')
     views = db.Column(db.Integer, default=0)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
     description = db.Column(db.Text,default="")
     tag = db.relationship("PostTag", backref="articles",lazy="dynamic", cascade='all')
     music_url = db.Column(db.String(164),default="")
@@ -453,7 +453,7 @@ class Interaction(db.Model):
     comments = db.relationship('Comment',backref='interaction', lazy='dynamic',cascade='all')
     light = db.relationship('Light',backref='interaction', lazy='dynamic',cascade='all')
     collect = db.relationship('Collect',backref='interaction', lazy='dynamic',cascade='all')
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
     description = db.Column(db.Text,default="")
     tag = db.relationship("PostTag", backref="interactions",lazy="dynamic", cascade='all')
     body = db.Column(db.Text,default="")
@@ -571,7 +571,7 @@ class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text,default="")
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow()+timedelta(hours=8))
+    time = db.Column(db.DateTime, index=True, default=datetime.now)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
     comment_id = db.Column(db.Integer,default=-1)
     news_id = db.Column(db.Integer, db.ForeignKey('news.id',ondelete="CASCADE"))
