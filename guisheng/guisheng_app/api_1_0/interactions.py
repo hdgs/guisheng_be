@@ -6,7 +6,7 @@ from ..models import Role,User,Interaction,Tag,PostTag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
-from datetime import datetime
+from datetime import datetime,timedelta
 
 @api.route('/interaction/<int:id>/',methods=['POST'])
 def get_interaction(id):
@@ -160,7 +160,7 @@ def update_interaction(id):
         interaction.editor = request.get_json().get('editor')
         saver_id = request.get_json().get('saver')
         interaction.saver = User.query.filter_by(id=saver_id).first().name
-        interaction.time = datetime.now()
+        interaction.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(interaction)
         db.session.commit()
 
@@ -203,7 +203,7 @@ def update_interaction_body(id):
     interaction = Interaction.query.get_or_404(id)
     if request.method == "PUT":
         interaction.body = request.get_json().get('body')
-        interaction.time = datetime.now()
+        interaction.time = datetime.utcnow()+timedelta(hours=8)
         saver_id = request.get_json().get('saver')
         interaction.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(interaction)

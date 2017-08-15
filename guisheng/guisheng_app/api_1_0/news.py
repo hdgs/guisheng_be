@@ -6,7 +6,7 @@ from ..models import Role,User,News,PostTag,Tag,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
-from datetime import datetime
+from datetime import datetime,timedelta
 
 
 @api.route('/news/<int:id>/', methods=['POST'])
@@ -140,7 +140,7 @@ def update_news(id):
         news.editor = request.get_json().get('editor')
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name
-        news.time = datetime.now()
+        news.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(news)
         db.session.commit()
 
@@ -185,7 +185,7 @@ def update_news_body(id):
     news = News.query.get_or_404(id)
     if request.method == "PUT":
         news.body = request.get_json().get('body')
-        news.time = datetime.now()
+        news.time = datetime.utcnow()+timedelta(hours=8)
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name
         db.session.add(news)

@@ -6,7 +6,7 @@ from ..models import Role,User,Picture,Tag,PostTag,Image,Collect
 from . import api
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
-from datetime import datetime
+from datetime import datetime,timedelta
 
 @api.route('/pics/<int:id>/', methods=['POST'])
 def get_pic(id):
@@ -111,7 +111,7 @@ def add_pics():
                 db.session.add(pics)
                 db.session.commit()
             pics.saver = User.query.filter_by(id=saver_id).first().name
-            pics.time = datetime.utcnow()
+            pics.time = datetime.utcnow()+timedelta(hours=8)
             db.session.add(pics)
             db.session.commit()
 
@@ -145,7 +145,7 @@ def update_pics(id):
         pics.author = User.query.filter_by(name=request.get_json().get('author')).first()
         saver_id = request.get_json().get('saver')
         pics.saver = User.query.filter_by(id=saver_id).first().name
-        pics.time = datetime.now()
+        pics.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(pics)
         db.session.commit()
 
@@ -196,3 +196,4 @@ def delete_one_pic(id,index):
         'deleted': pics.id,
         'index':index
     }),200
+

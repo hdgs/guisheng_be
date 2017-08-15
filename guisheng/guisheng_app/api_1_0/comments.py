@@ -9,7 +9,7 @@ from guisheng_app import db
 from guisheng_app.decorators import admin_required,edit_required
 
 def get_time(comment_time):
-    now_time = datetime.utcnow()
+    now_time = datetime.utcnow()+timedelta(hours=8)
     today = datetime.date(now_time)
     comment_date = datetime.date(comment_time)
     if now_time.strftime('%Y') == comment_time.strftime('%Y'):

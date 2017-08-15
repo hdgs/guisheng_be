@@ -8,7 +8,7 @@ from operator import attrgetter
 from guisheng_app import rds
 from .. import db
 from guisheng_app.decorators import admin_required,edit_required
-from datetime import datetime
+from datetime import datetime,timedelta
 
 @api.route('/feed/', methods=['GET'])
 def main_page():
@@ -203,7 +203,7 @@ def publish():
             post = Interaction.query.get_or_404(post_id)
         post.published = 1
         post.publisher = User.query.filter_by(id=publisher_id).first().name
-        post.time = datetime.now()
+        post.time = datetime.utcnow()+timedelta(hours=8)
         db.session.add(post)
         db.session.commit()
         return jsonify({
