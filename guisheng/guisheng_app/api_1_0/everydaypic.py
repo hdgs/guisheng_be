@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import render_template,jsonify,Response,g,request
 import json
-from  datetime import datetime
+from  datetime import datetime,timedelta
 from ..models import Everydaypic
 from . import api
 from .. import db
