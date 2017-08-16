@@ -7,7 +7,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 
 from . import api
 from guisheng_app import db
-from guisheng_app.decorators import admin_required
+from guisheng_app.decorators import admin_required,edit_required
 from guisheng_app.models import Special,ChildTopic,Role,User,News,Picture,Tag,PostTag,Image,Collect
 from operator import attrgetter
 
@@ -47,7 +47,7 @@ def special_main_page():
 #ToDo
 
 @api.route('/special/',methods = ['POST'])
-@admin_required
+@edit_required
 def add_special():
     if request.method == 'POST':
         
@@ -63,7 +63,7 @@ def add_special():
         }),201
 
 @api.route('/special/<int:id>/',methods = ['POST'])
-@admin_required
+@edit_required
 def add_childtopic(id):
     if request.method == 'POST':
         name = request.get_json().get('childtopic_name')
@@ -80,7 +80,7 @@ def add_childtopic(id):
         }),201
 
 @api.route('/special/<int:special_id>/<int:childtopic_id>/article/',methods=['POST'])
-@admin_required
+@edit_required
 def add_special_article(special_id,childtopic_id):
     if request.method =='POST':
          
@@ -88,6 +88,8 @@ def add_special_article(special_id,childtopic_id):
          article.special_id = special_id
          article.childtopic_id = childtopic_id
          article.freshmen=1
+         article.saver = User.query.filter_by(id=saver_id).first().name
+         article.time = datetime.utcnow()+timedelta(hours=8)
 
          db.session.add(article)
          db.session.commit()
@@ -110,7 +112,7 @@ def add_special_article(special_id,childtopic_id):
 
 
 @api.route('/special/<int:special_id>/<int:childtopic_id>/picture/',methods=['POST'])
-@admin_required
+@edit_required
 def add_special_picture(special_id,childtopic_id):
     if request.method == 'POST':
         title = request.get_json().get('title')
@@ -126,6 +128,11 @@ def add_special_picture(special_id,childtopic_id):
                 pics.freshmen=1
                 db.session.add(pics)
                 db.session.commit()
+            
+            pics.saver = User.query.filter_by(id=saver_id).first().name
+            pics.time = datetime.utcnow()+timedelta(hours=8)
+            db.session.add(pics)
+            db.session.commit()
 
             img_url = request.get_json().get('img_url')
             introduction = request.get_json().get('description')
@@ -150,7 +157,7 @@ def add_special_picture(special_id,childtopic_id):
 
 
 @api.route('/special/list/',methods = ['GET'])
-@admin_required
+@edit_required
 def special_list():
     page = int(request.args.get('page'))
     specials = []
@@ -172,7 +179,7 @@ def special_list():
 
 
 @api.route('/special/list/<int:special_id>/',methods=['GET'])
-@admin_required
+@edit_required
 def childtopic_list(special_id):
     page = int(request.args.get('page'))
     childtopics = ChildTopic.query.filter_by(special_id = special_id).order_by(ChildTopic.id).limit(COUNT).offset((page-1)*COUNT)
@@ -183,7 +190,7 @@ def childtopic_list(special_id):
                     {
                         "id":childtopic.id,
                         "childtopic_name":childtopic.childtopic_name,
-                        "count":ChildTopic.query.count()
+                        "count":ChildTopic.query.filter_by(special_id = special_id).count()
                     }
                     for childtopic in childtopics
                 ],
@@ -192,7 +199,7 @@ def childtopic_list(special_id):
 
 
 @api.route('/special/list/<int:special_id>/<int:childtopic_id>/',methods=['GET'])
-@admin_required
+@edit_required
 def all_posts(special_id,childtopic_id):
     page = int(request.args.get('page'))-1
     tolist = []
@@ -204,8 +211,8 @@ def all_posts(special_id,childtopic_id):
     
     tolist.sort(key=attrgetter('time'),reverse=True)
     alist = tolist[page*COUNT:(page+1)*COUNT]
-    spnews_count = News.query.filter_by(freshmen=1).count()
-    sppics_count = Picture.query.filter_by(freshmen=1).count()
+    spnews_count = News.query.filter_by(freshmen=1).filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).count()
+    sppics_count = Picture.query.filter_by(freshmen=1).filter_by(special_id=special_id).filter_by(childtopic_id=childtopic_id).count()
     allposts_count = spnews_count + sppics_count
     return Response(json.dumps([{
                 "kind":content.kind,
@@ -221,6 +228,8 @@ def all_posts(special_id,childtopic_id):
                 "tags":[Tag.query.get_or_404(t.tag_id).body for t in content.__class__.query.get_or_404(content.id).tag]\
                        if len([i for i in content.__class__.query.get_or_404(content.id).tag]) else [""],
                 "time":content.time.strftime('%Y-%m-%d'),
+                "saver":content.saver,
+                "publisher":content.publisher,
                 "description":content.description,
                 "published":content.published,
                 "count":allposts_count
