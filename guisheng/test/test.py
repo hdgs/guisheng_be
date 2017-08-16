@@ -103,6 +103,7 @@ class BasicTestCase(unittest.TestCase):
             data = json.dumps({ 
                 "author":str(ADMIN_NAME),
                 "title":str(number),
+                "saver":ID,
                 "tags":["test"],
                 "img_url":"test",
                 "editor":"test"
@@ -122,6 +123,7 @@ class BasicTestCase(unittest.TestCase):
                     "title":"test2",
                     "author":ADMIN_NAME,
                     "editor":"test2",
+                    "saver":ID,
                     "tags":["test"]
                     }),
             content_type = 'application/json')
@@ -143,6 +145,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data=json.dumps({
+                "saver":ID,
                 "body":"testbody"
                 }),
             content_type = 'application/json')
@@ -196,6 +199,7 @@ class BasicTestCase(unittest.TestCase):
                 "author":ADMIN_NAME,
                 "img_url":str(number),
                 "description":"test",
+                "saver":ID,
                 "editor":"test"
                 }),
             content_type = 'application/json')
@@ -213,6 +217,7 @@ class BasicTestCase(unittest.TestCase):
                 "title":str(number),
                 "tags":["test"],
                 "author":ADMIN_NAME,
+                "saver":ID,
                 "editor":"test"
             }),
             content_type = 'application/json')
@@ -282,6 +287,7 @@ class BasicTestCase(unittest.TestCase):
                 "author":ADMIN_NAME,
                 "description":"test",
                 "editor":"test",
+                "saver":ID,
                 "img_url":"test",
                 "flag":1
             }),
@@ -302,6 +308,7 @@ class BasicTestCase(unittest.TestCase):
                 "tags":["test"],
                 "description":"test",
                 "img_url":"test",
+                "saver":ID,
                 "editor":"Humbert",
                 "flag":0
             }),
@@ -324,6 +331,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({
+                "saver":ID,
                 "body":"test"
             }),
             content_type = 'application/json')
@@ -473,6 +481,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+               "publisher":ID,
                "kind":2,
                "post_id":pics_id
             }),
@@ -486,6 +495,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+                "publisher":ID,
                 "kind":1,
                 "post_id":news_id
             }),
@@ -499,6 +509,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+                "publisher":ID,
                 "kind":4,
                 "post_id":inte_id
             }),
@@ -512,6 +523,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+               "publisher":ID,
                "kind":3,
                "post_id":art_id
             }),
@@ -603,6 +615,7 @@ class BasicTestCase(unittest.TestCase):
                 "singer":"Queen",
                 "film_url":"Leon The Professor",
                 "film_img_url":"test",
+                "saver":ID,
                 "editor":"test",
                 "scores":float(1),
                 "flag":int(1)
@@ -633,6 +646,7 @@ class BasicTestCase(unittest.TestCase):
                 "film_url":"Leon The Professor",
                 "film_img_url":"test",
                 "editor":"test",
+                "saver":ID,
                 "scores":float(2),
                 "flag":int(1)
             }),
@@ -655,6 +669,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data=json.dumps({
+                "saver":ID,
                 "body":"test"
             }),
             content_type = 'application/json')
