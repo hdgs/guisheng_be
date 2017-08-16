@@ -145,6 +145,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data=json.dumps({
+                "saver":ID,
                 "body":"testbody"
                 }),
             content_type = 'application/json')
@@ -480,6 +481,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+               "publisher":ID,
                "kind":2,
                "post_id":pics_id
             }),
@@ -493,6 +495,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+                "publisher":ID,
                 "kind":1,
                 "post_id":news_id
             }),
@@ -506,6 +509,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+                "publisher":ID,
                 "kind":4,
                 "post_id":inte_id
             }),
@@ -519,6 +523,7 @@ class BasicTestCase(unittest.TestCase):
                 "Authorization":"Basic "+b64token,
             },
             data = json.dumps({ 
+               "publisher":ID,
                "kind":3,
                "post_id":art_id
             }),
