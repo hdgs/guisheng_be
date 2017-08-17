@@ -28,7 +28,7 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
 #redis site
-rds = redis.StrictRedis(host="redis2", port=6381, db=1)
+rds = redis.StrictRedis(host=os.environ.get("BROKER_URI"), port=6381, db=1)
 
 
 def create_app(config_name=None, main=True):
