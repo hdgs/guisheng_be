@@ -81,7 +81,7 @@ try:
 except:
     pass
 
-try
+try:
     whooshalchemy.whoosh_index(app, Tag)
 except:
     pass
