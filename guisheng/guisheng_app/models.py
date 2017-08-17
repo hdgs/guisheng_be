@@ -14,6 +14,7 @@ from itsdangerous import JSONWebSignatureSerializer as Serializer
 from datetime import datetime,timedelta
 from markdown import markdown
 import bleach
+import flask.ext.whooshalchemy as whooshalchemy
 
 
 # permissions
@@ -340,6 +341,7 @@ class Picture(db.Model):
     def __repr__(self):
         return "<Picture %r>" % self.id
 
+
 #水墨文章
 class Article(db.Model):
     __tablename__ = 'articles'
@@ -441,6 +443,7 @@ class Article(db.Model):
         return "<Article %r>" % self.id
 
 db.event.listen(Article.body, 'set', Article.on_changed_body)
+
 
 #互动话题
 class Interaction(db.Model):
@@ -774,6 +777,7 @@ class Tag(db.Model):
 
     def __repr__(self):
         return "<Tag %r>" % self.id
+
 
 class Suggestion(db.Model):
     __tablename__ = 'suggestions'
