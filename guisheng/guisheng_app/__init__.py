@@ -61,6 +61,13 @@ app = create_app(config_name = 'default')
 
 #to search
 from .models import News,Article,Picture,Interaction,Tag
+whooshalchemy.whoosh_index(app, News)
+whooshalchemy.whoosh_index(app, Article)
+whooshalchemy.whoosh_index(app, Picture)
+whooshalchemy.whoosh_index(app, Interaction)
+whooshalchemy.whoosh_index(app, Tag)
+
+'''
 if not os.path.exists('./whoosh_index/News'):
     print "init"
     whooshalchemy.whoosh_index(app, News)
@@ -76,7 +83,7 @@ if not os.path.exists('./whoosh_index/Interaction'):
 if not os.path.exists('./whoosh_index/Tag'):
     print "init"
     whooshalchemy.whoosh_index(app, Tag)
-
+'''
 '''
 def create_index(app, model):
     if not hasattr(app, 'whoosh_indexes'):
