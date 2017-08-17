@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from flask_moment import Moment
 from flask_debugtoolbar import DebugToolbarExtension
 from config import config
-import flask.ext.whooshalchemy as whooshalchemy
+import flask_whooshalchemy as whooshalchemy
 import redis
 from celery import Celery
 

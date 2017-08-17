@@ -14,7 +14,6 @@ from itsdangerous import JSONWebSignatureSerializer as Serializer
 from datetime import datetime,timedelta
 from markdown import markdown
 import bleach
-import flask.ext.whooshalchemy as whooshalchemy
 
 
 # permissions
