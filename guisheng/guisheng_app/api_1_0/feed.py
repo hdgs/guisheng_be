@@ -71,12 +71,15 @@ def main_page():
 def search():
     if request.method == 'POST':
         content = request.get_json().get("content")
+        msg = "none"
         #存储热门标签
         if Tag.query.filter_by(body=content).first():
             if rds.get(content) is None:
                 rds.set(content, 1)
+                msg = "set content"
             else:
                 rds.incr(content)
+                msg = "incr "
         rds.save()
         #返回搜索结果
         alist = []
@@ -110,6 +113,7 @@ def search():
                     if Interaction.query.get_or_404(_interaction.interaction_id).published == 1:
                         alist.append(Interaction.query.get_or_404(_interaction.interaction_id))
         return Response(json.dumps([{
+                "msg": msg + "content: " + content,
                 "kind":post.kind,
                 "article_id":post.id,
                 "img_url":post.img_url if post.__class__!=Picture \
