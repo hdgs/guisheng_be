@@ -61,14 +61,11 @@ app = create_app(config_name = 'default')
 
 #to search
 from .models import News,Article,Picture,Interaction,Tag
-try:
-    whooshalchemy.whoosh_index(app, News)
-    whooshalchemy.whoosh_index(app, Article)
-    whooshalchemy.whoosh_index(app, Picture)
-    whooshalchemy.whoosh_index(app, Interaction)
-    whooshalchemy.whoosh_index(app, Tag)
-except:
-    pass
+whooshalchemy.whoosh_index(app, News)
+whooshalchemy.whoosh_index(app, Article)
+whooshalchemy.whoosh_index(app, Picture)
+whooshalchemy.whoosh_index(app, Interaction)
+whooshalchemy.whoosh_index(app, Tag)
 
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
