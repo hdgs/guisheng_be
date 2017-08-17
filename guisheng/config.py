@@ -37,8 +37,8 @@ class Config:
     UPLOAD_FOLDER = os.path.join(basedir,"pics")
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
     WHOOSH_BASE = os.path.join(basedir,"whoosh_index")
-    CELERY_BROKER_URL = 'redis://redis1:6380/1'
-    CELERY_RESULT_BACKEND = 'redis://redis2:6381/1'
+    CELERY_BROKER_URL = 'redis://{}:6380/1'.format("BROKER_URI")
+    CELERY_RESULT_BACKEND = 'redis://{}:6381/1'.format("BACKEND_URI")
     CELERYBEAT_SCHEDULE = {
         'restart_redis_every_month': {
         'task': 'delete_hottags',
