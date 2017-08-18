@@ -84,13 +84,13 @@ def search():
             if n.published == 1:
                 alist.append(n)
         for p in Picture.query.filter(Picture.title.like('%'+content+'%')).all():
-            if n.published == 1:
+            if p.published == 1:
                 alist.append(p)
         for a in Article.query.filter(Article.title.like('%'+content+'%')).all():
-            if n.published == 1:
+            if a.published == 1:
                 alist.append(a)
         for i in Interaction.query.filter(Interaction.title.like('%'+content+'%')).all():
-            if n.published == 1:
+            if i.published == 1:
                 alist.append(i)
         for t in Tag.query.filter(Tag.body.like('%'+content+'%')).all():
             for _news in t.news:
