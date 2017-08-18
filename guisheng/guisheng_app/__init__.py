@@ -47,23 +47,23 @@ def create_app(config_name=None, main=True):
     from .models import News,Article,Picture,Interaction,Tag
     try:
         whooshalchemy.whoosh_index(app, News)
-    except NameError:
+    except NameError and OSError:
         pass
     try:
         whooshalchemy.whoosh_index(app, Article)
-    except NameError:
+    except NameError and OSError:
         pass
     try:
         whooshalchemy.whoosh_index(app, Picture)
-    except NameError:
+    except NameError and OSError:
         pass
     try:
         whooshalchemy.whoosh_index(app, Interaction)
-    except NameError:
+    except NameError and OSError:
         pass
     try:
         whooshalchemy.whoosh_index(app, Tag)
-    except NameError:
+    except NameError and OSError:
         pass
 
     # admin site
