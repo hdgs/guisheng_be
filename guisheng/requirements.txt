@@ -44,3 +44,4 @@ vine==1.1.3
 visitor==0.1.3
 wsgiref==0.1.2
 gunicorn
+flask_whooshalchemyplus

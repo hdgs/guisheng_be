@@ -80,19 +80,20 @@ def search():
         rds.save()
         #返回搜索结果
         alist = []
-        for n in News.query.whoosh_search(content):
+        News.query.filter(News.title.like('%'+'测'+'%')).all()
+        for n in News.query.filter(News.title.like('%'+content+'%')).all():
             if n.published == 1:
                 alist.append(n)
-        for p in Picture.query.whoosh_search(content):
+        for p in Picture.query.filter(Picture.title.like('%'+content+'%')).all():
             if n.published == 1:
                 alist.append(p)
-        for a in Article.query.whoosh_search(content):
+        for a in Article.query.filter(Article.title.like('%'+content+'%')).all():
             if n.published == 1:
                 alist.append(a)
-        for i in Interaction.query.whoosh_search(content):
+        for i in Interaction.query.filter(Interaction.title.like('%'+content+'%')).all():
             if n.published == 1:
                 alist.append(i)
-        for t in Tag.query.filter_by(body=content).all():
+        for t in Tag.query.filter(Tag.body.like('%'+content+'%')).all():
             for _news in t.news:
                 if News.query.filter_by(id=_news.news_id).first():
                     if News.query.get_or_404(_news.news_id).published == 1:

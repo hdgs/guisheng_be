@@ -15,7 +15,6 @@ from datetime import datetime,timedelta
 from markdown import markdown
 import bleach
 
-
 # permissions
 class Permission:
     """
