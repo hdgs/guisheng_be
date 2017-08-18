@@ -67,7 +67,7 @@ def main_page():
             } for _post in posts],
         ),mimetype='application/json')
 
-@api.route('/feed/', methods=['POST'])
+@api.route('/feed/', methods=['GET','POST'])
 def search():
     if request.method == 'POST':
         content = request.get_json().get("content")
