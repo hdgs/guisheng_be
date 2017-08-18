@@ -45,12 +45,29 @@ def create_app(config_name=None, main=True):
 
     #to search
     from .models import News,Article,Picture,Interaction,Tag
+    '''
     whooshalchemy.whoosh_index(app, News)
     whooshalchemy.whoosh_index(app, Article)
     whooshalchemy.whoosh_index(app, Picture)
     whooshalchemy.whoosh_index(app, Interaction)
     whooshalchemy.whoosh_index(app, Tag)
-
+    '''
+    if not os.path.exists('./whoosh_index/News/_MAIN_0.toc'):
+        print "init"
+        whooshalchemy.whoosh_index(app, News)
+    if not os.path.exists('./whoosh_index/Article/_MAIN_0.toc'):
+        print "init"
+        whooshalchemy.whoosh_index(app, Article)
+    if not os.path.exists('./whoosh_index/Picture/_MAIN_0.toc'):
+        print "init"
+        whooshalchemy.whoosh_index(app, Picture)
+    if not os.path.exists('./whoosh_index/Interaction/_MAIN_0.toc'):
+        print "init"
+        whooshalchemy.whoosh_index(app, Interaction)
+    if not os.path.exists('./whoosh_index/Tag_MAIN_0.toc'):
+        print "init"
+        whooshalchemy.whoosh_index(app, Tag)
+ 
     # admin site
     from admin import views
 
