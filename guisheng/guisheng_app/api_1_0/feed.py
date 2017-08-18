@@ -80,7 +80,6 @@ def search():
         rds.save()
         #返回搜索结果
         alist = []
-        News.query.filter(News.title.like('%'+'测'+'%')).all()
         for n in News.query.filter(News.title.like('%'+content+'%')).all():
             if n.published == 1:
                 alist.append(n)
