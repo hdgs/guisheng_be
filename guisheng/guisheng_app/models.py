@@ -177,7 +177,6 @@ def load_user(user_id):
 #新闻
 class News(db.Model):
     __tablename__ = 'news'
-    __searchable__ = ['title']
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64),default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
@@ -285,7 +284,6 @@ class Everydaypic(db.Model):
 #图片集
 class Picture(db.Model):
     __tablename__ = 'pictures'
-    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     img_url = db.relationship('Image', backref='picture', lazy='dynamic',cascade='all')
     title = db.Column(db.String(64),default="",unique=True, index=True)
@@ -343,7 +341,6 @@ class Picture(db.Model):
 #水墨文章
 class Article(db.Model):
     __tablename__ = 'articles'
-    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164),default="",unique=True, index=True)
     img_url = db.Column(db.String(164),default="")
@@ -446,7 +443,6 @@ db.event.listen(Article.body, 'set', Article.on_changed_body)
 #互动话题
 class Interaction(db.Model):
     __tablename__ = 'interactions'
-    __searchable__ = ['title']
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(164), default="",unique=True, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id',ondelete="CASCADE"))
@@ -752,7 +748,6 @@ class PostTag(db.Model):
 
 class Tag(db.Model):
     __tablename__ = 'tags'
-    __searchable__ = ['body']
     id = db.Column(db.Integer,primary_key=True)
     count = db.Column(db.Integer,default=0)
     body = db.Column(db.String(64),default="")

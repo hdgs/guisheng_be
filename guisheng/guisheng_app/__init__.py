@@ -7,8 +7,6 @@ from flask_login import LoginManager
 from flask_moment import Moment
 from flask_debugtoolbar import DebugToolbarExtension
 from config import config
-#import flask_whooshalchemy as whooshalchemy
-#import flask_whooshalchemyplus as whooshalchemyplus
 import redis
 from celery import Celery
 
@@ -43,37 +41,7 @@ def create_app(config_name=None, main=True):
     moment.init_app(app)
     toolbar.init_app(app)
     login_manager.init_app(app)
-    #whooshalchemyplus.init_app(app)
 
-    #to search
-    #from .models import News,Article,Picture,Interaction,Tag
-    #whooshalchemyplus.whoosh_index(app, News)
-    #whooshalchemyplus.whoosh_index(app, Article)
-    #whooshalchemyplus.whoosh_index(app, Picture)
-    #whooshalchemyplus.whoosh_index(app, Interaction)
-    #whooshalchemyplus.whoosh_index(app, Tag)
-    '''
-    try:
-        whooshalchemy.whoosh_index(app, News)
-    except NameError and OSError:
-        pass
-    try:
-        whooshalchemy.whoosh_index(app, Article)
-    except NameError and OSError:
-        pass
-    try:
-        whooshalchemy.whoosh_index(app, Picture)
-    except NameError and OSError:
-        pass
-    try:
-        whooshalchemy.whoosh_index(app, Interaction)
-    except NameError and OSError:
-        pass
-    try:
-        whooshalchemy.whoosh_index(app, Tag)
-    except NameError and OSError:
-        pass
-    '''
 
     # admin site
     from admin import views
