@@ -34,9 +34,11 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    UPLOAD_FOLDER = os.path.join(basedir,"pics")
+    UPLOAD_FOLDER = os.path.join(basedir,"guisheng_pics")
+    ACCESS_KEY = os.environ.get("ACCESS_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    BUCKET_NAME = 'guisheng'
     ALLOWED_EXTENSIONS = set(['png','jpg','jpeg'])
-    WHOOSH_BASE = os.path.join(basedir,"whoosh_index")
     CELERY_BROKER_URL = 'redis://{}:6380/1'.format(os.environ.get("BROKER_URI"))
     CELERY_RESULT_BACKEND = 'redis://{}:6381/1'.format(os.environ.get("BACKEND_URI"))
     CELERYBEAT_SCHEDULE = {
