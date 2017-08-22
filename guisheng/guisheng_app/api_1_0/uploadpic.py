@@ -15,7 +15,7 @@ BUCKET_NAME = 'guishengapp'
 
 q = Auth(ACCESS_KEY, SECRET_KEY)
 
-@api.route('/guisheng/upload_pics/',methods = ['POST'])
+@api.route('/guisheng/upload_pics/',methods = ['GET','POST'])
 def upload_pics():
     if request.method == 'POST':
         file = request.files['file']
