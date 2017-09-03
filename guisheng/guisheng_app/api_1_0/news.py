@@ -93,7 +93,7 @@ def show_news(id):
     tagids=[pt.tag_id for pt in PostTag.query.filter_by(news_id=id).all()]
     tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
-        "img_url":User.query.get_or_404(news.author_id).img_url,
+        "img_url":news.img_url,
         "kind":1,
         "title":news.title,
         "author":User.query.get_or_404(news.author_id).name,
@@ -139,6 +139,7 @@ def update_news(id):
     if request.method == "PUT":
         news.title = request.get_json().get('title')
         news.author = User.query.filter_by(name=request.get_json().get('author')).first()
+        news.img_url = request.get_json().get('img_url')
         news.editor = request.get_json().get('editor')
         saver_id = request.get_json().get('saver')
         news.saver = User.query.filter_by(id=saver_id).first().name

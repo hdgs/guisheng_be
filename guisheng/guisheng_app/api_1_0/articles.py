@@ -93,7 +93,7 @@ def show_article(id):
     return Response(json.dumps({
         "kind":3,
         "title":article.title,
-        "img_url":User.query.get_or_404(article.author_id).img_url,
+        "img_url":article.img_url,
         "author":User.query.get_or_404(article.author_id).name,
         "time":article.time.strftime('%Y-%m-%d'),
         "body":article.body_html,

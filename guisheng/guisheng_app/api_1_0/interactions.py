@@ -111,7 +111,7 @@ def show_interaction(id):
     tags=[Tag.query.filter_by(id=t).first().body for t in tagids]
     return Response(json.dumps({
         "kind":4,
-        "img_url":User.query.get_or_404(interaction.author_id).img_url,
+        "img_url":interaction.img_url,
         "title":interaction.title,
         "author":User.query.get_or_404(interaction.author_id).name,
         "time":interaction.time.strftime('%Y-%m-%d'),
